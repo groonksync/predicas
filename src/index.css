@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Subtle Apple-style scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(142, 142, 147, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(142, 142, 147, 0.6);
+}
+
+/* Ocultar barra de scroll completamente (scrollbar-none) */
+.scrollbar-none, .no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.scrollbar-none::-webkit-scrollbar, .no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slideRight {
+  animation: slideRight 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media print {
+  header, aside, button, .no-print {
+    display: none !important;
+  }
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Vista previa de impresión: solo se imprime la hoja */
+  body.print-preview-active #root {
+    display: none !important;
+  }
+  body.print-preview-active .print-preview-root {
+    position: static !important;
+    display: block !important;
+    background: white !important;
+    backdrop-filter: none !important;
+  }
+  body.print-preview-active .print-preview-panel {
+    display: none !important;
+  }
+  body.print-preview-active .print-preview-stage {
+    overflow: visible !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+  body.print-preview-active .print-preview-scaler {
+    transform: none !important;
+  }
+  body.print-preview-active .print-sheet {
+    width: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .print-sheet .break-inside-avoid {
+    break-inside: avoid;
+  }
+}
+
+/* Las notas dentro de la hoja siempre en tinta oscura */
+.print-sheet .print-notes,
+.print-sheet .print-notes * {
+  color: #1f1f1f;
+}
