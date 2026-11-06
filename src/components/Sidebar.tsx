@@ -214,20 +214,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </div>
                       </div>
 
-                      {studies.length > 1 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (confirm('¿Eliminar este estudio de prédica?')) {
-                              onDeleteStudy(study.id);
-                            }
-                          }}
-                          className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 transition-opacity"
-                          title="Eliminar"
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm('¿Eliminar este estudio de prédica?')) {
+                            onDeleteStudy(study.id);
+                          }
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-red-500 transition-opacity"
+                        title="Eliminar"
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </div>
                 );

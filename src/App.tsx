@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BookOpen } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { StudyCanvas } from './components/StudyCanvas';
 import { RightNotesPanel } from './components/RightNotesPanel';
@@ -17,6 +18,14 @@ export const App: React.FC = () => {
     return (localStorage.getItem('study_theme') as any) || 'dark';
   });
 
+  // Migración para limpiar datos de ejemplo iniciales solicitados por el usuario
+  const CLEAN_VERSION = 'v3_empty_clean';
+  if (typeof window !== 'undefined' && localStorage.getItem('study_platform_version') !== CLEAN_VERSION) {
+    localStorage.setItem('study_platform_version', CLEAN_VERSION);
+    localStorage.removeItem('study_data_map');
+    localStorage.removeItem('study_active_study');
+  }
+
   // Topics state
   const [topics, setTopics] = useState<Topic[]>(() => {
     const saved = localStorage.getItem('study_topics');
@@ -28,16 +37,12 @@ export const App: React.FC = () => {
     return localStorage.getItem('study_active_topic') || 'salvacion';
   });
 
-  // Studies state
+  // Studies state (inicia completamente vacío)
   const [studiesMap, setStudiesMap] = useState<Record<string, Study[]>>(() => {
     const saved = localStorage.getItem('study_data_map');
     if (!saved) return INITIAL_STUDIES;
     try {
-      const parsed = JSON.parse(saved);
-      if (parsed.salvacion && parsed.salvacion[0] && (!parsed.salvacion[0].detailedNotes || !parsed.salvacion[0].detailedNotes.includes('Léxico Griego'))) {
-        parsed.salvacion[0].detailedNotes = INITIAL_STUDIES.salvacion[0].detailedNotes;
-      }
-      return parsed;
+      return JSON.parse(saved);
     } catch {
       return INITIAL_STUDIES;
     }
@@ -46,7 +51,7 @@ export const App: React.FC = () => {
   // Active study id
   const [activeStudyId, setActiveStudyId] = useState<string>(() => {
     const currentList = studiesMap[activeTopicId] || [];
-    return currentList[0]?.id || 'estudio-salvacion-gracia';
+    return currentList[0]?.id || '';
   });
 
   // Right-hand Sermon Outline Panel open state (default true for writing and editing)
@@ -271,8 +276,26 @@ export const App: React.FC = () => {
             isOutlineOpen={isOutlineOpen}
           />
         ) : (
-          <div className="flex-1 flex items-center justify-center p-8 text-center text-slate-400">
-            <p>Selecciona o crea una prédica para comenzar el estudio.</p>
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-[#141416]">
+            <div className="max-w-md w-full p-8 rounded-3xl bg-white dark:bg-[#1C1C1F] border border-black/[0.06] dark:border-white/[0.08] shadow-sm space-y-4">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-[#E03126]/10 text-[#E03126] flex items-center justify-center font-bold">
+                <BookOpen size={28} />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Lienzo de Prédicas Vacío
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  No hay prédicas ni enseñanzas cargadas. Crea tu primer estudio bíblico para comenzar a predicar.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsCreateStudyModalOpen(true)}
+                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#E03126] hover:bg-[#C92A20] active:scale-95 transition-all shadow-xs border-0"
+              >
+                + Crear Nueva Prédica
+              </button>
+            </div>
           </div>
         )}
 
