@@ -33,6 +33,7 @@ interface CreateStudyModalProps {
   activeTopicId: string;
   onCreateStudy: (newStudy: Study, topicId: string) => void;
   onCreateTopicOnly?: (name: string) => string;
+  theme?: 'light' | 'dark';
 }
 
 export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
@@ -42,7 +43,10 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
   activeTopicId,
   onCreateStudy,
   onCreateTopicOnly,
+  theme = 'dark',
 }) => {
+  const isLight = theme === 'light';
+
   const [selectedTopicId, setSelectedTopicId] = useState(activeTopicId || (topics[0]?.id || ''));
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
@@ -311,20 +315,28 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 lg:p-7 font-sans select-none overflow-y-auto animate-fadeIn">
-      {/* Contenedor Modal Amplio y Cuadradito (Paleta Minimalista Luz y Gris Oscuro) */}
+    <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 lg:p-7 font-sans select-none overflow-y-auto animate-fadeIn">
+      {/* Contenedor Modal Amplio y Cuadradito Adaptable a Modo Luz y Modo Gris */}
       <div 
-        className="bg-[#18181B] text-[#F5F5F7] w-[96vw] max-w-6xl h-[94vh] max-h-[920px] rounded-[32px] shadow-2xl flex flex-col overflow-hidden my-auto"
+        className={`w-[96vw] max-w-6xl h-[94vh] max-h-[920px] rounded-[36px] shadow-2xl flex flex-col overflow-hidden my-auto transition-colors duration-200 ${
+          isLight 
+            ? 'bg-[#F8F9FB] text-[#1C1C1E]' 
+            : 'bg-[#161619] text-[#F5F5F7]'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* Cabecera Limpia sin Ícono Rojo ni Trazos Ruidosos */}
-        <div className="px-6 py-4.5 bg-[#1F1F23] flex items-center justify-between flex-shrink-0">
+        {/* Cabecera Espaciosa con Márgenes Generosos (Sin Ícono Rojo ni Cortes Pegados) */}
+        <div className={`px-8 pt-7 pb-5 flex items-center justify-between flex-shrink-0 transition-colors ${
+          isLight ? 'bg-white' : 'bg-[#1E1E22]'
+        }`}>
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">
+            <h2 className={`text-xl sm:text-2xl font-bold tracking-tight leading-tight ${
+              isLight ? 'text-[#1C1C1E]' : 'text-white'
+            }`}>
               Nueva Prédica o Estudio
             </h2>
-            <p className="text-xs text-[#8E8E93] font-normal mt-0.5">
+            <p className="text-xs sm:text-sm text-[#8E8E93] font-normal mt-1">
               Organiza el tema, pasajes bíblicos y visualiza la estructura en tiempo real
             </p>
           </div>
@@ -332,10 +344,14 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-[#2A2A2E] hover:bg-[#34343A] text-neutral-300 hover:text-white flex items-center justify-center transition-all active:scale-95"
+            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95 ${
+              isLight 
+                ? 'bg-[#EAEAEE] text-slate-700 hover:bg-[#DEDEE4] hover:text-black' 
+                : 'bg-[#2A2A2F] text-neutral-300 hover:bg-[#36363C] hover:text-white'
+            }`}
             title="Cerrar modal"
           >
-            <X size={17} />
+            <X size={18} />
           </button>
         </div>
 
@@ -346,11 +362,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
           <form 
             id={`form-${inputId}`}
             onSubmit={handleSubmit} 
-            className="lg:col-span-7 flex flex-col min-h-0 overflow-y-auto p-5 sm:p-6 space-y-6 scrollbar-thin scrollbar-thumb-white/10"
+            className="lg:col-span-7 flex flex-col min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-6 scrollbar-thin scrollbar-thumb-neutral-400/20"
           >
             
             {/* 1. TEMA BÍBLICO AL QUE PERTENECE */}
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-wider flex items-center gap-1.5">
                   <FolderOpen size={12} className="text-[#8E8E93]" />
@@ -360,7 +376,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsCreatingTopic(true)}
-                    className="text-[11px] font-semibold text-white/80 hover:text-white flex items-center gap-1 transition-colors px-2 py-0.5 rounded-lg bg-[#26262B]"
+                    className={`text-[11px] font-semibold flex items-center gap-1 transition-colors px-2.5 py-1 rounded-xl ${
+                      isLight 
+                        ? 'bg-[#EAEAEE] text-slate-800 hover:bg-[#DEDEE4]' 
+                        : 'bg-[#242429] text-neutral-300 hover:bg-[#2F2F35] hover:text-white'
+                    }`}
                   >
                     <Plus size={11} />
                     <span>Nuevo Tema</span>
@@ -370,13 +390,19 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
               {/* Input inline para crear nuevo tema */}
               {isCreatingTopic && (
-                <div className="flex items-center gap-2 p-2 bg-[#222226] rounded-2xl animate-fadeIn">
+                <div className={`flex items-center gap-2 p-2.5 rounded-2xl animate-fadeIn ${
+                  isLight ? 'bg-white shadow-xs' : 'bg-[#222227]'
+                }`}>
                   <input
                     type="text"
                     value={newTopicName}
                     onChange={(e) => setNewTopicName(e.target.value)}
                     placeholder="Nombre del nuevo tema bíblico..."
-                    className="flex-1 bg-[#18181B] rounded-xl px-3.5 py-2 text-xs text-white outline-none focus:ring-1 focus:ring-white/40"
+                    className={`flex-1 rounded-xl px-3.5 py-2 text-xs outline-none ${
+                      isLight 
+                        ? 'bg-[#F2F2F7] text-slate-900 focus:bg-white' 
+                        : 'bg-[#18181C] text-white focus:bg-[#202026]'
+                    }`}
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -391,7 +417,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                     type="button"
                     onClick={handleSaveNewTopic}
                     disabled={!newTopicName.trim()}
-                    className="px-4 py-2 bg-white text-black rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm active:scale-95 disabled:opacity-40"
+                    className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1 shadow-sm active:scale-95 disabled:opacity-40 ${
+                      isLight 
+                        ? 'bg-[#1C1C1E] text-white hover:bg-black' 
+                        : 'bg-white text-black hover:bg-neutral-200'
+                    }`}
                   >
                     <Check size={13} />
                     <span>Guardar</span>
@@ -399,7 +429,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsCreatingTopic(false)}
-                    className="p-2 text-neutral-400 hover:text-white rounded-xl"
+                    className="p-2 text-neutral-400 hover:text-neutral-600 dark:hover:text-white rounded-xl"
                   >
                     <X size={15} />
                   </button>
@@ -417,8 +447,12 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                       onClick={() => setSelectedTopicId(t.id)}
                       className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all active:scale-95 ${
                         isSelected
-                          ? 'bg-white text-black shadow-md font-bold scale-[1.02]'
-                          : 'bg-[#242428] text-neutral-300 hover:bg-[#2C2C32] hover:text-white'
+                          ? isLight
+                            ? 'bg-[#1C1C1E] text-white shadow-md font-bold scale-[1.02]'
+                            : 'bg-white text-black shadow-md font-bold scale-[1.02]'
+                          : isLight
+                            ? 'bg-[#EAEAEE] text-slate-800 hover:bg-[#DEDEE4]'
+                            : 'bg-[#222227] text-neutral-300 hover:bg-[#2A2A30] hover:text-white'
                       }`}
                     >
                       {t.name}
@@ -434,14 +468,18 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                 <label className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-wider block">
                   Título del Mensaje *
                 </label>
-                <span className="text-[10px] text-neutral-500 font-medium">Requerido</span>
+                <span className="text-[10px] text-neutral-400 font-medium">Requerido</span>
               </div>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ej. El Regalo Inmerecido de la Gracia, Poder para Vencer..."
-                className="w-full bg-[#202024] focus:bg-[#242429] rounded-2xl px-4 py-3 text-sm font-semibold text-white placeholder:text-neutral-500 transition-all outline-none focus:ring-1 focus:ring-white/40"
+                className={`w-full rounded-2xl px-4 py-3 text-sm font-semibold transition-all outline-none ${
+                  isLight 
+                    ? 'bg-white text-slate-900 placeholder:text-neutral-400 shadow-xs focus:ring-2 focus:ring-black/10' 
+                    : 'bg-[#1E1E23] text-white placeholder:text-neutral-500 focus:bg-[#24242A] focus:ring-1 focus:ring-white/30'
+                }`}
                 required
                 autoFocus
               />
@@ -458,7 +496,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
                   placeholder="Ej. Bosquejo expositivo para culto dominical..."
-                  className="w-full bg-[#202024] focus:bg-[#242429] rounded-2xl px-4 py-2.5 text-xs text-white placeholder:text-neutral-500 transition-all outline-none"
+                  className={`w-full rounded-2xl px-4 py-2.5 text-xs transition-all outline-none ${
+                    isLight 
+                      ? 'bg-white text-slate-900 placeholder:text-neutral-400 shadow-xs' 
+                      : 'bg-[#1E1E23] text-white placeholder:text-neutral-500 focus:bg-[#24242A]'
+                  }`}
                 />
               </div>
 
@@ -471,19 +513,27 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-[#202024] focus:bg-[#242429] rounded-2xl px-3.5 py-2.5 text-xs text-white font-medium transition-all outline-none scheme-dark"
+                  className={`w-full rounded-2xl px-3.5 py-2.5 text-xs font-medium transition-all outline-none ${
+                    isLight 
+                      ? 'bg-white text-slate-900 shadow-xs' 
+                      : 'bg-[#1E1E23] text-white focus:bg-[#24242A] scheme-dark'
+                  }`}
                 />
               </div>
             </div>
 
-            {/* 4. PASAJE BÍBLICO CENTRAL: AMBAS OPCIONES (EXPLORADOR COMPLETO O ESCRITURA DIRECTA) */}
-            <div className="bg-[#202024] rounded-3xl p-5 space-y-4">
+            {/* 4. PASAJE BÍBLICO CENTRAL (EXPLORADOR COMPLETO O ESCRITURA DIRECTA) */}
+            <div className={`rounded-3xl p-5 space-y-4 ${
+              isLight ? 'bg-white shadow-xs' : 'bg-[#1E1E23]'
+            }`}>
               
               {/* Selector de Modo: Explorador de Biblia Completa vs Entrada Rápida */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-black/[0.04] dark:border-white/[0.04]">
                 <div>
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                    <Quote size={14} className="text-neutral-400" />
+                  <h3 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-2 ${
+                    isLight ? 'text-slate-900' : 'text-white'
+                  }`}>
+                    <Quote size={14} className="text-[#8E8E93]" />
                     <span>Pasaje Bíblico Central</span>
                   </h3>
                   <p className="text-[11px] text-[#8E8E93] mt-0.5">
@@ -492,14 +542,20 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                 </div>
 
                 {/* Tabs de Modo: Luz y Gris */}
-                <div className="flex items-center gap-1 p-1 bg-[#141416] rounded-2xl self-start sm:self-auto">
+                <div className={`flex items-center gap-1 p-1 rounded-2xl self-start sm:self-auto ${
+                  isLight ? 'bg-[#EAEAEE]' : 'bg-[#141417]'
+                }`}>
                   <button
                     type="button"
                     onClick={() => setPassageMode('explorer')}
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                       passageMode === 'explorer'
-                        ? 'bg-white text-black shadow-sm'
-                        : 'text-neutral-400 hover:text-white'
+                        ? isLight 
+                          ? 'bg-[#1C1C1E] text-white shadow-xs' 
+                          : 'bg-white text-black shadow-xs'
+                        : isLight 
+                          ? 'text-slate-600 hover:text-black' 
+                          : 'text-neutral-400 hover:text-white'
                     }`}
                   >
                     <BookOpen size={12} className="inline mr-1.5" />
@@ -510,8 +566,12 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                     onClick={() => setPassageMode('direct')}
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                       passageMode === 'direct'
-                        ? 'bg-white text-black shadow-sm'
-                        : 'text-neutral-400 hover:text-white'
+                        ? isLight 
+                          ? 'bg-[#1C1C1E] text-white shadow-xs' 
+                          : 'bg-white text-black shadow-xs'
+                        : isLight 
+                          ? 'text-slate-600 hover:text-black' 
+                          : 'text-neutral-400 hover:text-white'
                     }`}
                   >
                     <Edit3 size={12} className="inline mr-1.5" />
@@ -522,19 +582,21 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
               {/* OPCIÓN 1: EXPLORADOR DE LA BIBLIA COMPLETA */}
               {passageMode === 'explorer' && (
-                <div className="space-y-3.5 pt-1 animate-fadeIn">
+                <div className="space-y-4 pt-1 animate-fadeIn">
                   
                   {/* Filtro de Testamento y Búsqueda de Libros */}
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
                     {/* Filtros de Testamento */}
-                    <div className="flex items-center gap-1 bg-[#18181B] p-1 rounded-xl">
+                    <div className={`flex items-center gap-1 p-1 rounded-xl ${
+                      isLight ? 'bg-[#F2F2F7]' : 'bg-[#141417]'
+                    }`}>
                       <button
                         type="button"
                         onClick={() => setTestamentFilter('ALL')}
                         className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                           testamentFilter === 'ALL'
-                            ? 'bg-white text-black font-bold shadow-xs'
-                            : 'text-neutral-400 hover:text-white'
+                            ? isLight ? 'bg-white text-black font-bold shadow-xs' : 'bg-white text-black font-bold shadow-xs'
+                            : isLight ? 'text-slate-600 hover:text-black' : 'text-neutral-400 hover:text-white'
                         }`}
                       >
                         Todos (66)
@@ -544,8 +606,8 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                         onClick={() => setTestamentFilter('AT')}
                         className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                           testamentFilter === 'AT'
-                            ? 'bg-white text-black font-bold shadow-xs'
-                            : 'text-neutral-400 hover:text-white'
+                            ? isLight ? 'bg-white text-black font-bold shadow-xs' : 'bg-white text-black font-bold shadow-xs'
+                            : isLight ? 'text-slate-600 hover:text-black' : 'text-neutral-400 hover:text-white'
                         }`}
                       >
                         Antiguo (39)
@@ -555,8 +617,8 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                         onClick={() => setTestamentFilter('NT')}
                         className={`px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                           testamentFilter === 'NT'
-                            ? 'bg-white text-black font-bold shadow-xs'
-                            : 'text-neutral-400 hover:text-white'
+                            ? isLight ? 'bg-white text-black font-bold shadow-xs' : 'bg-white text-black font-bold shadow-xs'
+                            : isLight ? 'text-slate-600 hover:text-black' : 'text-neutral-400 hover:text-white'
                         }`}
                       >
                         Nuevo (27)
@@ -571,17 +633,23 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                         value={bookSearchQuery}
                         onChange={(e) => setBookSearchQuery(e.target.value)}
                         placeholder="Buscar libro (ej. Juan, Romanos)..."
-                        className="w-full bg-[#18181B] rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-neutral-500 outline-none"
+                        className={`w-full rounded-xl pl-8 pr-3 py-1.5 text-xs outline-none ${
+                          isLight 
+                            ? 'bg-[#F2F2F7] text-slate-900 placeholder:text-neutral-400' 
+                            : 'bg-[#141417] text-white placeholder:text-neutral-500'
+                        }`}
                       />
                     </div>
                   </div>
 
                   {/* Rejilla de Libros */}
                   <div className="space-y-1.5">
-                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider block">
                       1. Selecciona el Libro:
                     </span>
-                    <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-1 bg-[#161618] rounded-2xl scrollbar-thin scrollbar-thumb-white/10">
+                    <div className={`flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2 rounded-2xl scrollbar-thin scrollbar-thumb-neutral-400/20 ${
+                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                    }`}>
                       {filteredBooks.map((b) => {
                         const isBookActive = selectedBook.name === b.name;
                         return (
@@ -597,8 +665,12 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                             }}
                             className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all active:scale-95 ${
                               isBookActive
-                                ? 'bg-white text-black font-bold shadow-sm scale-[1.02]'
-                                : 'bg-[#222226] text-neutral-300 hover:bg-[#2B2B30] hover:text-white'
+                                ? isLight
+                                  ? 'bg-[#1C1C1E] text-white font-bold shadow-xs scale-[1.02]'
+                                  : 'bg-white text-black font-bold shadow-xs scale-[1.02]'
+                                : isLight
+                                  ? 'bg-white text-slate-800 hover:bg-[#EAEAEA]'
+                                  : 'bg-[#222227] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
                             }`}
                           >
                             <span>{b.name}</span>
@@ -612,15 +684,17 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   {/* Selector de Capítulos */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider">
                         2. Capítulos de {selectedBook.name} ({selectedBook.chaptersCount} en total):
                       </span>
-                      <span className="text-xs text-white font-bold">
+                      <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                         Capítulo {selectedChapter}
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto p-1.5 bg-[#161618] rounded-2xl scrollbar-thin scrollbar-thumb-white/10">
+                    <div className={`flex flex-wrap gap-1 max-h-24 overflow-y-auto p-2 rounded-2xl scrollbar-thin scrollbar-thumb-neutral-400/20 ${
+                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                    }`}>
                       {Array.from({ length: selectedBook.chaptersCount }, (_, i) => i + 1).map((ch) => {
                         const isChActive = selectedChapter === ch;
                         return (
@@ -635,8 +709,12 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                             }}
                             className={`w-9 h-8 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center ${
                               isChActive
-                                ? 'bg-white text-black shadow-sm scale-105'
-                                : 'bg-[#222226] text-neutral-300 hover:bg-[#2B2B30] hover:text-white'
+                                ? isLight
+                                  ? 'bg-[#1C1C1E] text-white shadow-xs scale-105'
+                                  : 'bg-white text-black shadow-xs scale-105'
+                                : isLight
+                                  ? 'bg-white text-slate-800 hover:bg-[#EAEAEA]'
+                                  : 'bg-[#222227] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
                             }`}
                           >
                             {ch}
@@ -649,10 +727,10 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   {/* Selector de Versículos */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                      <span className="text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider">
                         3. Versículos de {selectedBook.name} {selectedChapter}:
                       </span>
-                      <span className="text-xs text-white font-bold">
+                      <span className={`text-xs font-bold ${isLight ? 'text-slate-900' : 'text-white'}`}>
                         {verseRef}
                       </span>
                     </div>
@@ -662,7 +740,9 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                         Cargando versículos de {selectedBook.name} {selectedChapter}...
                       </div>
                     ) : (
-                      <div className="flex flex-wrap gap-1 max-h-28 overflow-y-auto p-1.5 bg-[#161618] rounded-2xl scrollbar-thin scrollbar-thumb-white/10">
+                      <div className={`flex flex-wrap gap-1 max-h-28 overflow-y-auto p-2 rounded-2xl scrollbar-thin scrollbar-thumb-neutral-400/20 ${
+                        isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                      }`}>
                         {chapterVerses.map((item) => {
                           const isStart = item.verse === selectedVerseStart;
                           const inRange = item.verse >= Math.min(selectedVerseStart, selectedVerseEnd) && 
@@ -675,10 +755,16 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                               onDoubleClick={() => handleSelectExplorerRange(selectedVerseStart, item.verse)}
                               className={`w-9 h-8 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center justify-center ${
                                 isStart
-                                  ? 'bg-white text-black shadow-sm scale-105'
+                                  ? isLight
+                                    ? 'bg-[#1C1C1E] text-white shadow-xs scale-105'
+                                    : 'bg-white text-black shadow-xs scale-105'
                                   : inRange
-                                  ? 'bg-white/20 text-white font-bold'
-                                  : 'bg-[#222226] text-neutral-300 hover:bg-[#2B2B30] hover:text-white'
+                                  ? isLight
+                                    ? 'bg-black/15 text-black font-bold'
+                                    : 'bg-white/20 text-white font-bold'
+                                  : isLight
+                                    ? 'bg-white text-slate-800 hover:bg-[#EAEAEA]'
+                                    : 'bg-[#222227] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
                               }`}
                               title={`Versículo ${item.verse}: ${item.text.substring(0, 60)}...`}
                             >
@@ -691,14 +777,22 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   </div>
 
                   {/* Texto del Pasaje Seleccionado en RVR1960 */}
-                  <div className="p-3.5 bg-[#161618] rounded-2xl space-y-1.5">
-                    <div className="flex items-center justify-between text-xs font-bold text-white">
-                      <span>{verseRef || 'Pasaje seleccionado'}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-300">
+                  <div className={`p-4 rounded-2xl space-y-1.5 ${
+                    isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                  }`}>
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span className={isLight ? 'text-slate-900' : 'text-white'}>
+                        {verseRef || 'Pasaje seleccionado'}
+                      </span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                        isLight ? 'bg-black/10 text-slate-800' : 'bg-white/10 text-neutral-300'
+                      }`}>
                         RVR1960
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-300 italic leading-relaxed">
+                    <p className={`text-xs italic leading-relaxed ${
+                      isLight ? 'text-slate-700' : 'text-neutral-300'
+                    }`}>
                       "{verseText || 'Selecciona un versículo arriba para ver su contenido...'}"
                     </p>
                   </div>
@@ -722,7 +816,9 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                             type="button"
                             onClick={handleAutoLookupRVR1960}
                             disabled={isLookingUp}
-                            className="text-xs text-white/90 hover:text-white flex items-center gap-1 font-semibold underline"
+                            className={`text-xs flex items-center gap-1 font-semibold underline ${
+                              isLight ? 'text-slate-900 hover:text-black' : 'text-white/90 hover:text-white'
+                            }`}
                           >
                             <Search size={11} />
                             <span>{isLookingUp ? 'Buscando...' : 'Buscar en RVR1960'}</span>
@@ -731,7 +827,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                         <button
                           type="button"
                           onClick={() => setShowSuggestions(!showSuggestions)}
-                          className="text-xs font-bold text-white/80 hover:text-white px-2.5 py-1 rounded-xl bg-[#28282C] transition-all flex items-center gap-1"
+                          className={`text-xs font-bold px-2.5 py-1 rounded-xl transition-all flex items-center gap-1 ${
+                            isLight 
+                              ? 'bg-[#EAEAEE] text-slate-800 hover:bg-[#DEDEE4]' 
+                              : 'bg-[#28282D] text-white/80 hover:text-white'
+                          }`}
                         >
                           <Sparkles size={11} />
                           <span>Sugerencias</span>
@@ -745,19 +845,25 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                       onChange={(e) => setVerseRef(e.target.value)}
                       onBlur={handleAutoLookupRVR1960}
                       placeholder="Ej. Efesios 2:8-9, Romanos 8:28, Juan 3:16..."
-                      className="w-full bg-[#18181B] rounded-2xl px-4 py-2.5 text-xs text-white placeholder:text-neutral-500 font-semibold transition-all outline-none"
+                      className={`w-full rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all outline-none ${
+                        isLight 
+                          ? 'bg-[#F2F2F7] text-slate-900 placeholder:text-neutral-400 focus:bg-white' 
+                          : 'bg-[#141417] text-white placeholder:text-neutral-500 focus:bg-[#202026]'
+                      }`}
                     />
                   </div>
 
                   {/* Sugerencias Rápidas desplegables */}
                   {showSuggestions && (
-                    <div className="p-3 bg-[#161618] rounded-2xl space-y-2 animate-fadeIn">
+                    <div className={`p-3 rounded-2xl space-y-2 animate-fadeIn ${
+                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                    }`}>
                       <div className="flex items-center justify-between text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider">
                         <span>Pasajes clave para prédica:</span>
                         <button
                           type="button"
                           onClick={() => setShowSuggestions(false)}
-                          className="text-neutral-400 hover:text-white"
+                          className="text-neutral-400 hover:text-black dark:hover:text-white"
                         >
                           ✕
                         </button>
@@ -768,7 +874,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                             key={v.id}
                             type="button"
                             onClick={() => handleSelectSuggestedVerse(v.reference, v.text, v.version)}
-                            className="px-3 py-1 rounded-xl bg-[#26262B] hover:bg-white hover:text-black text-neutral-300 text-xs font-semibold whitespace-nowrap transition-colors"
+                            className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
+                              isLight 
+                                ? 'bg-white hover:bg-[#1C1C1E] hover:text-white text-slate-800' 
+                                : 'bg-[#222227] hover:bg-white hover:text-black text-neutral-300'
+                            }`}
                           >
                             {v.reference}
                           </button>
@@ -777,7 +887,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                     </div>
                   )}
 
-                  {/* Selector de Versión Bíblica con Espaciado Perfecto */}
+                  {/* Selector de Versión Bíblica con Espaciado Holgado y Proporcional */}
                   <div className="space-y-1.5">
                     <label className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-wider block">
                       Versión de la Traducción
@@ -792,8 +902,12 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                             onClick={() => setVerseVersion(ver)}
                             className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
                               isVerActive
-                                ? 'bg-white text-black shadow-md scale-[1.02]'
-                                : 'bg-[#18181B] text-neutral-400 hover:text-white hover:bg-[#25252A]'
+                                ? isLight
+                                  ? 'bg-[#1C1C1E] text-white shadow-md scale-[1.02]'
+                                  : 'bg-white text-black shadow-md scale-[1.02]'
+                                : isLight
+                                  ? 'bg-[#F2F2F7] text-slate-700 hover:bg-[#EAEAEE]'
+                                  : 'bg-[#141417] text-neutral-400 hover:text-white hover:bg-[#202026]'
                             }`}
                           >
                             {ver}
@@ -813,7 +927,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                       onChange={(e) => setVerseText(e.target.value)}
                       placeholder="Escribe o pega el texto bíblico que se leerá en el púlpito..."
                       rows={3}
-                      className="w-full bg-[#18181B] rounded-2xl p-3 text-xs text-neutral-200 placeholder:text-neutral-500 leading-relaxed outline-none resize-none transition-all"
+                      className={`w-full rounded-2xl p-3 text-xs leading-relaxed outline-none resize-none transition-all ${
+                        isLight 
+                          ? 'bg-[#F2F2F7] text-slate-900 placeholder:text-neutral-400 focus:bg-white' 
+                          : 'bg-[#141417] text-neutral-200 placeholder:text-neutral-500 focus:bg-[#202026]'
+                      }`}
                     />
                   </div>
 
@@ -836,18 +954,32 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   onClick={() => setTemplate('clasico')}
                   className={`p-4 rounded-2xl text-left transition-all active:scale-[0.98] flex flex-col justify-between ${
                     template === 'clasico'
-                      ? 'bg-white text-black shadow-lg scale-[1.01]'
-                      : 'bg-[#202024] hover:bg-[#26262B] text-white'
+                      ? isLight
+                        ? 'bg-[#1C1C1E] text-white shadow-lg scale-[1.01]'
+                        : 'bg-white text-black shadow-lg scale-[1.01]'
+                      : isLight
+                        ? 'bg-white hover:bg-[#F2F2F7] text-slate-900 shadow-xs'
+                        : 'bg-[#1E1E23] hover:bg-[#24242A] text-white'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <h4 className={`text-xs font-bold whitespace-nowrap ${template === 'clasico' ? 'text-black' : 'text-white'}`}>
+                      <h4 className={`text-xs font-bold whitespace-nowrap ${
+                        template === 'clasico'
+                          ? isLight ? 'text-white' : 'text-black'
+                          : isLight ? 'text-slate-900' : 'text-white'
+                      }`}>
                         Clásico Expositivo
                       </h4>
-                      {template === 'clasico' && <Check size={14} className="text-black" />}
+                      {template === 'clasico' && (
+                        <Check size={14} className={isLight ? 'text-white' : 'text-black'} />
+                      )}
                     </div>
-                    <p className={`text-[11px] mt-1.5 leading-snug ${template === 'clasico' ? 'text-neutral-700 font-medium' : 'text-neutral-400'}`}>
+                    <p className={`text-[11px] mt-1.5 leading-snug ${
+                      template === 'clasico'
+                        ? isLight ? 'text-neutral-300 font-medium' : 'text-neutral-700 font-medium'
+                        : 'text-[#8E8E93]'
+                    }`}>
                       4 puntos: Intro, Doctrina, Práctica, Llamado
                     </p>
                   </div>
@@ -859,18 +991,32 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   onClick={() => setTemplate('tematico')}
                   className={`p-4 rounded-2xl text-left transition-all active:scale-[0.98] flex flex-col justify-between ${
                     template === 'tematico'
-                      ? 'bg-white text-black shadow-lg scale-[1.01]'
-                      : 'bg-[#202024] hover:bg-[#26262B] text-white'
+                      ? isLight
+                        ? 'bg-[#1C1C1E] text-white shadow-lg scale-[1.01]'
+                        : 'bg-white text-black shadow-lg scale-[1.01]'
+                      : isLight
+                        ? 'bg-white hover:bg-[#F2F2F7] text-slate-900 shadow-xs'
+                        : 'bg-[#1E1E23] hover:bg-[#24242A] text-white'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <h4 className={`text-xs font-bold whitespace-nowrap ${template === 'tematico' ? 'text-black' : 'text-white'}`}>
+                      <h4 className={`text-xs font-bold whitespace-nowrap ${
+                        template === 'tematico'
+                          ? isLight ? 'text-white' : 'text-black'
+                          : isLight ? 'text-slate-900' : 'text-white'
+                      }`}>
                         Temático Dinámico
                       </h4>
-                      {template === 'tematico' && <Check size={14} className="text-black" />}
+                      {template === 'tematico' && (
+                        <Check size={14} className={isLight ? 'text-white' : 'text-black'} />
+                      )}
                     </div>
-                    <p className={`text-[11px] mt-1.5 leading-snug ${template === 'tematico' ? 'text-neutral-700 font-medium' : 'text-neutral-400'}`}>
+                    <p className={`text-[11px] mt-1.5 leading-snug ${
+                      template === 'tematico'
+                        ? isLight ? 'text-neutral-300 font-medium' : 'text-neutral-700 font-medium'
+                        : 'text-[#8E8E93]'
+                    }`}>
                       3 puntos: Necesidad, Solución en Dios, Pasos
                     </p>
                   </div>
@@ -882,18 +1028,32 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   onClick={() => setTemplate('blanco')}
                   className={`p-4 rounded-2xl text-left transition-all active:scale-[0.98] flex flex-col justify-between ${
                     template === 'blanco'
-                      ? 'bg-white text-black shadow-lg scale-[1.01]'
-                      : 'bg-[#202024] hover:bg-[#26262B] text-white'
+                      ? isLight
+                        ? 'bg-[#1C1C1E] text-white shadow-lg scale-[1.01]'
+                        : 'bg-white text-black shadow-lg scale-[1.01]'
+                      : isLight
+                        ? 'bg-white hover:bg-[#F2F2F7] text-slate-900 shadow-xs'
+                        : 'bg-[#1E1E23] hover:bg-[#24242A] text-white'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <h4 className={`text-xs font-bold whitespace-nowrap ${template === 'blanco' ? 'text-black' : 'text-white'}`}>
+                      <h4 className={`text-xs font-bold whitespace-nowrap ${
+                        template === 'blanco'
+                          ? isLight ? 'text-white' : 'text-black'
+                          : isLight ? 'text-slate-900' : 'text-white'
+                      }`}>
                         Lienzo en Blanco
                       </h4>
-                      {template === 'blanco' && <Check size={14} className="text-black" />}
+                      {template === 'blanco' && (
+                        <Check size={14} className={isLight ? 'text-white' : 'text-black'} />
+                      )}
                     </div>
-                    <p className={`text-[11px] mt-1.5 leading-snug ${template === 'blanco' ? 'text-neutral-700 font-medium' : 'text-neutral-400'}`}>
+                    <p className={`text-[11px] mt-1.5 leading-snug ${
+                      template === 'blanco'
+                        ? isLight ? 'text-neutral-300 font-medium' : 'text-neutral-700 font-medium'
+                        : 'text-[#8E8E93]'
+                    }`}>
                       Empieza desde cero con tus propios puntos
                     </p>
                   </div>
@@ -904,32 +1064,44 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
           </form>
 
           {/* COLUMNA DERECHA: Previsualización en Vivo de la Prédica (5 columnas) */}
-          <div className="lg:col-span-5 bg-[#141416] flex flex-col min-h-0 overflow-y-auto p-5 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-white/10">
+          <div className={`lg:col-span-5 flex flex-col min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-4 scrollbar-thin scrollbar-thumb-neutral-400/20 transition-colors ${
+            isLight ? 'bg-[#EFF1F4]' : 'bg-[#101012]'
+          }`}>
             
             {/* Cabecera de Previsualización */}
             <div className="flex items-center justify-between pb-1">
               <div className="flex items-center gap-2">
-                <Eye size={14} className="text-white" />
-                <span className="text-[11px] font-bold text-white uppercase tracking-wider">
+                <Eye size={14} className={isLight ? 'text-slate-900' : 'text-white'} />
+                <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                  isLight ? 'text-slate-900' : 'text-white'
+                }`}>
                   Vista Previa en Vivo
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-[10px] font-semibold text-neutral-300 bg-white/10 px-2.5 py-1 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              <div className={`flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full ${
+                isLight ? 'bg-black/10 text-slate-800' : 'bg-white/10 text-neutral-300'
+              }`}>
+                <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+                  isLight ? 'bg-black' : 'bg-white'
+                }`} />
                 <span>Tiempo Real</span>
               </div>
             </div>
 
             {/* Hoja de Estudio / Tarjeta del Púlpito en Blanco y Gris */}
-            <div className="bg-[#1C1C1F] rounded-3xl p-5 shadow-xl space-y-4 flex-1">
+            <div className={`rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 flex-1 ${
+              isLight ? 'bg-white text-slate-900' : 'bg-[#1A1A1E] text-white'
+            }`}>
               
               {/* Metadatos Superiores */}
               <div className="flex items-center justify-between gap-2 pb-2">
-                <span className="px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase bg-white text-black shadow-xs">
+                <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase shadow-xs ${
+                  isLight ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black'
+                }`}>
                   {currentTopic?.name || 'Tema Bíblico'}
                 </span>
-                <span className="text-xs text-neutral-400 font-medium flex items-center gap-1.5">
-                  <Calendar size={12} className="text-neutral-500" />
+                <span className="text-xs text-[#8E8E93] font-medium flex items-center gap-1.5">
+                  <Calendar size={12} className="text-[#8E8E93]" />
                   <span>{date || 'Sin fecha'}</span>
                 </span>
               </div>
@@ -937,45 +1109,57 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
               {/* Título y Subtítulo Dinámicos */}
               <div className="space-y-1">
                 {title.trim() ? (
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-snug tracking-tight">
+                  <h3 className={`text-base sm:text-lg font-bold leading-snug tracking-tight ${
+                    isLight ? 'text-slate-900' : 'text-white'
+                  }`}>
                     {title}
                   </h3>
                 ) : (
-                  <h3 className="text-sm sm:text-base font-semibold text-neutral-500 italic">
+                  <h3 className="text-sm sm:text-base font-semibold text-neutral-400 italic">
                     Título de la prédica aparecerá aquí...
                   </h3>
                 )}
 
-                <p className="text-xs text-neutral-400 font-normal leading-relaxed">
+                <p className="text-xs text-[#8E8E93] font-normal leading-relaxed">
                   {subtitle.trim() || 'Subtítulo o propósito del mensaje'}
                 </p>
               </div>
 
               {/* Cita Bíblica Central */}
               {verseRef.trim() ? (
-                <div className="bg-[#242429] rounded-2xl p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-white">
+                <div className={`rounded-2xl p-4 space-y-2 ${
+                  isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+                }`}>
+                  <div className={`flex items-center justify-between text-xs font-bold ${
+                    isLight ? 'text-slate-900' : 'text-white'
+                  }`}>
                     <span className="flex items-center gap-1.5">
-                      <Quote size={13} className="text-neutral-400" />
+                      <Quote size={13} className="text-[#8E8E93]" />
                       <span>{verseRef}</span>
                     </span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-neutral-200 font-mono">
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+                      isLight ? 'bg-black/10 text-slate-800' : 'bg-white/10 text-neutral-200'
+                    }`}>
                       {verseVersion}
                     </span>
                   </div>
                   {verseText.trim() ? (
-                    <p className="text-xs text-neutral-300 italic leading-relaxed line-clamp-4">
+                    <p className={`text-xs italic leading-relaxed line-clamp-4 ${
+                      isLight ? 'text-slate-700' : 'text-neutral-300'
+                    }`}>
                       "{verseText}"
                     </p>
                   ) : (
-                    <p className="text-[11px] text-neutral-500 italic">
+                    <p className="text-[11px] text-[#8E8E93] italic">
                       Texto bíblico listo para ser leído en el púlpito...
                     </p>
                   )}
                 </div>
               ) : (
-                <div className="p-3 rounded-2xl text-center bg-[#242429]">
-                  <p className="text-[11px] text-neutral-400 flex items-center justify-center gap-1.5">
+                <div className={`p-3 rounded-2xl text-center ${
+                  isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+                }`}>
+                  <p className="text-[11px] text-[#8E8E93] flex items-center justify-center gap-1.5">
                     <Quote size={12} />
                     <span>Pasaje central pendiente (podrás asignarlo después)</span>
                   </p>
@@ -984,12 +1168,12 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
               {/* Estructura del Bosquejo en Tiempo Real */}
               <div className="space-y-2.5 pt-1">
-                <div className="flex items-center justify-between text-[10px] font-bold text-neutral-400 uppercase tracking-wider">
+                <div className="flex items-center justify-between text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider">
                   <span className="flex items-center gap-1.5">
-                    <Layers size={12} className="text-neutral-400" />
+                    <Layers size={12} className="text-[#8E8E93]" />
                     <span>Estructura del Bosquejo ({previewPoints.length} Puntos)</span>
                   </span>
-                  <span className="text-white font-semibold capitalize">
+                  <span className={`font-semibold capitalize ${isLight ? 'text-slate-900' : 'text-white'}`}>
                     {template}
                   </span>
                 </div>
@@ -998,17 +1182,23 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   {previewPoints.map((pt, idx) => (
                     <div 
                       key={pt.id || idx}
-                      className="p-3 rounded-2xl bg-[#242429] space-y-1"
+                      className={`p-3 rounded-2xl space-y-1 ${
+                        isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+                      }`}
                     >
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-full bg-white text-black text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                        <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center flex-shrink-0 ${
+                          isLight ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black'
+                        }`}>
                           {idx + 1}
                         </span>
-                        <h5 className="text-xs font-bold text-white truncate">
+                        <h5 className={`text-xs font-bold truncate ${
+                          isLight ? 'text-slate-900' : 'text-white'
+                        }`}>
                           {pt.title.replace(/^\d+\.\s*/, '')}
                         </h5>
                       </div>
-                      <p className="text-[11px] text-neutral-400 pl-7 line-clamp-1 leading-snug">
+                      <p className="text-[11px] text-[#8E8E93] pl-7 line-clamp-1 leading-snug">
                         {pt.content}
                       </p>
                     </div>
@@ -1017,21 +1207,23 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
               </div>
 
               {/* Nota de Preparación Inicial */}
-              <div className="pt-2 flex items-center gap-2 text-[11px] text-neutral-400">
-                <BookmarkCheck size={13} className="text-neutral-400 flex-shrink-0" />
+              <div className="pt-2 flex items-center gap-2 text-[11px] text-[#8E8E93]">
+                <BookmarkCheck size={13} className="text-[#8E8E93] flex-shrink-0" />
                 <span className="truncate">
-                  Nota inicial: <span className="text-neutral-300">Pausa de silencio antes de predicar</span>
+                  Nota inicial: <span className={isLight ? 'text-slate-800' : 'text-neutral-300'}>Pausa de silencio antes de predicar</span>
                 </span>
               </div>
 
             </div>
 
             {/* Tarjeta de Información Complementaria */}
-            <div className="p-3.5 rounded-2xl bg-[#1C1C1F] text-[11px] text-neutral-400 space-y-1">
-              <span className="font-bold text-white block">
+            <div className={`p-4 rounded-2xl text-[11px] space-y-1 ${
+              isLight ? 'bg-white text-slate-700 shadow-xs' : 'bg-[#1A1A1E] text-neutral-400'
+            }`}>
+              <span className={`font-bold block ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 Suite de Predicación Lista
               </span>
-              <p className="text-[10px] leading-relaxed text-neutral-400">
+              <p className="text-[10px] leading-relaxed text-[#8E8E93]">
                 Al crear el estudio tendrás acceso al bosquejo interactivo, exégesis en Griego y Hebreo, citas cruzadas y modo presentación.
               </p>
             </div>
@@ -1041,20 +1233,26 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
         </div>
 
         {/* Footer Global de Acciones */}
-        <div className="px-6 py-4 bg-[#1F1F23] flex items-center justify-between flex-shrink-0">
-          <div className="hidden sm:flex items-center gap-2 text-xs text-neutral-400">
+        <div className={`px-8 py-4.5 flex items-center justify-between flex-shrink-0 transition-colors ${
+          isLight ? 'bg-white border-t border-black/[0.04]' : 'bg-[#1E1E22] border-t border-white/[0.04]'
+        }`}>
+          <div className="hidden sm:flex items-center gap-2 text-xs text-[#8E8E93]">
             <span>Tema:</span>
-            <span className="font-semibold text-white">{currentTopic?.name || 'Por defecto'}</span>
-            <span className="text-neutral-600">•</span>
+            <span className={`font-semibold ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              {currentTopic?.name || 'Por defecto'}
+            </span>
+            <span>•</span>
             <span>Plantilla:</span>
-            <span className="font-semibold text-white capitalize">{template}</span>
+            <span className={`font-semibold capitalize ${isLight ? 'text-slate-900' : 'text-white'}`}>
+              {template}
+            </span>
           </div>
 
           <div className="flex items-center gap-3 ml-auto">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-xs font-semibold text-neutral-400 hover:text-white transition-colors"
+              className="px-5 py-2.5 text-xs font-semibold text-[#8E8E93] hover:text-black dark:hover:text-white transition-colors"
             >
               Cancelar
             </button>
@@ -1063,7 +1261,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
               form={`form-${inputId}`}
               type="submit"
               disabled={!title.trim()}
-              className="px-6 py-2.5 bg-white text-black hover:bg-neutral-200 disabled:opacity-40 disabled:hover:bg-white text-xs font-bold rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2"
+              className={`px-6 py-2.5 text-xs font-bold rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2 disabled:opacity-40 ${
+                isLight 
+                  ? 'bg-[#1C1C1E] text-white hover:bg-black disabled:hover:bg-[#1C1C1E]' 
+                  : 'bg-white text-black hover:bg-neutral-200 disabled:hover:bg-white'
+              }`}
             >
               <FileText size={14} />
               <span>Crear Prédica</span>

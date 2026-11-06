@@ -367,6 +367,7 @@ export const App: React.FC = () => {
         activeTopicId={activeTopicId}
         onCreateStudy={handleConfirmCreateStudy}
         onCreateTopicOnly={handleCreateTopicOnly}
+        theme={theme}
       />
 
       {/* Vista previa de impresión con panel lateral de opciones */}
