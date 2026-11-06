@@ -185,6 +185,24 @@ export const App: React.FC = () => {
     setActiveStudyId(initialStudy.id);
   };
 
+  // Create a new topic only (without dummy study, for use in the create study modal)
+  const handleCreateTopicOnly = (name: string): string => {
+    const newId = `topic-${Date.now()}`;
+    const newTopic: Topic = {
+      id: newId,
+      name: name.trim(),
+      description: 'Estudio temático de las Escrituras',
+      colorBadge: 'blue',
+      iconName: 'BookOpen'
+    };
+    setTopics(prev => [...prev, newTopic]);
+    setStudiesMap(prev => ({
+      ...prev,
+      [newId]: []
+    }));
+    return newId;
+  };
+
   // Open Create Study Modal
   const handleAddStudy = () => {
     setIsCreateStudyModalOpen(true);
@@ -348,6 +366,7 @@ export const App: React.FC = () => {
         topics={topics}
         activeTopicId={activeTopicId}
         onCreateStudy={handleConfirmCreateStudy}
+        onCreateTopicOnly={handleCreateTopicOnly}
       />
 
       {/* Vista previa de impresión con panel lateral de opciones */}
