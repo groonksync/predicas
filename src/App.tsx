@@ -13,9 +13,10 @@ import { INITIAL_TOPICS, INITIAL_STUDIES } from './data/initialData';
 import { Topic, Study, BibleVerse } from './types';
 
 export const App: React.FC = () => {
-  // Theme state: 'light' | 'parchment' | 'dark'
-  const [theme, setTheme] = useState<'light' | 'parchment' | 'dark'>(() => {
-    return (localStorage.getItem('study_theme') as any) || 'dark';
+  // Theme state: Solo dos modos según especificación: 'light' (Luz) | 'dark' (Gris oscuro)
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('study_theme');
+    return saved === 'light' ? 'light' : 'dark';
   });
 
   // Migración para limpiar datos de ejemplo iniciales solicitados por el usuario
@@ -243,11 +244,10 @@ export const App: React.FC = () => {
     }
   };
 
-  // Theme wrapper styling: Apple Space Gray in Dark Mode (NO blue)
+  // Theme wrapper styling: 'light' (Luz) o 'dark' (Gris oscuro y Negro)
   const getThemeClass = () => {
-    if (theme === 'dark') return 'dark bg-[#141416] text-[#F5F5F7]';
-    if (theme === 'parchment') return 'bg-[#FAF7F2] text-stone-900';
-    return 'bg-[#F2F2F7] text-slate-900';
+    if (theme === 'dark') return 'dark bg-[#121214] text-[#F5F5F7]';
+    return 'bg-[#F4F4F6] text-[#1C1C1E]';
   };
 
   return (

@@ -30,8 +30,8 @@ interface NavbarProps {
   onDeleteStudy?: (studyId: string) => void;
   onEnterPulpitMode: () => void;
   onOpenPrintPreview?: () => void;
-  theme: 'light' | 'parchment' | 'dark';
-  setTheme: (theme: 'light' | 'parchment' | 'dark') => void;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
   activeTopicName?: string;
   activeStudyTitle?: string;
 }
@@ -97,41 +97,30 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Right controls: Theme Slider, Print & Pulpit Mode */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* iPadOS Segmented Theme Slider */}
-          <div className="flex items-center bg-black/[0.04] dark:bg-[#222225] p-1 rounded-full text-xs font-medium border border-black/[0.04] dark:border-white/[0.06]">
+          {/* Selector de Modo: Luz y Gris */}
+          <div className="flex items-center bg-black/[0.04] dark:bg-[#222225] p-1 rounded-full text-xs font-medium">
             <button
               onClick={() => setTheme('light')}
-              className={`px-3 py-1 rounded-full transition-all ${
+              className={`px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap ${
                 theme === 'light'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                  ? 'bg-white text-slate-900 shadow-sm font-bold'
                   : 'text-slate-600 hover:text-slate-900 dark:text-neutral-400'
               }`}
               title="Modo Luz"
             >
-              <Sun size={12} className="inline mr-1" />
+              <Sun size={13} className="inline mr-1.5" />
               <span>Luz</span>
             </button>
             <button
-              onClick={() => setTheme('parchment')}
-              className={`px-3 py-1 rounded-full transition-all ${
-                theme === 'parchment'
-                  ? 'bg-[#FAF7F2] text-stone-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-neutral-400'
-              }`}
-              title="Modo Papiro"
-            >
-              <span>Papiro</span>
-            </button>
-            <button
               onClick={() => setTheme('dark')}
-              className={`px-3 py-1 rounded-full transition-all ${
+              className={`px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap ${
                 theme === 'dark'
-                  ? 'bg-[#323236] text-white shadow-xs font-semibold'
+                  ? 'bg-[#323236] text-white shadow-sm font-bold'
                   : 'text-slate-600 hover:text-slate-900 dark:text-neutral-400'
               }`}
-              title="Modo Gris Espacial"
+              title="Modo Gris Oscuro"
             >
-              <Moon size={12} className="inline mr-1" />
+              <Moon size={13} className="inline mr-1.5" />
               <span>Gris</span>
             </button>
           </div>
