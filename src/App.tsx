@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Plus, Sparkles } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { StudyCanvas } from './components/StudyCanvas';
 import { RightNotesPanel } from './components/RightNotesPanel';
@@ -13,13 +13,12 @@ import { INITIAL_TOPICS, INITIAL_STUDIES } from './data/initialData';
 import { Topic, Study, BibleVerse } from './types';
 
 export const App: React.FC = () => {
-  // Theme state: Solo dos modos según especificación: 'light' (Luz) | 'dark' (Gris oscuro)
+  // Theme state: 'light' (Luz) | 'dark' (Gris oscuro)
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('study_theme');
     return saved === 'light' ? 'light' : 'dark';
   });
 
-  // Migración para limpiar datos de ejemplo iniciales solicitados por el usuario
   const CLEAN_VERSION = 'v3_empty_clean';
   if (typeof window !== 'undefined' && localStorage.getItem('study_platform_version') !== CLEAN_VERSION) {
     localStorage.setItem('study_platform_version', CLEAN_VERSION);
@@ -27,18 +26,15 @@ export const App: React.FC = () => {
     localStorage.removeItem('study_active_study');
   }
 
-  // Topics state
   const [topics, setTopics] = useState<Topic[]>(() => {
     const saved = localStorage.getItem('study_topics');
     return saved ? JSON.parse(saved) : INITIAL_TOPICS;
   });
 
-  // Active topic
   const [activeTopicId, setActiveTopicId] = useState<string>(() => {
     return localStorage.getItem('study_active_topic') || 'salvacion';
   });
 
-  // Studies state (inicia completamente vacío)
   const [studiesMap, setStudiesMap] = useState<Record<string, Study[]>>(() => {
     const saved = localStorage.getItem('study_data_map');
     if (!saved) return INITIAL_STUDIES;
@@ -49,26 +45,20 @@ export const App: React.FC = () => {
     }
   });
 
-  // Active study id
   const [activeStudyId, setActiveStudyId] = useState<string>(() => {
     const currentList = studiesMap[activeTopicId] || [];
     return currentList[0]?.id || '';
   });
 
-  // Right-hand Sermon Outline Panel open state (default true for writing and editing)
   const [isOutlineOpen, setIsOutlineOpen] = useState(true);
-
-  // Fullscreen Pulpit / Preaching Mode
   const [isPulpitMode, setIsPulpitMode] = useState(false);
 
-  // Modals
   const [verseModalOpen, setVerseModalOpen] = useState(false);
   const [isVerseModalForMain, setIsVerseModalForMain] = useState(false);
   const [isCreateStudyModalOpen, setIsCreateStudyModalOpen] = useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [imageModalData, setImageModalData] = useState<{ url: string; title: string } | null>(null);
 
-  // Sync to local storage
   useEffect(() => {
     localStorage.setItem('study_theme', theme);
   }, [theme]);
@@ -85,12 +75,10 @@ export const App: React.FC = () => {
     localStorage.setItem('study_data_map', JSON.stringify(studiesMap));
   }, [studiesMap]);
 
-  // Current topic and study helpers
   const currentTopic = topics.find(t => t.id === activeTopicId) || topics[0];
   const currentStudies = studiesMap[activeTopicId] || [];
   const currentStudy = currentStudies.find(s => s.id === activeStudyId) || currentStudies[0] || null;
 
-  // Handle study update
   const handleUpdateStudy = (updated: Study) => {
     setStudiesMap(prev => {
       const topicStudies = prev[activeTopicId] || [];
@@ -102,7 +90,6 @@ export const App: React.FC = () => {
     });
   };
 
-  // Toggle archive status of a study / message
   const handleToggleArchiveStudy = (studyId: string) => {
     setStudiesMap(prev => {
       const topicStudies = prev[activeTopicId] || [];
@@ -119,13 +106,11 @@ export const App: React.FC = () => {
     });
   };
 
-  // Permanently delete a study / message with clean state fallback
   const handleDeleteStudy = (studyId: string) => {
     setStudiesMap(prev => {
       const topicStudies = prev[activeTopicId] || [];
       const filtered = topicStudies.filter(s => s.id !== studyId);
       
-      // If we deleted the currently active study, pick the first available active one
       if (activeStudyId === studyId) {
         const nextActive = filtered.find(s => !s.isArchived) || filtered[0] || null;
         setActiveStudyId(nextActive ? nextActive.id : '');
@@ -138,7 +123,6 @@ export const App: React.FC = () => {
     });
   };
 
-  // Add new topic
   const handleAddTopic = (name: string, description: string) => {
     const newId = `topic-${Date.now()}`;
     const newTopic: Topic = {
@@ -186,7 +170,6 @@ export const App: React.FC = () => {
     setActiveStudyId(initialStudy.id);
   };
 
-  // Create a new topic only (without dummy study, for use in the create study modal)
   const handleCreateTopicOnly = (name: string): string => {
     const newId = `topic-${Date.now()}`;
     const newTopic: Topic = {
@@ -204,12 +187,10 @@ export const App: React.FC = () => {
     return newId;
   };
 
-  // Open Create Study Modal
   const handleAddStudy = () => {
     setIsCreateStudyModalOpen(true);
   };
 
-  // Confirm creation of new study from the guided modal
   const handleConfirmCreateStudy = (newStudy: Study, topicId: string) => {
     setStudiesMap(prev => ({
       ...prev,
@@ -219,7 +200,79 @@ export const App: React.FC = () => {
     setActiveStudyId(newStudy.id);
   };
 
-  // Add verse to current study or apply main verse
+  // Cargar un estudio modelo completo con 1 clic para explorar todas las herramientas
+  const handleLoadSampleStudy = () => {
+    const sampleStudy: Study = {
+      id: `study-sample-${Date.now()}`,
+      topicId: activeTopicId,
+      title: 'El Regalo Inmerecido de la Gracia',
+      subtitle: 'Exposición homilética sobre la salvación por medio de la fe y no por obras',
+      date: new Date().toISOString().split('T')[0],
+      mainVerse: {
+        id: 'mv-sample',
+        reference: 'Efesios 2:8-9',
+        version: 'RVR1960',
+        text: 'Porque por gracia sois salvos por medio de la fe; y esto no de vosotros, pues es don de Dios; no por obras, para que nadie se gloríe.'
+      },
+      relatedVerses: [
+        {
+          id: 'rv-1',
+          reference: 'Romanos 5:8',
+          version: 'RVR1960',
+          text: 'Mas Dios muestra su amor para con nosotros, en que siendo aún pecadores, Cristo murió por nosotros.'
+        },
+        {
+          id: 'rv-2',
+          reference: 'Tito 3:5',
+          version: 'RVR1960',
+          text: 'Nos salvó, no por obras de justicia que nosotros hubiéramos hecho, sino por su misericordia.'
+        }
+      ],
+      outlinePoints: [
+        {
+          id: 'pt-1',
+          number: 1,
+          title: 'El Origen Divino de la Salvación (La Gracia)',
+          scriptureRef: 'Efesios 2:8a',
+          content: 'La iniciativa nace íntegramente en el corazón de Dios (Cháris) y no en el mérito humano.'
+        },
+        {
+          id: 'pt-2',
+          number: 2,
+          title: 'El Canal de Recepción (Por Medio de la Fe)',
+          scriptureRef: 'Efesios 2:8b',
+          content: 'La fe (Pístis) no es una obra meritoria, sino la mano vacía que recibe el regalo de Cristo.'
+        },
+        {
+          id: 'pt-3',
+          number: 3,
+          title: 'El Propósito Final: Cero Jactancia y Vida Nueva',
+          scriptureRef: 'Efesios 2:9-10',
+          content: 'Somos hechura suya (Poíema), creados en Cristo Jesús para buenas obras como fruto, no como raíz.'
+        }
+      ],
+      detailedNotes: `**Griego — Gracia:** *Cháris* (Strong G5485)\n- **Significado literal:** Favor inmerecido, don gratuito que produce gozo.\n- **Contexto teológico:** En Pablo, la gracia se contrapone al salario por deuda; es la generosidad soberana de Dios hacia quien no tenía ningún mérito.\n\n> "La gracia nos encuentra donde estamos, pero jamás nos deja como estábamos."`,
+      images: [],
+      videos: [],
+      quickNotes: [
+        {
+          id: 'qn-1',
+          text: 'Hacer pausa de silencio después de leer Efesios 2:8-9',
+          tag: 'Pausa',
+          createdAt: '09:30'
+        },
+        {
+          id: 'qn-2',
+          text: 'Enfatizar que somos "Poíema" (obra de arte de Dios) en el versículo 10',
+          tag: 'Énfasis',
+          createdAt: '09:35'
+        }
+      ]
+    };
+
+    handleConfirmCreateStudy(sampleStudy, activeTopicId);
+  };
+
   const handleAddVerseToCurrentStudy = (verse: BibleVerse) => {
     if (!currentStudy) return;
     if (isVerseModalForMain) {
@@ -235,7 +288,6 @@ export const App: React.FC = () => {
     }
   };
 
-  // Topic select helper
   const handleSelectTopic = (topicId: string) => {
     setActiveTopicId(topicId);
     const studies = studiesMap[topicId] || [];
@@ -244,15 +296,13 @@ export const App: React.FC = () => {
     }
   };
 
-  // Theme wrapper styling: 'light' (Luz) o 'dark' (Gris oscuro y Negro)
   const getThemeClass = () => {
     if (theme === 'dark') return 'dark bg-[#121214] text-[#F5F5F7]';
-    return 'bg-[#F4F4F6] text-[#1C1C1E]';
+    return 'bg-[#F4F5F7] text-[#1C1C1E]';
   };
 
   return (
     <div className={`min-h-screen flex flex-col ${getThemeClass()} transition-colors duration-200`}>
-      {/* Top Navbar with integrated Topic & Sermon Selector */}
       <Navbar
         topics={topics}
         activeTopicId={activeTopicId}
@@ -272,9 +322,7 @@ export const App: React.FC = () => {
         activeStudyTitle={currentStudy?.title}
       />
 
-      {/* Main Split Layout: Left Scripture/Study Stage + Right Sermon Outline Writing Panel */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left / Center: Scriptures, Reading, Interactive Verse Cards, Exegesis & Resources */}
         {currentStudy ? (
           <StudyCanvas
             study={currentStudy}
@@ -294,30 +342,39 @@ export const App: React.FC = () => {
             isOutlineOpen={isOutlineOpen}
           />
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-slate-50 dark:bg-[#141416]">
-            <div className="max-w-md w-full p-8 rounded-3xl bg-white dark:bg-[#1C1C1F] border border-black/[0.06] dark:border-white/[0.08] shadow-sm space-y-4">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-[#E03126]/10 text-[#E03126] flex items-center justify-center font-bold">
-                <BookOpen size={28} />
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F4F5F7] dark:bg-[#121214]">
+            <div className="max-w-lg w-full p-9 rounded-3xl surface-card bg-white dark:bg-[#18181C] space-y-5 animate-scaleIn">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-[#F2F3F6] dark:bg-[#232329] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
+                <BookOpen size={26} />
               </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  Lienzo de Prédicas Vacío
+              <div className="space-y-1.5">
+                <h3 className="text-xl font-black text-[#1C1C1E] dark:text-white tracking-tight">
+                  Estudio y Púlpito Bíblico
                 </h3>
-                <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                  No hay prédicas ni enseñanzas cargadas. Crea tu primer estudio bíblico para comenzar a predicar.
+                <p className="text-xs sm:text-sm text-[#6E6E77] dark:text-[#9E9EA8] leading-relaxed">
+                  Crea una nueva prédica con el explorador completo de los 66 libros de la Biblia, diccionario Strong Grego/Hebreo, bosquejo interactivo y modo Púlpito.
                 </p>
               </div>
-              <button
-                onClick={() => setIsCreateStudyModalOpen(true)}
-                className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#E03126] hover:bg-[#C92A20] active:scale-95 transition-all shadow-xs border-0"
-              >
-                + Crear Nueva Prédica
-              </button>
+              <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+                <button
+                  onClick={() => setIsCreateStudyModalOpen(true)}
+                  className="flex items-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] active:scale-95 transition-all shadow-xs whitespace-nowrap"
+                >
+                  <Plus size={15} />
+                  <span>Nueva Prédica</span>
+                </button>
+                <button
+                  onClick={handleLoadSampleStudy}
+                  className="flex items-center gap-2 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#232329] dark:hover:bg-[#2C2C33] text-[#1C1C1E] dark:text-white active:scale-95 transition-all whitespace-nowrap"
+                >
+                  <Sparkles size={15} />
+                  <span>Cargar Prédica de Ejemplo</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Right: Dedicated Notes, Exegesis & Sermon Outline Panel */}
         {currentStudy && (
           <RightNotesPanel
             study={currentStudy}
@@ -332,7 +389,6 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      {/* Fullscreen Pulpit / Preaching Mode for iPad on Lectern */}
       {isPulpitMode && currentStudy && (
         <PulpitMode
           study={currentStudy}
@@ -341,7 +397,6 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* Dock de Acceso Rápido y Buscador Universal en Modo Normal */}
       {!isPulpitMode && currentStudy && (
         <QuickAccess
           study={currentStudy}
@@ -351,7 +406,6 @@ export const App: React.FC = () => {
         />
       )}
 
-      {/* Verse selection & creation modal */}
       <VerseModal
         isOpen={verseModalOpen}
         onClose={() => setVerseModalOpen(false)}
@@ -359,7 +413,6 @@ export const App: React.FC = () => {
         isMainVerse={isVerseModalForMain}
       />
 
-      {/* Modal Guiado para Crear Nueva Prédica */}
       <CreateStudyModal
         isOpen={isCreateStudyModalOpen}
         onClose={() => setIsCreateStudyModalOpen(false)}
@@ -370,7 +423,6 @@ export const App: React.FC = () => {
         theme={theme}
       />
 
-      {/* Vista previa de impresión con panel lateral de opciones */}
       <PrintPreviewModal
         isOpen={isPrintPreviewOpen}
         onClose={() => setIsPrintPreviewOpen(false)}
@@ -378,7 +430,6 @@ export const App: React.FC = () => {
         topicName={currentTopic?.name}
       />
 
-      {/* Fullscreen Image Preview modal */}
       {imageModalData && (
         <ImageModal
           isOpen={!!imageModalData}

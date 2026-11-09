@@ -13,7 +13,7 @@
   }
 }
 
-/* Subtle Apple-style scrollbar */
+/* Scrollbar minimalista */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -24,15 +24,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(142, 142, 147, 0.35);
+  background: rgba(142, 142, 147, 0.25);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(142, 142, 147, 0.6);
+  background: rgba(142, 142, 147, 0.45);
 }
 
-/* Ocultar barra de scroll completamente (scrollbar-none) */
+/* Ocultar barra de scroll completamente */
 .scrollbar-none, .no-scrollbar {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
@@ -44,17 +44,74 @@
   height: 0 !important;
 }
 
-@keyframes slideRight {
+/* Animaciones pulidas, orgánicas y sutiles (sin brusquedad) */
+@keyframes fadeIn {
   from {
-    transform: translateX(-100%);
+    opacity: 0;
+    transform: translateY(4px);
   }
   to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
     transform: translateX(0);
   }
 }
 
+@keyframes slideLeft {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 .animate-slideRight {
-  animation: slideRight 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideRight 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Superficies elevadas sin trazos */
+.surface-card {
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.dark .surface-card {
+  box-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.45);
 }
 
 @media print {

@@ -18,8 +18,12 @@ import {
   Bookmark,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Copy,
-  BookOpen
+  BookOpen,
+  Lightbulb,
+  Target
 } from 'lucide-react';
 import { Study, OutlinePoint, QuickNote, BibleVerse } from '../types';
 import { MarkdownRenderer } from './MarkdownRenderer';
@@ -41,20 +45,13 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
   onToggle,
   onOpenVerseModal,
 }) => {
-  // Pestaña activa: por defecto 'notas'
   const [activeTab, setActiveTab] = useState<PanelTab>('notas');
-
-  // Modo edición vs visualización formateada: por defecto false (ver formateado primero)
   const [isEditingNotes, setIsEditingNotes] = useState(false);
-
-  // Cita de referencia seleccionada para inspección rápida
   const [selectedRefVerse, setSelectedRefVerse] = useState<BibleVerse | null>(null);
   const [copiedVerseId, setCopiedVerseId] = useState<string | null>(null);
 
-  // Ref para el textarea de notas exegéticas para manipulación precisa de selección
   const exegesisTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Estados de notas rápidas
   const [newNoteText, setNewNoteText] = useState('');
   const [newNoteTag, setNewNoteTag] = useState<QuickNote['tag']>('Recordatorio');
 
@@ -66,14 +63,12 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     'Llamado',
   ];
 
-  // Copiar cita al portapapeles
   const handleCopyVerse = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedVerseId(id);
     setTimeout(() => setCopiedVerseId(null), 1800);
   };
 
-  // Lista unificada de citas bíblicas (Base + Referencias)
   const getAllVerses = (): BibleVerse[] => {
     const list: BibleVerse[] = [];
     if (study.mainVerse?.reference) {
@@ -85,16 +80,13 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
 
   const allVerses = getAllVerses();
 
-  // Versículo actualmente seleccionado para lectura
   const currentSelectedVerse: BibleVerse | null = 
     selectedRefVerse || (study.mainVerse?.reference ? study.mainVerse : study.relatedVerses[0]) || null;
 
-  // Índice actual para el stepper numérico
   const currentVerseIdx = currentSelectedVerse 
     ? allVerses.findIndex(v => v.id === currentSelectedVerse.id) 
     : 0;
 
-  // Navegación escalonada sin cortes (Anterior / Siguiente)
   const handleStepVerse = (direction: 'prev' | 'next') => {
     if (allVerses.length === 0) return;
     const currentIdx = currentVerseIdx >= 0 ? currentVerseIdx : 0;
@@ -104,7 +96,6 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     setSelectedRefVerse(allVerses[nextIdx]);
   };
 
-  // Eliminar cita de apoyo
   const handleDeleteRelatedVerse = (verseId: string) => {
     onUpdateStudy({
       ...study,
@@ -115,7 +106,6 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     }
   };
 
-  // Insertar cita seleccionada en el texto de notas
   const handleInsertVerseIntoNotes = (verse: BibleVerse) => {
     const quoteText = `\n\n> **${verse.reference} (${verse.version}):** “${verse.text}”\n`;
     onUpdateStudy({
@@ -124,7 +114,6 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     });
   };
 
-  // Inserción de formato y plantillas
   const handleInsertFormat = (before: string, after: string = '', defaultPlaceholder: string = '') => {
     const textarea = exegesisTextareaRef.current;
     const currentNotes = study.detailedNotes || '';
@@ -162,14 +151,20 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     }, 10);
   };
 
-  // Plantilla rápida de Léxico Griego o Hebreo
   const handleInsertLexicon = (lang: 'Griego' | 'Hebreo') => {
     const template = `\n\n**${lang} — [Término/Palabra]:** *transliteración* (Strong)\n- **Significado literal:** \n- **Contexto teológico:** \n`;
     handleInsertFormat(template, '', '');
     setIsEditingNotes(true);
   };
 
-  // Manejo de notas rápidas
+  const handleInsertBlock = (type: 'ilustracion' | 'aplicacion') => {
+    const snippet = type === 'ilustracion'
+      ? `\n\n### Ilustración Homilética\n> Describe aquí la historia, metáfora o ejemplo cotidiano que conecta con la audiencia...\n`
+      : `\n\n### Aplicación Práctica\n- **Para la mente:** ¿Qué verdad debemos creer hoy?\n- **Para el corazón:** ¿Qué actitud debemos entregar a Dios?\n- **Para las manos:** ¿Qué paso concreto daremos esta semana?\n`;
+    handleInsertFormat(snippet, '', '');
+    setIsEditingNotes(true);
+  };
+
   const handleAddQuickNote = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newNoteText.trim()) return;
@@ -193,7 +188,6 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     });
   };
 
-  // Manejo del Bosquejo
   const handleAddOutlinePoint = () => {
     const newNumber = (study.outlinePoints.length || 0) + 1;
     const newPoint: OutlinePoint = {
@@ -216,6 +210,17 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     onUpdateStudy({ ...study, outlinePoints: updated });
   };
 
+  const handleMovePoint = (idx: number, direction: 'up' | 'down') => {
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= study.outlinePoints.length) return;
+    const copy = [...study.outlinePoints];
+    const temp = copy[idx];
+    copy[idx] = copy[targetIdx];
+    copy[targetIdx] = temp;
+    const renumbered = copy.map((p, i) => ({ ...p, number: i + 1 }));
+    onUpdateStudy({ ...study, outlinePoints: renumbered });
+  };
+
   const handleDeletePoint = (pointId: string) => {
     const filtered = study.outlinePoints
       .filter(p => p.id !== pointId)
@@ -225,44 +230,41 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
 
   if (!isOpen) return null;
 
-  // Componente de Citas Bíblicas de Referencia (Diseño Ultra Limpio, Profesional y Sin Cortes)
   const renderCitasBiblicas = () => {
     if (allVerses.length === 0) return null;
 
     return (
-      <div className="p-3.5 bg-white dark:bg-[#1C1C1F] rounded-2xl border border-black/[0.06] dark:border-white/[0.08] shadow-xs space-y-3">
-        {/* Cabecera con título, conteo, stepper y botón añadir */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-black/[0.04] dark:border-white/[0.06]">
+      <div className="p-4 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
+            <div className="w-6 h-6 rounded-lg bg-[#E8E9EE] dark:bg-[#2C2C34] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
               <Bookmark size={13} />
             </div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-              Citas Bíblicas de Referencia
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#1C1C1E] dark:text-white">
+              Citas Bíblicas
             </span>
-            <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400">
+            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-white dark:bg-[#18181C] text-[#6E6E77] dark:text-[#9E9EA8]">
               {allVerses.length}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            {/* Stepper de navegación < y > */}
-            <div className="flex items-center bg-black/[0.04] dark:bg-[#252528] p-0.5 rounded-xl border border-black/[0.04] dark:border-white/[0.06] text-xs">
+            <div className="flex items-center bg-white dark:bg-[#18181C] p-0.5 rounded-xl text-xs">
               <button
                 type="button"
                 onClick={() => handleStepVerse('prev')}
-                className="p-1 px-1.5 text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white rounded-lg transition-colors active:scale-95"
+                className="p-1 px-1.5 text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white rounded-lg transition-colors active:scale-95"
                 title="Cita anterior"
               >
                 <ChevronLeft size={13} />
               </button>
-              <span className="px-1 text-[10px] font-bold text-neutral-400 font-mono">
+              <span className="px-1.5 text-[10px] font-bold text-[#8E8E98] font-mono">
                 {(currentVerseIdx >= 0 ? currentVerseIdx : 0) + 1}/{allVerses.length}
               </span>
               <button
                 type="button"
                 onClick={() => handleStepVerse('next')}
-                className="p-1 px-1.5 text-neutral-600 dark:text-neutral-300 hover:text-black dark:hover:text-white rounded-lg transition-colors active:scale-95"
+                className="p-1 px-1.5 text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white rounded-lg transition-colors active:scale-95"
                 title="Cita siguiente"
               >
                 <ChevronRight size={13} />
@@ -273,65 +275,61 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               <button
                 type="button"
                 onClick={onOpenVerseModal}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold text-white bg-[#E03126] hover:bg-[#C92A20] active:scale-95 transition-all shadow-xs border-0"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] active:scale-95 transition-all whitespace-nowrap"
                 title="Añadir nueva cita bíblica"
               >
-                <Bookmark size={11} />
+                <Plus size={12} />
                 <span>Cita</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Cuadrícula limpia y fluida de citas (TODAS visibles, NUNCA cortadas) */}
         <div className="flex flex-wrap items-center gap-1.5">
-          {/* Pasaje Base Central */}
           {study.mainVerse?.reference && (
             <button
               type="button"
               onClick={() => setSelectedRefVerse(study.mainVerse)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap ${
                 currentSelectedVerse?.id === study.mainVerse.id
-                  ? 'bg-[#E03126] text-white border-[#E03126] shadow-xs'
-                  : 'bg-black/[0.03] dark:bg-[#252528] text-slate-800 dark:text-neutral-200 border-black/[0.05] dark:border-white/[0.08] hover:border-[#E03126]/40'
+                  ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
+                  : 'bg-white dark:bg-[#18181C] text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-[#EAECEF] dark:hover:bg-[#282830]'
               }`}
             >
-              <BookOpen size={12} className={currentSelectedVerse?.id === study.mainVerse.id ? 'text-white' : 'text-[#E03126]'} />
+              <BookOpen size={12} />
               <span>{study.mainVerse.reference}</span>
-              <span className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase ${
-                currentSelectedVerse?.id === study.mainVerse.id ? 'bg-white/20 text-white' : 'bg-[#E03126]/10 text-[#E03126]'
+              <span className={`text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase ${
+                currentSelectedVerse?.id === study.mainVerse.id
+                  ? 'bg-white/20 text-white dark:bg-black/15 dark:text-[#121214]'
+                  : 'bg-[#F0F1F4] dark:bg-[#26262E] text-[#6E6E77] dark:text-[#9E9EA8]'
               }`}>
                 Base
               </span>
             </button>
           )}
 
-          {/* Citas de apoyo */}
           {study.relatedVerses.map((v) => {
             const isSelected = currentSelectedVerse?.id === v.id;
             return (
               <div
                 key={v.id}
                 onClick={() => setSelectedRefVerse(v)}
-                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer border ${
+                className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer whitespace-nowrap ${
                   isSelected
-                    ? 'bg-purple-600 text-white border-purple-600 shadow-xs'
-                    : 'bg-black/[0.03] dark:bg-[#252528] text-slate-800 dark:text-neutral-200 border-black/[0.05] dark:border-white/[0.08] hover:border-purple-500/40'
+                    ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
+                    : 'bg-white dark:bg-[#18181C] text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-[#EAECEF] dark:hover:bg-[#282830]'
                 }`}
               >
-                <BookOpen size={12} className={isSelected ? 'text-white' : 'text-neutral-400'} />
+                <BookOpen size={12} className=" opacity-75" />
                 <span>{v.reference}</span>
-                <span className={`text-[10px] ${isSelected ? 'text-white/80' : 'text-neutral-400 font-semibold'}`}>
-                  ({v.version})
-                </span>
-                
+                <span className="text-[10px] opacity-65">({v.version})</span>
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteRelatedVerse(v.id);
                   }}
-                  className="opacity-0 group-hover:opacity-100 p-0.5 rounded-lg hover:bg-red-500/20 text-neutral-400 hover:text-red-500 transition-opacity ml-0.5"
+                  className="opacity-0 group-hover:opacity-100 p-0.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-opacity ml-0.5"
                   title="Eliminar cita"
                 >
                   <Trash2 size={10} />
@@ -341,29 +339,23 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
           })}
         </div>
 
-        {/* Tarjeta de Lectura Exegética de la Cita Seleccionada */}
         {currentSelectedVerse && (
-          <div className="p-3 bg-black/[0.02] dark:bg-[#232326] rounded-xl border border-black/[0.05] dark:border-white/[0.07] space-y-1.5 animate-fadeIn shadow-xs">
+          <div className="p-3.5 bg-white dark:bg-[#18181C] rounded-xl space-y-2 animate-fadeIn">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black text-slate-900 dark:text-white">
+                <span className="text-xs font-black text-[#1C1C1E] dark:text-white">
                   {currentSelectedVerse.reference}
                 </span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-black/[0.04] dark:bg-white/[0.08] text-neutral-400 font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#F2F3F6] dark:bg-[#25252C] text-[#6E6E77] dark:text-[#9E9EA8] font-bold">
                   {currentSelectedVerse.version}
                 </span>
-                {currentSelectedVerse.id === study.mainVerse?.id && (
-                  <span className="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-[#E03126]/10 text-[#E03126]">
-                    Pasaje Base
-                  </span>
-                )}
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => handleInsertVerseIntoNotes(currentSelectedVerse)}
-                  className="text-[10px] font-bold text-neutral-500 hover:text-black dark:text-neutral-300 dark:hover:text-white flex items-center gap-1 px-2 py-0.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] active:scale-95 transition-all"
+                  className="text-[10px] font-bold text-[#5A5A64] dark:text-[#B4B4BE] hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F2F3F6] dark:bg-[#25252C] active:scale-95 transition-all whitespace-nowrap"
                   title="Pegar esta cita dentro de las notas"
                 >
                   <FileText size={10} />
@@ -372,21 +364,21 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCopyVerse(currentSelectedVerse.text, currentSelectedVerse.id)}
-                  className="text-[10px] font-bold text-neutral-500 hover:text-black dark:text-neutral-300 dark:hover:text-white flex items-center gap-1 px-2 py-0.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] active:scale-95 transition-all"
+                  className="text-[10px] font-bold text-[#5A5A64] dark:text-[#B4B4BE] hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F2F3F6] dark:bg-[#25252C] active:scale-95 transition-all whitespace-nowrap"
                 >
-                  {copiedVerseId === currentSelectedVerse.id ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} />}
+                  {copiedVerseId === currentSelectedVerse.id ? <Check size={10} /> : <Copy size={10} />}
                   <span>{copiedVerseId === currentSelectedVerse.id ? 'Copiado' : 'Copiar'}</span>
                 </button>
               </div>
             </div>
 
-            <p className="text-xs font-serif italic text-slate-800 dark:text-neutral-200 leading-relaxed select-text">
+            <p className="text-xs font-serif italic text-[#2C2C32] dark:text-[#D8D8E0] leading-relaxed select-text">
               “{currentSelectedVerse.text}”
             </p>
 
             {currentSelectedVerse.notes && (
-              <p className="text-[11px] text-neutral-500 dark:text-neutral-400 pt-1 border-t border-black/[0.03] dark:border-white/[0.05]">
-                <span className="font-bold text-neutral-700 dark:text-neutral-300">Nota:</span> {currentSelectedVerse.notes}
+              <p className="text-[11px] text-[#6E6E77] dark:text-[#9E9EA8] pt-1">
+                <span className="font-bold text-[#1C1C1E] dark:text-white">Nota:</span> {currentSelectedVerse.notes}
               </p>
             )}
           </div>
@@ -396,126 +388,132 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
   };
 
   return (
-    <aside className="w-full lg:w-[460px] xl:w-[480px] flex-shrink-0 bg-white dark:bg-[#18181A] border-l border-black/[0.06] dark:border-white/[0.08] flex flex-col h-full select-none font-sans shadow-2xl z-20 animate-slideRight">
+    <aside className="w-full lg:w-[460px] xl:w-[490px] flex-shrink-0 bg-white dark:bg-[#18181C] flex flex-col h-full select-none font-sans shadow-xl z-20 animate-slideRight">
       
-      {/* 1. CABECERA PRINCIPAL PEGADA AL TOPE (Sin espacios vacíos arriba) */}
-      <div className="px-4 py-3 border-b border-black/[0.05] dark:border-white/[0.07] flex items-center justify-between gap-3 bg-white/95 dark:bg-[#18181A]/95 backdrop-blur-xl">
+      {/* 1. CABECERA PRINCIPAL SIN TRAZOS */}
+      <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#18181C]/95 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#E03126] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+          <div className="w-8 h-8 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] flex items-center justify-center font-bold text-xs shadow-xs">
             <FileText size={15} />
           </div>
           <div>
-            <h3 className="font-bold text-sm text-slate-900 dark:text-white leading-tight">
-              Notas y Apuntes
+            <h3 className="font-bold text-sm text-[#1C1C1E] dark:text-white leading-tight">
+              Taller de Estudio y Notas
             </h3>
-            <span className="text-[10px] text-[#8E8E93] font-medium">
-              Panel derecho de estudio
+            <span className="text-[10px] text-[#7A7A85] font-medium">
+              Exégesis, bosquejo y avisos de púlpito
             </span>
           </div>
         </div>
 
-        {/* Botón para ocultar y recuperar el 100% de la pantalla */}
         <button
           onClick={onToggle}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold text-neutral-500 hover:text-black dark:text-neutral-400 dark:hover:text-white bg-black/[0.04] hover:bg-black/[0.08] dark:bg-white/[0.06] dark:hover:bg-white/[0.1] transition-all active:scale-95"
-          title="Ocultar panel lateral (cerrar)"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#5A5A64] hover:text-black dark:text-[#A0A0AB] dark:hover:text-white bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#232329] dark:hover:bg-[#2C2C33] transition-all active:scale-95 whitespace-nowrap"
+          title="Ocultar panel lateral"
         >
           <span>Ocultar</span>
           <X size={13} />
         </button>
       </div>
 
-      {/* 2. PESTAÑAS SUPERIORES COMPACTAS */}
-      <div className="px-3 py-1.5 border-b border-black/[0.05] dark:border-white/[0.06] bg-black/[0.01] dark:bg-white/[0.01]">
-        <div className="flex bg-black/[0.03] dark:bg-[#242427] p-1 rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
+      {/* 2. PESTAÑAS SUPERIORES COMPACTAS SIN TRAZOS */}
+      <div className="px-4 pb-2">
+        <div className="flex bg-[#F2F3F6] dark:bg-[#222228] p-1 rounded-2xl gap-1">
           <button
             onClick={() => setActiveTab('notas')}
-            className={`flex-1 py-1 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
               activeTab === 'notas'
-                ? 'bg-white dark:bg-[#18181A] text-slate-900 dark:text-white shadow-xs'
-                : 'text-neutral-500 hover:text-black dark:hover:text-white'
+                ? 'bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white shadow-xs'
+                : 'text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white'
             }`}
           >
-            <FileText size={12} />
-            <span>Notas y Exégesis</span>
+            <FileText size={13} />
+            <span>Exégesis</span>
           </button>
 
           <button
             onClick={() => setActiveTab('bosquejo')}
-            className={`flex-1 py-1 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
               activeTab === 'bosquejo'
-                ? 'bg-white dark:bg-[#18181A] text-slate-900 dark:text-white shadow-xs'
-                : 'text-neutral-500 hover:text-black dark:hover:text-white'
+                ? 'bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white shadow-xs'
+                : 'text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white'
             }`}
           >
-            <ListOrdered size={12} />
+            <ListOrdered size={13} />
             <span>Bosquejo ({study.outlinePoints.length})</span>
           </button>
 
           <button
             onClick={() => setActiveTab('avisos')}
-            className={`flex-1 py-1 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
               activeTab === 'avisos'
-                ? 'bg-white dark:bg-[#18181A] text-slate-900 dark:text-white shadow-xs'
-                : 'text-neutral-500 hover:text-black dark:hover:text-white'
+                ? 'bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white shadow-xs'
+                : 'text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white'
             }`}
           >
-            <StickyNote size={12} />
+            <StickyNote size={13} />
             <span>Avisos ({study.quickNotes.filter(n => !n.isArchived).length})</span>
           </button>
         </div>
       </div>
 
-      {/* 3. CONTENIDO SEGÚN LA PESTAÑA SELECCIONADA */}
-      <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 scrollbar-none">
+      {/* 3. CONTENIDO SEGÚN PESTAÑA */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 scrollbar-none">
         
-        {/* ============================================================== */}
-        {/* PESTAÑA 1: NOTAS EXEGÉTICAS Y APUNTES                          */}
-        {/* ============================================================== */}
+        {/* PESTAÑA 1: NOTAS EXEGÉTICAS */}
         {activeTab === 'notas' && (
-          <div className="space-y-3.5">
-            
-            {/* SECCIÓN A: CITAS BÍBLICAS DE REFERENCIA (POSICIONADAS ARRIBA) */}
+          <div className="space-y-4">
             {renderCitasBiblicas()}
 
-            {/* SECCIÓN B: NOTAS EXEGÉTICAS O APUNTES TEOLÓGICOS (JUSTO DEBAJO) */}
-            <div className="space-y-2.5">
-              
-              {/* Barra de cabecera con botones sólidos y leve circunferencia */}
-              <div className="flex items-center justify-between gap-2 pb-1.5 border-b border-black/[0.05] dark:border-white/[0.06]">
-                <div className="flex items-center gap-1.5">
-                  <FileText size={15} className="text-[#E03126]" />
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                    Notas Exegéticas y Apuntes
-                  </h4>
-                </div>
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#7A7A85]">
+                  Apuntes Teológicos
+                </span>
 
-                {/* Botones +Griego (Azul sólido), +Hebreo (Verde sólido), Editar (Gris sólido) con texto blanco */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => handleInsertLexicon('Griego')}
-                    className="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-all active:scale-95 flex items-center gap-1.5 border-0"
-                    title="Insertar apunte de término en Griego"
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#232329] dark:hover:bg-[#2C2C33] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                   >
-                    <BookA size={13} />
-                    <span>Griego</span>
+                    <BookA size={12} />
+                    <span>+ Griego</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleInsertLexicon('Hebreo')}
-                    className="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all active:scale-95 flex items-center gap-1.5 border-0"
-                    title="Insertar apunte de término en Hebreo"
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#232329] dark:hover:bg-[#2C2C33] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                   >
-                    <BookA size={13} />
-                    <span>Hebreo</span>
+                    <BookA size={12} />
+                    <span>+ Hebreo</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleInsertBlock('ilustracion')}
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#232329] dark:hover:bg-[#2C2C33] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                    title="Insertar bloque de ilustración"
+                  >
+                    <Lightbulb size={12} />
+                    <span>+ Ilustración</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleInsertBlock('aplicacion')}
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#232329] dark:hover:bg-[#2C2C33] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                    title="Insertar bloque de aplicación práctica"
+                  >
+                    <Target size={12} />
+                    <span>+ Aplicación</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setIsEditingNotes(!isEditingNotes)}
-                    className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#2C2C2E] hover:bg-[#38383B] text-white shadow-xs transition-all active:scale-95 flex items-center gap-1 border-0"
+                    className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                   >
                     {isEditingNotes ? (
                       <>
@@ -532,13 +530,12 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 </div>
               </div>
 
-              {/* Barra de herramientas de formato (Solo al editar) */}
               {isEditingNotes && (
-                <div className="flex flex-wrap items-center gap-1 p-1 bg-black/[0.03] dark:bg-[#202024] rounded-xl border border-black/[0.04] dark:border-white/[0.06]">
+                <div className="flex flex-wrap items-center gap-1 p-1.5 bg-[#F2F3F6] dark:bg-[#222228] rounded-xl">
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('**', '**', 'negrita')}
-                    className="p-1.5 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.1]"
+                    className="p-1.5 rounded-lg text-[#5A5A64] dark:text-[#B4B4BE] hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
                     title="Negrita"
                   >
                     <Bold size={13} />
@@ -546,7 +543,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('*', '*', 'cursiva')}
-                    className="p-1.5 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.1]"
+                    className="p-1.5 rounded-lg text-[#5A5A64] dark:text-[#B4B4BE] hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
                     title="Cursiva"
                   >
                     <Italic size={13} />
@@ -554,7 +551,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('\n### ', '\n', 'Subtítulo')}
-                    className="p-1.5 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.1]"
+                    className="p-1.5 rounded-lg text-[#5A5A64] dark:text-[#B4B4BE] hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
                     title="Encabezado"
                   >
                     <Heading size={13} />
@@ -562,7 +559,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('==', '==', 'texto clave')}
-                    className="p-1.5 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.1]"
+                    className="p-1.5 rounded-lg text-[#5A5A64] dark:text-[#B4B4BE] hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
                     title="Resaltado"
                   >
                     <Highlighter size={13} />
@@ -570,7 +567,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('\n- ', '', 'Elemento')}
-                    className="p-1.5 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.1]"
+                    className="p-1.5 rounded-lg text-[#5A5A64] dark:text-[#B4B4BE] hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
                     title="Viñeta"
                   >
                     <List size={13} />
@@ -578,7 +575,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('\n> "', '"', 'Cita teológica')}
-                    className="p-1.5 rounded-lg text-neutral-600 dark:text-neutral-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.1]"
+                    className="p-1.5 rounded-lg text-[#5A5A64] dark:text-[#B4B4BE] hover:bg-black/[0.06] dark:hover:bg-white/[0.08]"
                     title="Cita"
                   >
                     <Quote size={13} />
@@ -586,30 +583,29 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 </div>
               )}
 
-              {/* Renderizado de Notas (Edición vs Formateado) con trazo sutil */}
               {isEditingNotes ? (
                 <textarea
                   ref={exegesisTextareaRef}
                   value={study.detailedNotes}
                   onChange={(e) => onUpdateStudy({ ...study, detailedNotes: e.target.value })}
                   rows={14}
-                  className="w-full text-xs sm:text-sm font-sans leading-relaxed text-slate-800 dark:text-neutral-200 bg-white dark:bg-[#1E1E21] p-3.5 rounded-2xl border border-black/[0.07] dark:border-white/[0.08] resize-y focus:outline-none focus:ring-1 focus:ring-[#E03126]"
+                  className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] bg-[#F6F7F9] dark:bg-[#202026] p-4 rounded-2xl resize-y focus:outline-none"
                   placeholder="Escribe aquí el estudio de palabras griegas/hebreas, trasfondo teológico, notas exegéticas o reflexiones..."
                   autoFocus
                 />
               ) : (
                 <div 
                   onClick={() => setIsEditingNotes(true)}
-                  className="w-full p-4 bg-white dark:bg-[#1E1E22] rounded-2xl border border-black/[0.05] dark:border-white/[0.07] shadow-xs cursor-text min-h-[220px]"
+                  className="w-full p-4 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl cursor-text min-h-[220px]"
                 >
                   {study.detailedNotes?.trim() ? (
-                    <div className="text-xs sm:text-sm font-sans leading-relaxed text-slate-800 dark:text-neutral-200 select-text">
+                    <div className="text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] select-text">
                       <MarkdownRenderer content={study.detailedNotes} />
                     </div>
                   ) : (
-                    <div className="py-10 text-center text-xs text-neutral-400 space-y-2">
+                    <div className="py-10 text-center text-xs text-[#7A7A85] space-y-2">
                       <p>No hay notas exegéticas escritas aún.</p>
-                      <span className="inline-block text-[#E03126] font-bold">
+                      <span className="inline-block text-[#1C1C1E] dark:text-white font-bold">
                         Toca aquí o usa los botones superiores para añadir términos en Griego o notas
                       </span>
                     </div>
@@ -617,28 +613,22 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 </div>
               )}
             </div>
-
           </div>
         )}
 
-        {/* ============================================================== */}
-        {/* PESTAÑA 2: BOSQUEJO HOMILÉTICO (CON CITAS DE REFERENCIA ARRIBA) */}
-        {/* ============================================================== */}
+        {/* PESTAÑA 2: BOSQUEJO HOMILÉTICO */}
         {activeTab === 'bosquejo' && (
-          <div className="space-y-3.5">
-            
-            {/* Citas bíblicas de referencia POSICIONADAS ARRIBA DE LOS PUNTOS DEL BOSQUEJO */}
+          <div className="space-y-4">
             {renderCitasBiblicas()}
 
-            {/* Puntos del Bosquejo */}
             <div className="flex items-center justify-between px-1 pt-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#7A7A85]">
                 Puntos del Bosquejo ({study.outlinePoints.length})
               </span>
               <button
                 type="button"
                 onClick={handleAddOutlinePoint}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#E03126] text-white hover:bg-[#C92A20] active:scale-95 transition-all shadow-xs border-0"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] active:scale-95 transition-all whitespace-nowrap"
               >
                 <Plus size={13} />
                 <span>Añadir Punto</span>
@@ -646,14 +636,14 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
             </div>
 
             <div className="space-y-3">
-              {study.outlinePoints.map((point) => (
+              {study.outlinePoints.map((point, idx) => (
                 <div
                   key={point.id}
-                  className="bg-white dark:bg-[#1E1E22] rounded-2xl p-3.5 border border-black/[0.05] dark:border-white/[0.07] shadow-xs space-y-2"
+                  className="bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl p-4 space-y-2.5"
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 flex-1">
-                      <span className="w-6 h-6 rounded-lg bg-black/[0.05] dark:bg-white/[0.08] font-bold text-xs flex items-center justify-center text-slate-800 dark:text-white flex-shrink-0">
+                    <div className="flex items-center gap-2.5 flex-1">
+                      <span className="w-6 h-6 rounded-lg bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] font-bold text-xs flex items-center justify-center flex-shrink-0">
                         {point.number}
                       </span>
                       <input
@@ -661,32 +651,52 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                         value={point.title}
                         onChange={(e) => handleUpdatePoint(point.id, { title: e.target.value })}
                         placeholder="Título del punto..."
-                        className="w-full font-bold text-xs sm:text-sm bg-transparent border-b border-transparent hover:border-black/10 dark:hover:border-white/10 focus:border-[#E03126] outline-none text-slate-900 dark:text-white"
+                        className="w-full font-bold text-xs sm:text-sm bg-transparent outline-none text-[#1C1C1E] dark:text-white"
                       />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleDeletePoint(point.id)}
-                      className="p-1 text-neutral-400 hover:text-red-500 rounded-lg"
-                      title="Eliminar punto"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        disabled={idx === 0}
+                        onClick={() => handleMovePoint(idx, 'up')}
+                        className="p-1 text-[#7A7A85] hover:text-black dark:hover:text-white disabled:opacity-25 rounded-lg"
+                        title="Subir punto"
+                      >
+                        <ChevronUp size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={idx === study.outlinePoints.length - 1}
+                        onClick={() => handleMovePoint(idx, 'down')}
+                        className="p-1 text-[#7A7A85] hover:text-black dark:hover:text-white disabled:opacity-25 rounded-lg"
+                        title="Bajar punto"
+                      >
+                        <ChevronDown size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeletePoint(point.id)}
+                        className="p-1 text-[#7A7A85] hover:text-black dark:hover:text-white rounded-lg"
+                        title="Eliminar punto"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
 
                   <input
                     type="text"
                     value={point.scriptureRef || ''}
                     onChange={(e) => handleUpdatePoint(point.id, { scriptureRef: e.target.value })}
-                    placeholder="Cita bíblica base (ej. Juan 3:16)..."
-                    className="w-full text-xs font-mono bg-black/[0.02] dark:bg-[#252528] px-2.5 py-1 rounded-lg text-slate-700 dark:text-neutral-300 outline-none"
+                    placeholder="Cita bíblica de respaldo (ej. Juan 3:16)..."
+                    className="w-full text-xs font-mono bg-white dark:bg-[#18181C] px-3 py-1.5 rounded-xl text-[#4A4A52] dark:text-[#C8C8D0] outline-none"
                   />
 
                   <textarea
                     value={point.content}
                     onChange={(e) => handleUpdatePoint(point.id, { content: e.target.value })}
                     rows={3}
-                    className="w-full text-xs leading-relaxed bg-black/[0.01] dark:bg-[#252528] p-2.5 rounded-xl border border-black/[0.04] dark:border-white/[0.06] text-slate-800 dark:text-neutral-200 outline-none resize-y"
+                    className="w-full text-xs leading-relaxed bg-white dark:bg-[#18181C] p-3 rounded-xl text-[#1C1C1E] dark:text-[#E5E5EA] outline-none resize-y"
                     placeholder="Contenido, explicación y aplicación..."
                   />
                 </div>
@@ -695,32 +705,28 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
           </div>
         )}
 
-        {/* ============================================================== */}
-        {/* PESTAÑA 3: AVISOS Y RECORDATORIOS DE PÚLPITO                   */}
-        {/* ============================================================== */}
+        {/* PESTAÑA 3: AVISOS Y RECORDATORIOS DE PÚLPITO */}
         {activeTab === 'avisos' && (
-          <div className="space-y-3.5">
-            
-            {/* Formulario rápido para nuevo aviso */}
-            <form onSubmit={handleAddQuickNote} className="p-3 bg-white dark:bg-[#1E1E22] rounded-2xl border border-black/[0.05] dark:border-white/[0.07] space-y-2">
+          <div className="space-y-4">
+            <form onSubmit={handleAddQuickNote} className="p-4 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl space-y-3">
               <input
                 type="text"
-                placeholder="Escribe un recordatorio o pausa (ej. Pausa de silencio)..."
+                placeholder="Escribe un recordatorio o pausa (ej. Hacer llamado al final)..."
                 value={newNoteText}
                 onChange={(e) => setNewNoteText(e.target.value)}
-                className="w-full text-xs p-2.5 bg-black/[0.02] dark:bg-[#252528] rounded-xl text-slate-900 dark:text-white outline-none"
+                className="w-full text-xs p-3 bg-white dark:bg-[#18181C] rounded-xl text-[#1C1C1E] dark:text-white outline-none"
               />
               <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1 overflow-x-auto py-0.5 scrollbar-none">
+                <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 scrollbar-none">
                   {availableTags.map(tag => (
                     <button
                       key={tag}
                       type="button"
                       onClick={() => setNewNoteTag(tag)}
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-lg transition-all ${
+                      className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
                         newNoteTag === tag
-                          ? 'bg-[#E03126] text-white'
-                          : 'bg-black/[0.04] dark:bg-white/[0.06] text-neutral-500'
+                          ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
+                          : 'bg-white dark:bg-[#18181C] text-[#6E6E77] dark:text-[#9E9EA8]'
                       }`}
                     >
                       {tag}
@@ -729,31 +735,30 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 </div>
                 <button
                   type="submit"
-                  className="px-3 py-1 bg-[#1C1C1E] dark:bg-white text-white dark:text-[#1C1C1E] text-xs font-bold rounded-xl border-0"
+                  className="px-3.5 py-1.5 bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] text-xs font-bold rounded-xl whitespace-nowrap"
                 >
                   Añadir
                 </button>
               </div>
             </form>
 
-            {/* Lista de notas rápidas */}
             <div className="space-y-2">
               {study.quickNotes.map(n => (
                 <div
                   key={n.id}
-                  className="p-3 bg-white dark:bg-[#1E1E22] rounded-2xl border border-black/[0.05] dark:border-white/[0.07] flex items-center justify-between gap-2"
+                  className="p-3.5 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl flex items-center justify-between gap-2"
                 >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-lg bg-black/[0.05] dark:bg-white/[0.08] text-neutral-600 dark:text-neutral-300">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] whitespace-nowrap">
                       {n.tag || 'Nota'}
                     </span>
-                    <span className="text-xs text-slate-800 dark:text-neutral-200 truncate font-medium">
+                    <span className="text-xs text-[#1C1C1E] dark:text-[#E5E5EA] truncate font-medium">
                       {n.text}
                     </span>
                   </div>
                   <button
                     onClick={() => deleteQuickNote(n.id)}
-                    className="p-1 text-neutral-400 hover:text-red-500 rounded-lg"
+                    className="p-1.5 text-[#7A7A85] hover:text-black dark:hover:text-white rounded-lg"
                     title="Eliminar aviso"
                   >
                     <Trash2 size={12} />

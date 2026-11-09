@@ -22,16 +22,12 @@ import { Study, BibleVerse } from '../types';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { searchBible, RVR1960VerseResult } from '../services/bibleService';
 
-/* ------------------------------------------------------------------ */
-/* Tipos compartidos                                                   */
-/* ------------------------------------------------------------------ */
-
 export interface PreviewItem {
   id: string;
   kind: 'verse' | 'point' | 'note' | 'exegesis' | 'bible';
-  label: string; // Etiqueta superior (ej. "Pasaje central")
-  title: string; // Título grande (ej. "Efesios 2:8-9")
-  body: string; // Texto principal
+  label: string;
+  title: string;
+  body: string;
   markdown?: boolean;
 }
 
@@ -44,11 +40,9 @@ interface QuickAccessProps {
   onOpenNotesPanel?: () => void;
 }
 
-// Normaliza texto para búsquedas sin acentos ni mayúsculas
 const norm = (s: string) =>
   (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-// Construye la lista de elementos navegables del sermón
 const buildStudyItems = (study: Study) => {
   const verses: PreviewItem[] = [];
   if (study.mainVerse?.reference) {
@@ -105,10 +99,6 @@ const bibleToVerse = (r: RVR1960VerseResult): BibleVerse => ({
   version: 'RVR1960',
 });
 
-/* ------------------------------------------------------------------ */
-/* Vista previa gigante                                                */
-/* ------------------------------------------------------------------ */
-
 export const BigPreview: React.FC<{
   items: PreviewItem[];
   index: number;
@@ -135,31 +125,29 @@ export const BigPreview: React.FC<{
 
   return (
     <div className="fixed inset-0 z-[80] bg-[#0E0E10] text-white flex flex-col font-sans animate-fadeIn">
-      {/* Barra superior */}
-      <div className="flex items-center justify-between px-5 sm:px-8 py-4 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between px-5 sm:px-8 py-4 bg-[#141418]">
         <span className="text-xs font-bold uppercase tracking-wider text-[#8E8E93]">
           {item.label} {items.length > 1 && <span className="ml-2 text-neutral-500">{index + 1} / {items.length}</span>}
         </span>
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#1C1C1F] border border-white/[0.06] rounded-full p-0.5">
+          <div className="flex items-center bg-[#202026] rounded-full p-0.5">
             <button onClick={() => setScale(s => Math.max(60, s - 10))} className="p-2 rounded-full hover:bg-white/[0.08]" title="Reducir letra">
               <ZoomOut size={15} />
             </button>
-            <span className="px-1.5 text-xs font-mono font-bold">{scale}%</span>
+            <span className="px-2 text-xs font-mono font-bold">{scale}%</span>
             <button onClick={() => setScale(s => Math.min(200, s + 10))} className="p-2 rounded-full hover:bg-white/[0.08]" title="Aumentar letra">
               <ZoomIn size={15} />
             </button>
           </div>
           <button
             onClick={onClose}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-[#141416] text-xs font-bold active:scale-95 transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-[#141416] text-xs font-bold active:scale-95 transition-all whitespace-nowrap"
           >
             <X size={14} /> Cerrar
           </button>
         </div>
       </div>
 
-      {/* Contenido gigante */}
       <div className="flex-1 overflow-y-auto flex items-center justify-center px-6 sm:px-14 lg:px-24 py-10" onClick={onClose}>
         <div className="max-w-6xl w-full" style={{ fontSize: `${scale}%` }} onClick={e => e.stopPropagation()}>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-6 text-white">{item.title}</h2>
@@ -179,20 +167,19 @@ export const BigPreview: React.FC<{
         </div>
       </div>
 
-      {/* Navegación anterior / siguiente */}
       {items.length > 1 && (
         <div className="flex items-center justify-center gap-3 pb-6">
           <button
             disabled={index === 0}
             onClick={() => onIndexChange(index - 1)}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1C1C1F] border border-white/[0.08] text-sm font-bold disabled:opacity-30 active:scale-95"
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1C1C22] text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap"
           >
             <ChevronLeft size={16} /> Anterior
           </button>
           <button
             disabled={index === items.length - 1}
             onClick={() => onIndexChange(index + 1)}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1C1C1F] border border-white/[0.08] text-sm font-bold disabled:opacity-30 active:scale-95"
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1C1C22] text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap"
           >
             Siguiente <ChevronRight size={16} />
           </button>
@@ -201,10 +188,6 @@ export const BigPreview: React.FC<{
     </div>
   );
 };
-
-/* ------------------------------------------------------------------ */
-/* Hook de búsqueda bíblica con retardo                                */
-/* ------------------------------------------------------------------ */
 
 const useBibleSearch = (query: string, max = 25) => {
   const [results, setResults] = useState<RVR1960VerseResult[]>([]);
@@ -235,10 +218,6 @@ const useBibleSearch = (query: string, max = 25) => {
   return { results, loading };
 };
 
-/* ------------------------------------------------------------------ */
-/* Fila de resultado bíblico                                           */
-/* ------------------------------------------------------------------ */
-
 const BibleRow: React.FC<{
   r: RVR1960VerseResult;
   added: boolean;
@@ -250,7 +229,7 @@ const BibleRow: React.FC<{
       <div className="text-sm font-bold text-white">{r.reference}</div>
       <div className="text-xs text-neutral-400 leading-relaxed line-clamp-2 mt-0.5">{r.text}</div>
     </button>
-    <div className="flex items-center gap-1 flex-shrink-0">
+    <div className="flex items-center gap-1.5 flex-shrink-0">
       <button onClick={onPreview} className="p-2 rounded-full text-neutral-400 hover:text-white hover:bg-white/[0.08]" title="Ver en grande">
         <Maximize2 size={14} />
       </button>
@@ -258,8 +237,8 @@ const BibleRow: React.FC<{
         <button
           onClick={onAdd}
           disabled={added}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all active:scale-95 ${
-            added ? 'bg-[#34C759]/15 text-[#34C759]' : 'bg-white text-[#141416]'
+          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all active:scale-95 whitespace-nowrap ${
+            added ? 'bg-white/10 text-neutral-300' : 'bg-white text-[#141416]'
           }`}
           title="Añadir al sermón"
         >
@@ -270,10 +249,6 @@ const BibleRow: React.FC<{
     </div>
   </div>
 );
-
-/* ------------------------------------------------------------------ */
-/* Buscador universal                                                  */
-/* ------------------------------------------------------------------ */
 
 const UniversalSearch: React.FC<{
   study: Study;
@@ -306,10 +281,10 @@ const UniversalSearch: React.FC<{
   return (
     <div className="fixed inset-0 z-[75] bg-black/60 backdrop-blur-sm flex items-start justify-center pt-[10vh] px-4 font-sans" onClick={onClose}>
       <div
-        className="w-full max-w-2xl bg-[#1C1C1F] border border-white/[0.08] rounded-3xl shadow-2xl overflow-hidden text-white"
+        className="w-full max-w-2xl bg-[#1C1C22] rounded-3xl shadow-2xl overflow-hidden text-white animate-scaleIn"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.08]">
+        <div className="flex items-center gap-3 px-5 py-4 bg-[#23232A]">
           <Search size={18} className="text-[#8E8E93]" />
           <input
             ref={inputRef}
@@ -318,7 +293,7 @@ const UniversalSearch: React.FC<{
             placeholder="Buscar versículos, notas, bosquejo o en la Biblia (ej. Juan 3:16, gracia)…"
             className="flex-1 bg-transparent text-base outline-none placeholder:text-neutral-500"
           />
-          <kbd className="hidden sm:inline text-[10px] font-bold text-neutral-500 border border-white/[0.1] rounded-md px-1.5 py-0.5">ESC</kbd>
+          <kbd className="hidden sm:inline text-[10px] font-bold text-neutral-400 bg-white/10 rounded-md px-2 py-0.5">ESC</kbd>
         </div>
 
         <div className="max-h-[60vh] overflow-y-auto p-3 space-y-4">
@@ -373,10 +348,6 @@ const UniversalSearch: React.FC<{
   );
 };
 
-/* ------------------------------------------------------------------ */
-/* Componente principal: barra fija + hojas + buscador + vista previa  */
-/* ------------------------------------------------------------------ */
-
 export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, variant = 'normal', onOpenNotesPanel }) => {
   const [sheet, setSheet] = useState<SheetKind>(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -392,7 +363,6 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
 
   const anyOverlay = !!sheet || searchOpen || !!preview;
 
-  // Indica al resto de la app que hay una capa abierta (para no interferir con atajos)
   useEffect(() => {
     if (anyOverlay) document.body.dataset.quickOverlay = 'open';
     else delete document.body.dataset.quickOverlay;
@@ -401,7 +371,6 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
     };
   }, [anyOverlay]);
 
-  // Atajo global ⌘K / Ctrl+K y "/" para abrir el buscador
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -463,12 +432,12 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
     items.length === 0 ? (
       <div className="py-8 text-center text-xs text-neutral-500">{emptyText}</div>
     ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         {items.map((it, i) => (
           <button
             key={it.id}
             onClick={() => openPreview(items, i)}
-            className="text-left p-4 rounded-2xl bg-[#222225] hover:bg-[#2A2A2E] border border-white/[0.06] transition-all active:scale-[0.98] group"
+            className="text-left p-4 rounded-2xl bg-[#25252C] hover:bg-[#2E2E36] transition-all active:scale-[0.98] group"
           >
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#8E8E93] truncate">{it.label}</span>
@@ -483,24 +452,23 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
 
   return createPortal(
     <>
-      {/* HOJA INFERIOR (bottom sheet) */}
       {sheet && (
         <>
           <div className="fixed inset-0 z-[64] bg-black/30" onClick={() => setSheet(null)} />
-          <div className="fixed z-[65] left-1/2 -translate-x-1/2 bottom-24 w-[calc(100%-2rem)] max-w-3xl bg-[#1C1C1F]/95 backdrop-blur-2xl border border-white/[0.08] rounded-3xl shadow-2xl text-white font-sans animate-fadeIn">
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06]">
+          <div className="fixed z-[65] left-1/2 -translate-x-1/2 bottom-24 w-[calc(100%-2rem)] max-w-3xl bg-[#1C1C22]/95 backdrop-blur-2xl rounded-3xl shadow-2xl text-white font-sans animate-scaleIn">
+            <div className="flex items-center justify-between px-5 py-4">
               <h3 className="text-sm font-bold">{sheetTitle[sheet]}</h3>
               <button onClick={() => setSheet(null)} className="p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-white/[0.08]">
                 <X size={16} />
               </button>
             </div>
-            <div className="max-h-[55vh] overflow-y-auto p-3">
+            <div className="max-h-[55vh] overflow-y-auto px-4 pb-4">
               {sheet === 'citas' && renderList(verses, 'Aún no hay versículos en este sermón.')}
               {sheet === 'bosquejo' && renderList(points, 'El bosquejo está vacío.')}
               {sheet === 'notas' && renderList(notes, 'No hay notas todavía.')}
               {sheet === 'biblia' && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 px-3 py-2.5 rounded-2xl bg-[#222225] border border-white/[0.06]">
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-[#25252C]">
                     <Search size={15} className="text-[#8E8E93]" />
                     <input
                       autoFocus
@@ -535,12 +503,12 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
         </>
       )}
 
-      {/* BARRA FIJA DE ACCESO RÁPIDO */}
+      {/* BARRA FLOTANTE DE ACCESO RÁPIDO SIN TRAZOS */}
       <nav
-        className={`no-print fixed z-[66] left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-1 p-1.5 rounded-full backdrop-blur-2xl border shadow-2xl font-sans ${
+        className={`no-print fixed z-[66] left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-1 p-1.5 rounded-2xl backdrop-blur-2xl shadow-2xl font-sans ${
           variant === 'pulpit'
-            ? 'bg-[#1C1C1F]/90 border-white/[0.1]'
-            : 'bg-white/85 dark:bg-[#1C1C1F]/90 border-black/[0.08] dark:border-white/[0.1]'
+            ? 'bg-[#18181C]/95'
+            : 'bg-white/95 dark:bg-[#18181C]/95'
         }`}
       >
         {dockButtons.map(b => {
@@ -549,19 +517,21 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
             <button
               key={b.key}
               onClick={() => onDock(b.key)}
-              className={`relative flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1.5 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold transition-all active:scale-95 ${
+              className={`relative flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all active:scale-95 whitespace-nowrap ${
                 active
-                  ? 'bg-[#E03126] text-white'
+                  ? variant === 'pulpit'
+                    ? 'bg-white text-[#121214]'
+                    : 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
                   : variant === 'pulpit'
                   ? 'text-neutral-300 hover:bg-white/[0.08] hover:text-white'
-                  : 'text-slate-700 dark:text-neutral-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.08]'
+                  : 'text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-black/[0.05] dark:hover:bg-white/[0.08]'
               }`}
               title={b.key === 'buscar' ? 'Buscar (⌘K)' : b.label}
             >
               <b.icon size={15} />
               <span>{b.label}</span>
               {!!b.count && (
-                <span className={`hidden sm:inline text-[10px] font-bold ${active ? 'text-white/80' : 'text-[#8E8E93]'}`}>{b.count}</span>
+                <span className="hidden sm:inline text-[10px] font-bold opacity-70">{b.count}</span>
               )}
             </button>
           );

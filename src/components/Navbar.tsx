@@ -13,7 +13,10 @@ import {
   PanelLeftClose,
   Archive,
   ArchiveRestore,
-  Trash2
+  Trash2,
+  Search,
+  Sparkles,
+  ChevronRight
 } from 'lucide-react';
 import { Topic, Study } from '../types';
 
@@ -58,6 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isAddingTopic, setIsAddingTopic] = useState(false);
   const [newTopicName, setNewTopicName] = useState('');
   const [studyFilter, setStudyFilter] = useState<'activos' | 'archivados' | 'todos'>('activos');
+  const [studySearch, setStudySearch] = useState('');
   const [studyToDelete, setStudyToDelete] = useState<Study | null>(null);
 
   const handleCreateTopic = (e: React.FormEvent) => {
@@ -70,153 +74,189 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const currentTopic = topics.find(t => t.id === activeTopicId);
 
+  const filteredStudies = studies.filter(s => {
+    const matchesTab =
+      studyFilter === 'activos' ? !s.isArchived :
+      studyFilter === 'archivados' ? !!s.isArchived : true;
+    const matchesQuery =
+      !studySearch.trim() ||
+      s.title.toLowerCase().includes(studySearch.toLowerCase()) ||
+      s.mainVerse?.reference?.toLowerCase().includes(studySearch.toLowerCase());
+    return matchesTab && matchesQuery;
+  });
+
   return (
     <>
-      <header className="h-14 border-b border-black/[0.06] dark:border-white/[0.08] bg-white/90 dark:bg-[#18181A]/95 backdrop-blur-xl px-4 sm:px-6 lg:px-8 flex items-center justify-between z-30 select-none font-sans sticky top-0">
+      <header className="h-16 bg-white/85 dark:bg-[#151518]/85 backdrop-blur-2xl px-4 sm:px-6 lg:px-8 flex items-center justify-between z-30 select-none font-sans sticky top-0 shadow-[0_2px_16px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-colors duration-200">
         
-        {/* Left: Botón Compacto de Barra Lateral que NO ESTORBA */}
-        <div className="flex items-center gap-3">
+        {/* Izquierda: Selector de Biblioteca y Creación Directa */}
+        <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/[0.04] hover:bg-black/[0.08] dark:bg-[#222225] dark:hover:bg-[#2C2C30] text-slate-900 dark:text-white transition-all active:scale-95 border border-black/[0.04] dark:border-white/[0.06]"
-            title="Abrir explorador de temas y prédicas"
+            className="flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#202024] dark:hover:bg-[#29292F] text-[#1C1C1E] dark:text-white transition-all duration-200 active:scale-95"
+            title="Abrir biblioteca de temas y prédicas"
           >
             <PanelLeft size={16} className="text-[#8E8E93]" />
-            <span className="font-bold text-xs sm:text-sm truncate max-w-[140px] sm:max-w-[200px]">
-              {activeTopicName || "Temas Bíblicos"}
+            <span className="font-bold text-xs sm:text-sm truncate max-w-[130px] sm:max-w-[190px]">
+              {activeTopicName || "Biblioteca"}
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/[0.06] dark:bg-white/[0.1] text-[#636366] dark:text-neutral-300">
+              {studies.filter(s => !s.isArchived).length}
             </span>
           </button>
 
-          {/* Subtítulo del sermón actual discreto */}
+          {/* Botón Directo: Nueva Prédica en 1 clic desde cualquier vista */}
+          <button
+            onClick={onAddStudy}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#202024] dark:hover:bg-[#29292F] text-[#1C1C1E] dark:text-white text-xs font-bold transition-all duration-200 active:scale-95 whitespace-nowrap"
+            title="Crear nueva prédica o estudio bíblico"
+          >
+            <Plus size={14} />
+            <span className="hidden sm:inline">Nueva Prédica</span>
+          </button>
+
+          {/* Indicador del estudio activo */}
           {activeStudyTitle && (
-            <span className="hidden md:inline text-xs text-[#8E8E93] font-medium truncate max-w-[260px] lg:max-w-[360px]">
-              • {activeStudyTitle}
-            </span>
+            <div className="hidden lg:flex items-center gap-2 pl-1 text-xs text-[#8E8E93] font-medium truncate max-w-[300px] xl:max-w-[400px]">
+              <ChevronRight size={13} className="opacity-50 flex-shrink-0" />
+              <span className="truncate text-[#1C1C1E]/80 dark:text-neutral-300 font-semibold">
+                {activeStudyTitle}
+              </span>
+            </div>
           )}
         </div>
 
-        {/* Right controls: Theme Slider, Print & Pulpit Mode */}
+        {/* Derecha: Selector de Tema (Luz / Gris), Imprimir y Modo Prédica */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Selector de Modo: Luz y Gris */}
-          <div className="flex items-center bg-black/[0.04] dark:bg-[#222225] p-1 rounded-full text-xs font-medium">
+          {/* Selector de Modo: Luz y Gris (Sin trazos) */}
+          <div className="flex items-center bg-[#F2F3F5] dark:bg-[#202024] p-1 rounded-2xl text-xs font-medium">
             <button
               onClick={() => setTheme('light')}
-              className={`px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 ${
                 theme === 'light'
-                  ? 'bg-white text-slate-900 shadow-sm font-bold'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-neutral-400'
+                  ? 'bg-white text-[#1C1C1E] shadow-xs font-bold'
+                  : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
               }`}
               title="Modo Luz"
             >
-              <Sun size={13} className="inline mr-1.5" />
+              <Sun size={13} />
               <span>Luz</span>
             </button>
             <button
               onClick={() => setTheme('dark')}
-              className={`px-3.5 py-1.5 rounded-full transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 ${
                 theme === 'dark'
-                  ? 'bg-[#323236] text-white shadow-sm font-bold'
-                  : 'text-slate-600 hover:text-slate-900 dark:text-neutral-400'
+                  ? 'bg-[#2E2E34] text-white shadow-xs font-bold'
+                  : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
               }`}
               title="Modo Gris Oscuro"
             >
-              <Moon size={13} className="inline mr-1.5" />
+              <Moon size={13} />
               <span>Gris</span>
             </button>
           </div>
 
-          {/* Print Button */}
-          <button
-            onClick={() => (onOpenPrintPreview ? onOpenPrintPreview() : window.print())}
-            className="hidden md:flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-neutral-200 bg-black/[0.04] hover:bg-black/[0.08] dark:bg-[#222225] dark:hover:bg-[#2A2A2E] rounded-full transition-all active:scale-95"
-            title="Imprimir estudio"
-          >
-            <Printer size={13} />
-            <span>Imprimir</span>
-          </button>
+          {/* Botón Imprimir / Exportar */}
+          {activeStudyTitle && (
+            <button
+              onClick={() => (onOpenPrintPreview ? onOpenPrintPreview() : window.print())}
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#1C1C1E] dark:text-neutral-200 bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#202024] dark:hover:bg-[#29292F] rounded-2xl transition-all duration-200 active:scale-95 whitespace-nowrap"
+              title="Vista previa de impresión y hoja de púlpito"
+            >
+              <Printer size={14} />
+              <span>Imprimir</span>
+            </button>
+          )}
 
-          {/* Modo Prédica - Solid Red Action Button */}
-          <button
-            onClick={onEnterPulpitMode}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold bg-[#E03126] hover:bg-[#C92A20] text-white rounded-full shadow-xs transition-all active:scale-95"
-            title="Modo atril pantalla completa"
-          >
-            <Maximize2 size={13} />
-            <span>Modo Prédica</span>
-          </button>
+          {/* Modo Prédica (Púlpito) en Alto Contraste Luz/Gris */}
+          {activeStudyTitle && (
+            <button
+              onClick={onEnterPulpitMode}
+              className="flex items-center gap-2 px-4 py-2 text-xs font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#121214] rounded-2xl shadow-sm transition-all duration-200 active:scale-95 whitespace-nowrap"
+              title="Abrir Modo Atril / Púlpito a pantalla completa"
+            >
+              <Maximize2 size={13} />
+              <span>Modo Prédica</span>
+            </button>
+          )}
         </div>
       </header>
 
-      {/* SIDEBAR DRAWER LATERAL DESLIZABLE ESTILO IPADOS (NO ESTORBA EL CENTRO) */}
+      {/* PANEL LATERAL DESLIZABLE (BIBLIOTECA DE TEMAS Y PRÉDICAS SIN TRAZOS) */}
       {isSidebarOpen && (
         <>
-          {/* Backdrop oscurecido transparente para cerrar con un toque */}
           <div 
-            className="fixed inset-0 z-40 bg-black/30 dark:bg-black/50 backdrop-blur-xs transition-opacity duration-200"
+            className="fixed inset-0 z-40 bg-black/40 dark:bg-black/60 backdrop-blur-xs transition-opacity duration-200"
             onClick={() => setIsSidebarOpen(false)}
           />
 
-          {/* Panel Lateral Izquierdo */}
-          <aside className="fixed top-0 left-0 bottom-0 w-80 sm:w-88 bg-white dark:bg-[#18181A] z-50 border-r border-black/[0.06] dark:border-white/[0.08] shadow-2xl flex flex-col font-sans select-none animate-slideRight">
+          <aside className="fixed top-0 left-0 bottom-0 w-84 sm:w-96 bg-[#F8F9FB] dark:bg-[#161619] z-50 shadow-2xl flex flex-col font-sans select-none animate-slideRight">
             
             {/* Cabecera del Panel Lateral */}
-            <div className="p-4 border-b border-black/[0.05] dark:border-white/[0.06] flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BookOpen size={17} className="text-[#8E8E93]" />
-                <h3 className="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white">
-                  Temas y Prédicas
-                </h3>
+            <div className="px-6 pt-6 pb-4 bg-white dark:bg-[#1C1C20] flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#F2F3F5] dark:bg-[#26262B] text-[#1C1C1E] dark:text-white flex items-center justify-center">
+                  <BookOpen size={16} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base text-[#1C1C1E] dark:text-white leading-tight">
+                    Biblioteca de Estudios
+                  </h3>
+                  <span className="text-[11px] text-[#8E8E93]">
+                    Temas y bosquejos de predicación
+                  </span>
+                </div>
               </div>
 
               <button
                 onClick={() => setIsSidebarOpen(false)}
-                className="p-1.5 rounded-full text-neutral-400 hover:text-black dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors"
-                title="Cerrar panel lateral"
+                className="w-8 h-8 rounded-full bg-[#F2F3F5] dark:bg-[#26262B] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white flex items-center justify-center transition-colors"
+                title="Cerrar biblioteca"
               >
-                <PanelLeftClose size={18} />
+                <PanelLeftClose size={16} />
               </button>
             </div>
 
-            {/* Contenido del Sidebar con Scroll */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6">
+            {/* Contenido con Scroll */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-thin">
               
               {/* SECCIÓN 1: TEMAS BÍBLICOS */}
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between px-1">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93]">
-                    Temas ({topics.length})
+                    Categorías Temáticas ({topics.length})
                   </span>
                   <button
                     onClick={() => setIsAddingTopic(!isAddingTopic)}
-                    className="text-xs font-bold text-slate-700 dark:text-neutral-300 hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.06]"
+                    className="text-xs font-bold text-[#1C1C1E] dark:text-neutral-200 hover:opacity-80 flex items-center gap-1 px-3 py-1 rounded-xl bg-white dark:bg-[#222227] shadow-2xs transition-all"
                   >
                     <Plus size={12} />
-                    <span>Nuevo</span>
+                    <span>Nuevo Tema</span>
                   </button>
                 </div>
 
                 {/* Formulario para añadir nuevo tema */}
                 {isAddingTopic && (
-                  <form onSubmit={handleCreateTopic} className="p-3 bg-[#F2F2F7] dark:bg-[#222225] rounded-2xl border border-black/[0.05] dark:border-white/[0.06] space-y-2">
+                  <form onSubmit={handleCreateTopic} className="p-3 bg-white dark:bg-[#222227] rounded-2xl shadow-sm space-y-2.5 animate-fadeIn">
                     <input
                       type="text"
-                      placeholder="Nombre del nuevo tema..."
+                      placeholder="Nombre del nuevo tema bíblico..."
                       value={newTopicName}
                       onChange={(e) => setNewTopicName(e.target.value)}
-                      className="w-full text-xs p-2 bg-white dark:bg-[#18181A] rounded-xl text-slate-900 dark:text-white focus:outline-none"
+                      className="w-full text-xs px-3.5 py-2.5 bg-[#F2F3F5] dark:bg-[#161619] rounded-xl text-[#1C1C1E] dark:text-white focus:outline-none"
                       autoFocus
                     />
-                    <div className="flex justify-end gap-1.5">
+                    <div className="flex justify-end gap-2">
                       <button
                         type="button"
                         onClick={() => setIsAddingTopic(false)}
-                        className="px-2.5 py-0.5 text-xs text-neutral-500 font-semibold"
+                        className="px-3 py-1 text-xs text-[#8E8E93] font-semibold"
                       >
                         Cancelar
                       </button>
                       <button
                         type="submit"
-                        className="px-3 py-1 text-xs bg-[#1C1C1E] dark:bg-white text-white dark:text-[#1C1C1E] font-bold rounded-lg"
+                        className="px-3.5 py-1.5 text-xs bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] font-bold rounded-xl"
                       >
                         Guardar
                       </button>
@@ -225,17 +265,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
 
                 {/* Lista de temas */}
-                <div className="space-y-1">
+                <div className="grid grid-cols-1 gap-1.5">
                   {topics.map((t) => {
                     const isActive = t.id === activeTopicId;
                     return (
                       <button
                         key={t.id}
                         onClick={() => onSelectTopic(t.id)}
-                        className={`w-full flex items-center justify-between p-2.5 rounded-2xl text-xs text-left transition-all active:scale-98 ${
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs text-left transition-all duration-200 active:scale-[0.99] ${
                           isActive
-                            ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#1C1C1E] font-extrabold shadow-sm'
-                            : 'text-slate-700 dark:text-neutral-300 hover:bg-black/[0.04] dark:hover:bg-[#222225]'
+                            ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] font-bold shadow-sm'
+                            : 'bg-white/70 dark:bg-[#1E1E23] text-[#1C1C1E] dark:text-neutral-300 hover:bg-white dark:hover:bg-[#25252B]'
                         }`}
                       >
                         <div className="flex items-center gap-2.5 truncate">
@@ -250,32 +290,46 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
 
               {/* SECCIÓN 2: PRÉDICAS DEL TEMA SELECCIONADO */}
-              <div className="space-y-2.5 pt-4 border-t border-black/[0.05] dark:border-white/[0.06]">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between px-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93] truncate max-w-[190px]">
-                    Prédicas en {currentTopic?.name || "este tema"}
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93] truncate">
+                    Prédicas en {currentTopic?.name || 'Tema'} ({studies.length})
                   </span>
                   <button
                     onClick={() => {
-                      onAddStudy();
                       setIsSidebarOpen(false);
+                      onAddStudy();
                     }}
-                    className="text-xs font-bold text-slate-700 dark:text-neutral-300 hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.06]"
+                    className="text-xs font-bold bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] flex items-center gap-1 px-3 py-1.5 rounded-xl shadow-xs active:scale-95 transition-all"
                   >
                     <Plus size={12} />
-                    <span>Añadir</span>
+                    <span>Crear Prédica</span>
                   </button>
                 </div>
 
+                {/* Buscador rápido de prédicas dentro del tema */}
+                {studies.length > 1 && (
+                  <div className="relative">
+                    <Search size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+                    <input
+                      type="text"
+                      value={studySearch}
+                      onChange={(e) => setStudySearch(e.target.value)}
+                      placeholder="Filtrar por título o pasaje..."
+                      className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white dark:bg-[#1E1E23] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none"
+                    />
+                  </div>
+                )}
+
                 {/* Filtro Activos / Archivados / Todos */}
-                <div className="bg-[#F2F2F7] dark:bg-[#222225] p-1 rounded-2xl flex items-center gap-1 border border-black/[0.04] dark:border-white/[0.06]">
+                <div className="flex bg-[#EAEAEE] dark:bg-[#202025] p-1 rounded-xl text-[11px] font-bold">
                   <button
                     type="button"
                     onClick={() => setStudyFilter('activos')}
-                    className={`flex-1 py-1 text-[11px] font-bold rounded-xl transition-all ${
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${
                       studyFilter === 'activos'
-                        ? 'bg-white dark:bg-[#18181A] text-slate-900 dark:text-white shadow-xs'
-                        : 'text-neutral-500 hover:text-black dark:hover:text-white'
+                        ? 'bg-white dark:bg-[#2E2E35] text-[#1C1C1E] dark:text-white shadow-2xs'
+                        : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
                     }`}
                   >
                     Activos ({studies.filter(s => !s.isArchived).length})
@@ -283,10 +337,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button
                     type="button"
                     onClick={() => setStudyFilter('archivados')}
-                    className={`flex-1 py-1 text-[11px] font-bold rounded-xl transition-all ${
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${
                       studyFilter === 'archivados'
-                        ? 'bg-white dark:bg-[#18181A] text-slate-900 dark:text-white shadow-xs'
-                        : 'text-neutral-500 hover:text-black dark:hover:text-white'
+                        ? 'bg-white dark:bg-[#2E2E35] text-[#1C1C1E] dark:text-white shadow-2xs'
+                        : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
                     }`}
                   >
                     Archivados ({studies.filter(s => s.isArchived).length})
@@ -294,35 +348,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <button
                     type="button"
                     onClick={() => setStudyFilter('todos')}
-                    className={`flex-1 py-1 text-[11px] font-bold rounded-xl transition-all ${
+                    className={`flex-1 py-1.5 rounded-lg transition-all ${
                       studyFilter === 'todos'
-                        ? 'bg-white dark:bg-[#18181A] text-slate-900 dark:text-white shadow-xs'
-                        : 'text-neutral-500 hover:text-black dark:hover:text-white'
+                        ? 'bg-white dark:bg-[#2E2E35] text-[#1C1C1E] dark:text-white shadow-2xs'
+                        : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
                     }`}
                   >
                     Todos ({studies.length})
                   </button>
                 </div>
 
-                {/* Lista de prédicas filtradas */}
+                {/* Lista de prédicas */}
                 <div className="space-y-2">
-                  {studies.filter(s => {
-                    if (studyFilter === 'activos') return !s.isArchived;
-                    if (studyFilter === 'archivados') return !!s.isArchived;
-                    return true;
-                  }).length === 0 ? (
-                    <div className="p-6 text-center text-xs text-[#8E8E93] bg-black/[0.02] dark:bg-white/[0.02] rounded-2xl border border-dashed border-black/[0.06] dark:border-white/[0.08]">
-                      {studyFilter === 'archivados' 
-                        ? 'No hay mensajes archivados en este tema.'
-                        : 'No hay mensajes en este tema.'}
+                  {filteredStudies.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-[#8E8E93] bg-white/60 dark:bg-[#1E1E23] rounded-2xl space-y-2">
+                      <Sparkles size={18} className="mx-auto text-[#8E8E93]" />
+                      <p>
+                        {studyFilter === 'archivados'
+                          ? 'No hay prédicas archivadas en este tema.'
+                          : 'Aún no hay prédicas en este tema.'}
+                      </p>
                     </div>
                   ) : (
-                    studies.filter(s => {
-                      if (studyFilter === 'activos') return !s.isArchived;
-                      if (studyFilter === 'archivados') return !!s.isArchived;
-                      return true;
-                    }).map((s) => {
-                      const isCurrent = s.id === activeStudyId;
+                    filteredStudies.map((s) => {
+                      const isSelected = s.id === activeStudyId;
                       return (
                         <div
                           key={s.id}
@@ -330,40 +379,31 @@ export const Navbar: React.FC<NavbarProps> = ({
                             onSelectStudy(s.id);
                             setIsSidebarOpen(false);
                           }}
-                          className={`p-3.5 rounded-2xl cursor-pointer transition-all active:scale-98 border text-left group relative ${
-                            isCurrent
-                              ? 'bg-[#F2F2F7] dark:bg-[#222225] border-black/[0.08] dark:border-white/[0.12] shadow-xs'
-                              : 'bg-white dark:bg-[#18181A] hover:bg-black/[0.02] dark:hover:bg-[#202023] border-black/[0.04] dark:border-white/[0.05]'
+                          className={`group w-full p-3.5 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] shadow-md'
+                              : 'bg-white dark:bg-[#1E1E23] hover:bg-[#F0F1F4] dark:hover:bg-[#26262C] text-[#1C1C1E] dark:text-neutral-200'
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-2 mb-1.5">
-                            <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-snug line-clamp-2">
-                              {s.title}
-                            </h4>
-                            <div className="flex items-center gap-1 flex-shrink-0">
-                              {s.isArchived && (
-                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-400">
-                                  Archivado
-                                </span>
-                              )}
-                              {isCurrent && (
-                                <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#E03126] text-white">
-                                  Activa
-                                </span>
-                              )}
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-start gap-2.5 min-w-0">
+                              <FileText size={15} className={`mt-0.5 flex-shrink-0 ${
+                                isSelected ? 'opacity-90' : 'text-[#8E8E93]'
+                              }`} />
+                              <div className="min-w-0">
+                                <div className="font-bold text-xs sm:text-sm truncate">
+                                  {s.title}
+                                </div>
+                                <div className={`text-[11px] truncate mt-0.5 ${
+                                  isSelected ? 'opacity-75' : 'text-[#8E8E93]'
+                                }`}>
+                                  {s.mainVerse?.reference || 'Sin pasaje central'} • {s.outlinePoints.length} pts
+                                </div>
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="flex items-center justify-between text-[11px] text-[#8E8E93] pt-1">
-                            <div className="flex items-center gap-1.5 truncate">
-                              <FileText size={11} className="flex-shrink-0" />
-                              <span className="truncate font-medium text-slate-600 dark:text-neutral-300">
-                                {s.mainVerse?.reference || 'Sin cita'}
-                              </span>
-                            </div>
-                            
-                            {/* Botones de Acción: Archivar y Eliminar */}
-                            <div className="flex items-center gap-1">
+                            {/* Acciones rápidas: Archivar y Eliminar */}
+                            <div className="flex items-center gap-1 flex-shrink-0 opacity-80 group-hover:opacity-100">
                               {onToggleArchiveStudy && (
                                 <button
                                   type="button"
@@ -371,8 +411,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                                     e.stopPropagation();
                                     onToggleArchiveStudy(s.id);
                                   }}
-                                  className="p-1 rounded-lg text-neutral-400 hover:text-black dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-colors"
-                                  title={s.isArchived ? "Restaurar prédica a activos" : "Archivar prédica"}
+                                  className={`p-1.5 rounded-xl transition-colors ${
+                                    isSelected
+                                      ? 'hover:bg-white/15 dark:hover:bg-black/10'
+                                      : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08]'
+                                  }`}
+                                  title={s.isArchived ? "Restaurar prédica" : "Archivar prédica"}
                                 >
                                   {s.isArchived ? <ArchiveRestore size={13} /> : <Archive size={13} />}
                                 </button>
@@ -384,7 +428,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                                     e.stopPropagation();
                                     setStudyToDelete(s);
                                   }}
-                                  className="p-1 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                  className={`p-1.5 rounded-xl transition-colors ${
+                                    isSelected
+                                      ? 'hover:bg-white/15 dark:hover:bg-black/10'
+                                      : 'text-[#8E8E93] hover:text-red-500 hover:bg-red-500/10'
+                                  }`}
                                   title="Eliminar prédica"
                                 >
                                   <Trash2 size={13} />
@@ -402,32 +450,32 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Footer del Sidebar */}
-            <div className="p-3 border-t border-black/[0.05] dark:border-white/[0.06] text-center text-[11px] text-[#8E8E93]">
-              Toca una prédica para abrirla
+            <div className="p-4 bg-white dark:bg-[#1C1C20] text-center text-[11px] text-[#8E8E93]">
+              Selecciona una prédica para abrir su lienzo de estudio
             </div>
           </aside>
 
-          {/* Diálogo Modal de Confirmación para Eliminar Mensaje / Prédica */}
+          {/* Modal de Confirmación para Eliminar Prédica */}
           {studyToDelete && (
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-[#1C1C1F] w-full max-w-sm rounded-3xl p-5 shadow-2xl border border-black/[0.08] dark:border-white/[0.1] space-y-4 animate-fadeIn">
+              <div className="bg-white dark:bg-[#1C1C20] w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 animate-scaleIn">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center font-bold">
-                    <Trash2 size={20} />
+                  <div className="w-10 h-10 rounded-2xl bg-black/[0.05] dark:bg-white/[0.08] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
+                    <Trash2 size={18} />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-slate-900 dark:text-white text-sm">¿Eliminar Mensaje?</h3>
+                    <h3 className="font-bold text-[#1C1C1E] dark:text-white text-sm">¿Eliminar Prédica?</h3>
                     <p className="text-[11px] text-[#8E8E93]">Esta acción no se puede deshacer</p>
                   </div>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-neutral-300 leading-relaxed">
-                  ¿Estás seguro de que deseas eliminar permanentemente <strong className="text-slate-900 dark:text-white">"{studyToDelete.title}"</strong>?
+                <p className="text-xs text-[#636366] dark:text-neutral-300 leading-relaxed">
+                  ¿Estás seguro de que deseas eliminar permanentemente <strong className="text-[#1C1C1E] dark:text-white">"{studyToDelete.title}"</strong>?
                 </p>
-                <div className="flex justify-end gap-2 pt-2 border-t border-black/[0.04] dark:border-white/[0.06]">
+                <div className="flex justify-end gap-2 pt-2">
                   <button
                     type="button"
                     onClick={() => setStudyToDelete(null)}
-                    className="px-4 py-2 text-xs font-semibold text-neutral-500 hover:text-black dark:hover:text-white"
+                    className="px-4 py-2 text-xs font-semibold text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white"
                   >
                     Cancelar
                   </button>
@@ -437,7 +485,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       if (onDeleteStudy) onDeleteStudy(studyToDelete.id);
                       setStudyToDelete(null);
                     }}
-                    className="px-4 py-2 text-xs bg-[#E03126] hover:bg-[#C92A20] text-white font-bold rounded-full transition-all active:scale-95 shadow-sm"
+                    className="px-4 py-2 text-xs bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] font-bold rounded-xl transition-all active:scale-95 shadow-xs"
                   >
                     Eliminar Definitivamente
                   </button>
