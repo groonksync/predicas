@@ -729,7 +729,9 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
         )}
       </main>
 
-      <QuickAccess study={study} onAddVerse={onAddVerse} variant="pulpit" />
+      {!projectedItem && (
+        <QuickAccess study={study} onAddVerse={onAddVerse} variant="pulpit" />
+      )}
 
       {projectedItem && (
         <BigPreview
@@ -737,6 +739,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
           index={0}
           onIndexChange={() => {}}
           onClose={() => setProjectedItem(null)}
+          initialTheme={pulpitTheme}
         />
       )}
     </div>

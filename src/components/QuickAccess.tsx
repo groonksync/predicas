@@ -17,6 +17,8 @@ import {
   ZoomOut,
   FileText,
   Loader2,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { Study, BibleVerse } from '../types';
 import { MarkdownRenderer } from './MarkdownRenderer';
@@ -104,9 +106,15 @@ export const BigPreview: React.FC<{
   index: number;
   onIndexChange: (i: number) => void;
   onClose: () => void;
-}> = ({ items, index, onIndexChange, onClose }) => {
+  initialTheme?: 'light' | 'dark';
+}> = ({ items, index, onIndexChange, onClose, initialTheme = 'dark' }) => {
   const [scale, setScale] = useState(100);
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>(initialTheme);
   const item = items[index];
+
+  useEffect(() => {
+    setPreviewTheme(initialTheme);
+  }, [initialTheme]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -122,34 +130,69 @@ export const BigPreview: React.FC<{
 
   if (!item) return null;
   const isLong = item.body.length > 420 || item.markdown;
+  const isLight = previewTheme === 'light';
 
   return (
-    <div className="fixed inset-0 z-[80] bg-[#0E0E10] text-white flex flex-col font-sans animate-fadeIn">
-      <div className="flex items-center justify-between px-5 sm:px-8 py-4 bg-[#141418]">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#8E8E93]">
-          {item.label} {items.length > 1 && <span className="ml-2 text-neutral-500">{index + 1} / {items.length}</span>}
+    <div className={`fixed inset-0 z-[90] flex flex-col font-sans animate-fadeIn transition-colors duration-200 ${
+      isLight ? 'bg-[#F4F5F7] text-[#121214]' : 'bg-[#0E0E10] text-white'
+    }`}>
+      <div className={`flex items-center justify-between px-5 sm:px-8 py-3.5 ${
+        isLight ? 'bg-white/95 shadow-xs' : 'bg-[#141418]'
+      }`}>
+        <span className="text-xs font-bold uppercase tracking-wider opacity-60">
+          {item.label} {items.length > 1 && <span className="ml-2 opacity-50">{index + 1} / {items.length}</span>}
         </span>
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#202026] rounded-full p-1 gap-1">
+          {/* Alternar tema Luz / Gris */}
+          <div className={`flex items-center p-1 rounded-xl text-xs font-bold ${
+            isLight ? 'bg-[#F2F3F6]' : 'bg-[#202026]'
+          }`}>
             <button
-              onClick={() => setScale(s => Math.max(70, s - 15))}
-              className="p-2 rounded-full hover:bg-white/[0.1] active:scale-90 transition-all text-neutral-300 hover:text-white"
-              title="Reducir tamaño de letra"
+              onClick={() => setPreviewTheme('light')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
+                isLight ? 'bg-white text-[#121214] shadow-xs' : 'opacity-60 hover:opacity-100 text-white'
+              }`}
             >
-              <ZoomOut size={16} />
+              <Sun size={12} />
+              <span>Luz</span>
             </button>
-            <span className="px-2.5 text-xs font-mono font-bold text-white min-w-[50px] text-center">{scale}%</span>
             <button
-              onClick={() => setScale(s => Math.min(250, s + 15))}
-              className="p-2 rounded-full hover:bg-white/[0.1] active:scale-90 transition-all text-neutral-300 hover:text-white"
-              title="Aumentar tamaño de letra"
+              onClick={() => setPreviewTheme('dark')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
+                !isLight ? 'bg-white text-[#121214] shadow-xs' : 'opacity-60 hover:opacity-100 text-[#121214]'
+              }`}
             >
-              <ZoomIn size={16} />
+              <Moon size={12} />
+              <span>Gris</span>
             </button>
           </div>
+
+          {/* Zoom tipográfico */}
+          <div className={`flex items-center rounded-xl p-1 gap-1 ${
+            isLight ? 'bg-[#F2F3F6]' : 'bg-[#202026]'
+          }`}>
+            <button
+              onClick={() => setScale(s => Math.max(70, s - 15))}
+              className="p-1.5 rounded-lg opacity-75 hover:opacity-100 active:scale-90 transition-all"
+              title="Reducir tamaño de letra"
+            >
+              <ZoomOut size={15} />
+            </button>
+            <span className="px-2 text-xs font-mono font-bold min-w-[45px] text-center">{scale}%</span>
+            <button
+              onClick={() => setScale(s => Math.min(250, s + 15))}
+              className="p-1.5 rounded-lg opacity-75 hover:opacity-100 active:scale-90 transition-all"
+              title="Aumentar tamaño de letra"
+            >
+              <ZoomIn size={15} />
+            </button>
+          </div>
+
           <button
             onClick={onClose}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-[#141416] text-xs font-bold active:scale-95 transition-all whitespace-nowrap"
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold active:scale-95 transition-all whitespace-nowrap ${
+              isLight ? 'bg-[#1C1C1E] text-white' : 'bg-white text-[#141416]'
+            }`}
           >
             <X size={14} /> Cerrar
           </button>
@@ -159,21 +202,21 @@ export const BigPreview: React.FC<{
       <div className="flex-1 overflow-y-auto flex items-center justify-center px-6 sm:px-14 lg:px-24 py-10" onClick={onClose}>
         <div className="max-w-6xl w-full" onClick={e => e.stopPropagation()}>
           <h2
-            className="font-black tracking-tight mb-6 text-white"
+            className="font-black tracking-tight mb-6"
             style={{ fontSize: `calc(2.75rem * ${scale / 100})`, lineHeight: 1.15 }}
           >
             {item.title}
           </h2>
           {item.markdown ? (
             <div
-              className="leading-relaxed text-neutral-100 font-medium"
-              style={{ fontSize: `calc(1.65rem * ${scale / 100})`, lineHeight: 1.5 }}
+              className="leading-relaxed font-medium"
+              style={{ fontSize: `calc(1.65rem * ${scale / 100})`, lineHeight: 1.55 }}
             >
               <MarkdownRenderer content={item.body} />
             </div>
           ) : (
             <p
-              className="font-extrabold leading-snug text-white whitespace-pre-line"
+              className="font-extrabold leading-snug whitespace-pre-line"
               style={{
                 fontSize: `calc(${isLong ? '2.3rem' : '4rem'} * ${scale / 100})`,
                 lineHeight: 1.25
@@ -190,14 +233,18 @@ export const BigPreview: React.FC<{
           <button
             disabled={index === 0}
             onClick={() => onIndexChange(index - 1)}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1C1C22] text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap"
+            className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap ${
+              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white'
+            }`}
           >
             <ChevronLeft size={16} /> Anterior
           </button>
           <button
             disabled={index === items.length - 1}
             onClick={() => onIndexChange(index + 1)}
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#1C1C22] text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap"
+            className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap ${
+              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white'
+            }`}
           >
             Siguiente <ChevronRight size={16} />
           </button>
@@ -521,40 +568,42 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
         </>
       )}
 
-      {/* BARRA FLOTANTE DE ACCESO RÁPIDO SIN TRAZOS */}
-      <nav
-        className={`no-print fixed z-[66] left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-1 p-1.5 rounded-2xl backdrop-blur-2xl shadow-2xl font-sans ${
-          variant === 'pulpit'
-            ? 'bg-[#18181C]/95'
-            : 'bg-white/95 dark:bg-[#18181C]/95'
-        }`}
-      >
-        {dockButtons.map(b => {
-          const active = sheet === b.key || (b.key === 'buscar' && searchOpen);
-          return (
-            <button
-              key={b.key}
-              onClick={() => onDock(b.key)}
-              className={`relative flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all active:scale-95 whitespace-nowrap ${
-                active
-                  ? variant === 'pulpit'
-                    ? 'bg-white text-[#121214]'
-                    : 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                  : variant === 'pulpit'
-                  ? 'text-neutral-300 hover:bg-white/[0.08] hover:text-white'
-                  : 'text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-black/[0.05] dark:hover:bg-white/[0.08]'
-              }`}
-              title={b.key === 'buscar' ? 'Buscar (⌘K)' : b.label}
-            >
-              <b.icon size={15} />
-              <span>{b.label}</span>
-              {!!b.count && (
-                <span className="hidden sm:inline text-[10px] font-bold opacity-70">{b.count}</span>
-              )}
-            </button>
-          );
-        })}
-      </nav>
+      {/* BARRA FLOTANTE DE ACCESO RÁPIDO SIN TRAZOS (oculta cuando hay vista previa gigante) */}
+      {!preview && (
+        <nav
+          className={`no-print fixed z-[66] left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-1 p-1.5 rounded-2xl backdrop-blur-2xl shadow-2xl font-sans ${
+            variant === 'pulpit'
+              ? 'bg-[#18181C]/95'
+              : 'bg-white/95 dark:bg-[#18181C]/95'
+          }`}
+        >
+          {dockButtons.map(b => {
+            const active = sheet === b.key || (b.key === 'buscar' && searchOpen);
+            return (
+              <button
+                key={b.key}
+                onClick={() => onDock(b.key)}
+                className={`relative flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 px-3 sm:px-3.5 py-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all active:scale-95 whitespace-nowrap ${
+                  active
+                    ? variant === 'pulpit'
+                      ? 'bg-white text-[#121214]'
+                      : 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
+                    : variant === 'pulpit'
+                    ? 'text-neutral-300 hover:bg-white/[0.08] hover:text-white'
+                    : 'text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-black/[0.05] dark:hover:bg-white/[0.08]'
+                }`}
+                title={b.key === 'buscar' ? 'Buscar (⌘K)' : b.label}
+              >
+                <b.icon size={15} />
+                <span>{b.label}</span>
+                {!!b.count && (
+                  <span className="hidden sm:inline text-[10px] font-bold opacity-70">{b.count}</span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+      )}
 
       {searchOpen && (
         <UniversalSearch
@@ -572,6 +621,7 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
           index={preview.index}
           onIndexChange={i => setPreview(p => (p ? { ...p, index: i } : p))}
           onClose={() => setPreview(null)}
+          initialTheme={document.querySelector('.dark') ? 'dark' : 'light'}
         />
       )}
     </>,
