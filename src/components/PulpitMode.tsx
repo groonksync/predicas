@@ -242,7 +242,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
           </div>
         )}
 
-        {/* Derecha: Tema Luz/Gris, Zoom y Salir */}
+        {/* Derecha: Tema Claro/Gris, Zoom y Salir */}
         <div className="flex items-center gap-2">
           <div className={`flex items-center p-1 rounded-xl text-xs font-bold ${
             isLight ? 'bg-[#F2F3F6]' : 'bg-[#232329]'
@@ -254,7 +254,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
               }`}
             >
               <Sun size={12} />
-              <span>Luz</span>
+              <span>Claro</span>
             </button>
             <button
               onClick={() => handleSetPulpitTheme('dark')}
@@ -739,7 +739,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
           index={0}
           onIndexChange={() => {}}
           onClose={() => setProjectedItem(null)}
-          initialTheme={pulpitTheme}
+          initialTheme="dark"
         />
       )}
     </div>

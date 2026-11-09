@@ -1557,6 +1557,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           index={0}
           onIndexChange={() => {}}
           onClose={() => setProjectedItem(null)}
+          initialTheme="dark"
         />
       )}
     </main>

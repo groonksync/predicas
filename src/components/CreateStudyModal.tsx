@@ -10,6 +10,7 @@ import {
   FolderOpen, 
   Search, 
   Eye, 
+  EyeOff,
   Plus, 
   Check, 
   Layers, 
@@ -78,6 +79,9 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
   // Selector de sugerencias rápidas en modo directo
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Alternar vista previa en vivo para maximizar espacio de edición
+  const [showLivePreview, setShowLivePreview] = useState(true);
 
   // Crear nuevo tema inline
   const [isCreatingTopic, setIsCreatingTopic] = useState(false);
@@ -316,9 +320,9 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/65 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 lg:p-7 font-sans select-none overflow-y-auto animate-fadeIn">
-      {/* Contenedor Modal Amplio y Cuadradito Adaptable a Modo Luz y Modo Gris */}
+      {/* Contenedor Modal Amplio y Cuadradito Adaptable a Modo Claro y Modo Gris */}
       <div 
-        className={`w-[96vw] max-w-6xl h-[94vh] max-h-[920px] rounded-[36px] shadow-2xl flex flex-col overflow-hidden my-auto transition-colors duration-200 ${
+        className={`w-[96vw] max-w-6xl h-[94vh] max-h-[920px] rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto transition-colors duration-200 ${
           isLight 
             ? 'bg-[#F8F9FB] text-[#1C1C1E]' 
             : 'bg-[#161619] text-[#F5F5F7]'
@@ -326,7 +330,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* Cabecera Espaciosa con Márgenes Generosos (Sin Ícono Rojo ni Cortes Pegados) */}
+        {/* Cabecera Espaciosa con Márgenes Generosos */}
         <div className={`px-8 pt-7 pb-5 flex items-center justify-between flex-shrink-0 transition-colors ${
           isLight ? 'bg-white' : 'bg-[#1E1E22]'
         }`}>
@@ -341,28 +345,51 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-95 ${
-              isLight 
-                ? 'bg-[#EAEAEE] text-slate-700 hover:bg-[#DEDEE4] hover:text-black' 
-                : 'bg-[#2A2A2F] text-neutral-300 hover:bg-[#36363C] hover:text-white'
-            }`}
-            title="Cerrar modal"
-          >
-            <X size={18} />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Botón para Ocultar / Ver la Vista Previa */}
+            <button
+              type="button"
+              onClick={() => setShowLivePreview(prev => !prev)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${
+                showLivePreview
+                  ? isLight
+                    ? 'bg-[#EAEAEE] text-slate-800 hover:bg-[#DEDEE4]'
+                    : 'bg-[#2A2A2F] text-neutral-200 hover:bg-[#36363C]'
+                  : isLight
+                    ? 'bg-[#1C1C1E] text-white hover:bg-black shadow-xs'
+                    : 'bg-white text-black hover:bg-neutral-200 shadow-xs'
+              }`}
+              title={showLivePreview ? 'Ocultar vista previa para ampliar espacio de edición' : 'Mostrar vista previa en vivo'}
+            >
+              {showLivePreview ? <EyeOff size={14} /> : <Eye size={14} />}
+              <span className="hidden sm:inline">{showLivePreview ? 'Ocultar Vista' : 'Ver Vista'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-95 ${
+                isLight 
+                  ? 'bg-[#EAEAEE] text-slate-700 hover:bg-[#DEDEE4] hover:text-black' 
+                  : 'bg-[#2A2A2F] text-neutral-300 hover:bg-[#36363C] hover:text-white'
+              }`}
+              title="Cerrar modal"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* Cuerpo Principal Dividido en 2 Columnas Balanceadas */}
+        {/* Cuerpo Principal Dividido en Columnas */}
         <div className="grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-0 overflow-hidden">
           
-          {/* COLUMNA IZQUIERDA: Formulario de Configuración (7 columnas) */}
+          {/* COLUMNA IZQUIERDA: Formulario de Configuración (7 o 12 columnas) */}
           <form 
             id={`form-${inputId}`}
             onSubmit={handleSubmit} 
-            className="lg:col-span-7 flex flex-col min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-6 scrollbar-thin scrollbar-thumb-neutral-400/20"
+            className={`${
+              showLivePreview ? 'lg:col-span-7' : 'lg:col-span-12 max-w-4xl mx-auto w-full'
+            } flex flex-col min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-6 scrollbar-thin scrollbar-thumb-neutral-400/20`}
           >
             
             {/* 1. TEMA BÍBLICO AL QUE PERTENECE */}
@@ -1063,10 +1090,11 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
           </form>
 
-          {/* COLUMNA DERECHA: Previsualización en Vivo de la Prédica (5 columnas) */}
-          <div className={`lg:col-span-5 flex flex-col min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-4 scrollbar-thin scrollbar-thumb-neutral-400/20 transition-colors ${
-            isLight ? 'bg-[#EFF1F4]' : 'bg-[#101012]'
-          }`}>
+          {/* COLUMNA DERECHA: Previsualización en Vivo de la Prédica (5 columnas, colapsable) */}
+          {showLivePreview && (
+            <div className={`lg:col-span-5 flex flex-col min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-4 scrollbar-thin scrollbar-thumb-neutral-400/20 transition-colors border-l ${
+              isLight ? 'bg-[#EFF1F4] border-black/[0.04]' : 'bg-[#101012] border-white/[0.04]'
+            }`}>
             
             {/* Cabecera de Previsualización */}
             <div className="flex items-center justify-between pb-1">
@@ -1229,11 +1257,12 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
             </div>
 
           </div>
+          )}
 
         </div>
 
-        {/* Footer Global de Acciones */}
-        <div className={`px-8 py-4.5 flex items-center justify-between flex-shrink-0 transition-colors ${
+        {/* Footer Global de Acciones con Espaciado Generoso y Botones Compactos */}
+        <div className={`px-8 py-5 flex items-center justify-between flex-shrink-0 transition-colors ${
           isLight ? 'bg-white border-t border-black/[0.04]' : 'bg-[#1E1E22] border-t border-white/[0.04]'
         }`}>
           <div className="hidden sm:flex items-center gap-2 text-xs text-[#8E8E93]">
@@ -1252,7 +1281,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 text-xs font-semibold text-[#8E8E93] hover:text-black dark:hover:text-white transition-colors"
+              className="px-5 py-2.5 text-xs font-bold rounded-xl text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-all"
             >
               Cancelar
             </button>
@@ -1261,7 +1290,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
               form={`form-${inputId}`}
               type="submit"
               disabled={!title.trim()}
-              className={`px-6 py-2.5 text-xs font-bold rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2 disabled:opacity-40 ${
+              className={`px-6 py-2.5 text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2 disabled:opacity-40 ${
                 isLight 
                   ? 'bg-[#1C1C1E] text-white hover:bg-black disabled:hover:bg-[#1C1C1E]' 
                   : 'bg-white text-black hover:bg-neutral-200 disabled:hover:bg-white'

@@ -388,7 +388,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
   };
 
   return (
-    <aside className="w-full lg:w-[460px] xl:w-[490px] flex-shrink-0 bg-white dark:bg-[#18181C] flex flex-col h-full select-none font-sans shadow-xl z-20 animate-slideRight">
+    <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[460px] lg:static lg:w-[460px] xl:w-[490px] flex-shrink-0 bg-white dark:bg-[#18181C] flex flex-col h-full min-h-0 select-none font-sans shadow-2xl lg:shadow-xl animate-slideRight">
       
       {/* 1. CABECERA PRINCIPAL SIN TRAZOS */}
       <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#18181C]/95 backdrop-blur-xl">
@@ -458,7 +458,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
       </div>
 
       {/* 3. CONTENIDO SEGÚN PESTAÑA */}
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 scrollbar-none">
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4 scrollbar-none pb-28 min-h-0">
         
         {/* PESTAÑA 1: NOTAS EXEGÉTICAS */}
         {activeTab === 'notas' && (

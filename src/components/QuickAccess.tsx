@@ -109,11 +109,13 @@ export const BigPreview: React.FC<{
   initialTheme?: 'light' | 'dark';
 }> = ({ items, index, onIndexChange, onClose, initialTheme = 'dark' }) => {
   const [scale, setScale] = useState(100);
-  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>(initialTheme);
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('dark');
   const item = items[index];
 
   useEffect(() => {
-    setPreviewTheme(initialTheme);
+    if (initialTheme) {
+      setPreviewTheme(initialTheme);
+    }
   }, [initialTheme]);
 
   useEffect(() => {
@@ -132,18 +134,18 @@ export const BigPreview: React.FC<{
   const isLong = item.body.length > 420 || item.markdown;
   const isLight = previewTheme === 'light';
 
-  return (
-    <div className={`fixed inset-0 z-[90] flex flex-col font-sans animate-fadeIn transition-colors duration-200 ${
-      isLight ? 'bg-[#F4F5F7] text-[#121214]' : 'bg-[#0E0E10] text-white'
+  return createPortal(
+    <div className={`fixed inset-0 z-[100] w-screen h-screen min-h-screen overflow-hidden flex flex-col font-sans select-none animate-fadeIn transition-colors duration-200 ${
+      isLight ? 'bg-[#FAFAFC] text-[#121214]' : 'bg-[#0E0E10] text-white'
     }`}>
-      <div className={`flex items-center justify-between px-5 sm:px-8 py-3.5 ${
-        isLight ? 'bg-white/95 shadow-xs' : 'bg-[#141418]'
+      <div className={`flex items-center justify-between px-5 sm:px-8 py-3.5 flex-shrink-0 ${
+        isLight ? 'bg-white shadow-xs border-b border-black/[0.05]' : 'bg-[#141418] border-b border-white/[0.06]'
       }`}>
-        <span className="text-xs font-bold uppercase tracking-wider opacity-60">
-          {item.label} {items.length > 1 && <span className="ml-2 opacity-50">{index + 1} / {items.length}</span>}
+        <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-[#636366]' : 'text-neutral-400'}`}>
+          {item.label} {items.length > 1 && <span className="ml-2 opacity-60">{index + 1} / {items.length}</span>}
         </span>
         <div className="flex items-center gap-2">
-          {/* Alternar tema Luz / Gris */}
+          {/* Alternar tema Claro / Gris */}
           <div className={`flex items-center p-1 rounded-xl text-xs font-bold ${
             isLight ? 'bg-[#F2F3F6]' : 'bg-[#202026]'
           }`}>
@@ -154,7 +156,7 @@ export const BigPreview: React.FC<{
               }`}
             >
               <Sun size={12} />
-              <span>Luz</span>
+              <span>Claro</span>
             </button>
             <button
               onClick={() => setPreviewTheme('dark')}
@@ -191,7 +193,7 @@ export const BigPreview: React.FC<{
           <button
             onClick={onClose}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold active:scale-95 transition-all whitespace-nowrap ${
-              isLight ? 'bg-[#1C1C1E] text-white' : 'bg-white text-[#141416]'
+              isLight ? 'bg-[#1C1C1E] text-white hover:bg-black' : 'bg-white text-[#141416] hover:bg-neutral-200'
             }`}
           >
             <X size={14} /> Cerrar
@@ -202,21 +204,21 @@ export const BigPreview: React.FC<{
       <div className="flex-1 overflow-y-auto flex items-center justify-center px-6 sm:px-14 lg:px-24 py-10" onClick={onClose}>
         <div className="max-w-6xl w-full" onClick={e => e.stopPropagation()}>
           <h2
-            className="font-black tracking-tight mb-6"
+            className={`font-black tracking-tight mb-6 ${isLight ? 'text-[#121214]' : 'text-white'}`}
             style={{ fontSize: `calc(2.75rem * ${scale / 100})`, lineHeight: 1.15 }}
           >
             {item.title}
           </h2>
           {item.markdown ? (
             <div
-              className="leading-relaxed font-medium"
+              className={`leading-relaxed font-medium ${isLight ? 'text-[#1C1C1E]' : 'text-white'}`}
               style={{ fontSize: `calc(1.65rem * ${scale / 100})`, lineHeight: 1.55 }}
             >
               <MarkdownRenderer content={item.body} />
             </div>
           ) : (
             <p
-              className="font-extrabold leading-snug whitespace-pre-line"
+              className={`font-extrabold leading-snug whitespace-pre-line ${isLight ? 'text-[#121214]' : 'text-white'}`}
               style={{
                 fontSize: `calc(${isLong ? '2.3rem' : '4rem'} * ${scale / 100})`,
                 lineHeight: 1.25
@@ -229,12 +231,12 @@ export const BigPreview: React.FC<{
       </div>
 
       {items.length > 1 && (
-        <div className="flex items-center justify-center gap-3 pb-6">
+        <div className="flex items-center justify-center gap-3 pb-6 flex-shrink-0">
           <button
             disabled={index === 0}
             onClick={() => onIndexChange(index - 1)}
             className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap ${
-              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white'
+              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white hover:bg-[#282830]'
             }`}
           >
             <ChevronLeft size={16} /> Anterior
@@ -243,14 +245,15 @@ export const BigPreview: React.FC<{
             disabled={index === items.length - 1}
             onClick={() => onIndexChange(index + 1)}
             className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap ${
-              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white'
+              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white hover:bg-[#282830]'
             }`}
           >
             Siguiente <ChevronRight size={16} />
           </button>
         </div>
       )}
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -621,7 +624,7 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
           index={preview.index}
           onIndexChange={i => setPreview(p => (p ? { ...p, index: i } : p))}
           onClose={() => setPreview(null)}
-          initialTheme={document.querySelector('.dark') ? 'dark' : 'light'}
+          initialTheme="dark"
         />
       )}
     </>,

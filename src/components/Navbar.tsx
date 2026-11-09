@@ -137,10 +137,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   ? 'bg-white text-[#1C1C1E] shadow-xs font-bold'
                   : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
               }`}
-              title="Modo Luz"
+              title="Modo Claro"
             >
               <Sun size={13} />
-              <span>Luz</span>
+              <span>Claro</span>
             </button>
             <button
               onClick={() => setTheme('dark')}

@@ -298,7 +298,7 @@ export const App: React.FC = () => {
 
   const getThemeClass = () => {
     if (theme === 'dark') return 'dark bg-[#121214] text-[#F5F5F7]';
-    return 'bg-[#F4F5F7] text-[#1C1C1E]';
+    return 'bg-[#FAFAFB] text-[#1C1C1E]';
   };
 
   return (
@@ -375,17 +375,23 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {currentStudy && (
-          <RightNotesPanel
-            study={currentStudy}
-            onUpdateStudy={handleUpdateStudy}
-            isOpen={isOutlineOpen}
-            onToggle={() => setIsOutlineOpen(!isOutlineOpen)}
-            onOpenVerseModal={() => {
-              setIsVerseModalForMain(false);
-              setVerseModalOpen(true);
-            }}
-          />
+        {currentStudy && isOutlineOpen && (
+          <>
+            <div
+              className="lg:hidden fixed inset-0 z-30 bg-black/40 backdrop-blur-xs animate-fadeIn"
+              onClick={() => setIsOutlineOpen(false)}
+            />
+            <RightNotesPanel
+              study={currentStudy}
+              onUpdateStudy={handleUpdateStudy}
+              isOpen={isOutlineOpen}
+              onToggle={() => setIsOutlineOpen(!isOutlineOpen)}
+              onOpenVerseModal={() => {
+                setIsVerseModalForMain(false);
+                setVerseModalOpen(true);
+              }}
+            />
+          </>
         )}
       </div>
 
