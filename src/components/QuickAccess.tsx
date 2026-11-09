@@ -113,8 +113,8 @@ export const BigPreview: React.FC<{
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowRight' && index < items.length - 1) onIndexChange(index + 1);
       if (e.key === 'ArrowLeft' && index > 0) onIndexChange(index - 1);
-      if (e.key === '+' || e.key === '=') setScale(s => Math.min(200, s + 10));
-      if (e.key === '-') setScale(s => Math.max(60, s - 10));
+      if (e.key === '+' || e.key === '=') setScale(s => Math.min(250, s + 15));
+      if (e.key === '-') setScale(s => Math.max(70, s - 15));
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -130,13 +130,21 @@ export const BigPreview: React.FC<{
           {item.label} {items.length > 1 && <span className="ml-2 text-neutral-500">{index + 1} / {items.length}</span>}
         </span>
         <div className="flex items-center gap-2">
-          <div className="flex items-center bg-[#202026] rounded-full p-0.5">
-            <button onClick={() => setScale(s => Math.max(60, s - 10))} className="p-2 rounded-full hover:bg-white/[0.08]" title="Reducir letra">
-              <ZoomOut size={15} />
+          <div className="flex items-center bg-[#202026] rounded-full p-1 gap-1">
+            <button
+              onClick={() => setScale(s => Math.max(70, s - 15))}
+              className="p-2 rounded-full hover:bg-white/[0.1] active:scale-90 transition-all text-neutral-300 hover:text-white"
+              title="Reducir tamaño de letra"
+            >
+              <ZoomOut size={16} />
             </button>
-            <span className="px-2 text-xs font-mono font-bold">{scale}%</span>
-            <button onClick={() => setScale(s => Math.min(200, s + 10))} className="p-2 rounded-full hover:bg-white/[0.08]" title="Aumentar letra">
-              <ZoomIn size={15} />
+            <span className="px-2.5 text-xs font-mono font-bold text-white min-w-[50px] text-center">{scale}%</span>
+            <button
+              onClick={() => setScale(s => Math.min(250, s + 15))}
+              className="p-2 rounded-full hover:bg-white/[0.1] active:scale-90 transition-all text-neutral-300 hover:text-white"
+              title="Aumentar tamaño de letra"
+            >
+              <ZoomIn size={16} />
             </button>
           </div>
           <button
@@ -149,17 +157,27 @@ export const BigPreview: React.FC<{
       </div>
 
       <div className="flex-1 overflow-y-auto flex items-center justify-center px-6 sm:px-14 lg:px-24 py-10" onClick={onClose}>
-        <div className="max-w-6xl w-full" style={{ fontSize: `${scale}%` }} onClick={e => e.stopPropagation()}>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-6 text-white">{item.title}</h2>
+        <div className="max-w-6xl w-full" onClick={e => e.stopPropagation()}>
+          <h2
+            className="font-black tracking-tight mb-6 text-white"
+            style={{ fontSize: `calc(2.75rem * ${scale / 100})`, lineHeight: 1.15 }}
+          >
+            {item.title}
+          </h2>
           {item.markdown ? (
-            <div className="text-xl sm:text-2xl leading-relaxed text-neutral-100 font-medium">
+            <div
+              className="leading-relaxed text-neutral-100 font-medium"
+              style={{ fontSize: `calc(1.65rem * ${scale / 100})`, lineHeight: 1.5 }}
+            >
               <MarkdownRenderer content={item.body} />
             </div>
           ) : (
             <p
-              className={`font-extrabold leading-snug text-white whitespace-pre-line ${
-                isLong ? 'text-2xl sm:text-3xl lg:text-4xl' : 'text-3xl sm:text-5xl lg:text-6xl'
-              }`}
+              className="font-extrabold leading-snug text-white whitespace-pre-line"
+              style={{
+                fontSize: `calc(${isLong ? '2.3rem' : '4rem'} * ${scale / 100})`,
+                lineHeight: 1.25
+              }}
             >
               {item.kind === 'verse' || item.kind === 'bible' ? `“${item.body}”` : item.body}
             </p>

@@ -27,17 +27,38 @@ import { QuickAccess, BigPreview, PreviewItem } from './QuickAccess';
 
 interface PulpitModeProps {
   study: Study;
+  initialTheme?: 'dark' | 'light';
+  onThemeChange?: (theme: 'dark' | 'light') => void;
   onExit: () => void;
   onAddVerse?: (verse: BibleVerse) => void;
 }
 
-export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVerse }) => {
+export const PulpitMode: React.FC<PulpitModeProps> = ({ 
+  study, 
+  initialTheme = 'dark',
+  onThemeChange,
+  onExit, 
+  onAddVerse 
+}) => {
   // Cronómetro y meta de tiempo del sermón (en minutos)
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
   const [targetMinutes, setTargetMinutes] = useState<number>(45);
   const [currentTime, setCurrentTime] = useState('');
-  const [pulpitTheme, setPulpitTheme] = useState<'dark' | 'light'>('dark');
+  
+  // Tema sincronizado con la aplicación principal
+  const [pulpitTheme, setPulpitTheme] = useState<'dark' | 'light'>(initialTheme);
+
+  useEffect(() => {
+    setPulpitTheme(initialTheme);
+  }, [initialTheme]);
+
+  const handleSetPulpitTheme = (newTheme: 'dark' | 'light') => {
+    setPulpitTheme(newTheme);
+    if (onThemeChange) {
+      onThemeChange(newTheme);
+    }
+  };
 
   // Escala tipográfica para el atril
   const [fontScale, setFontScale] = useState(120);
@@ -227,7 +248,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
             isLight ? 'bg-[#F2F3F6]' : 'bg-[#232329]'
           }`}>
             <button
-              onClick={() => setPulpitTheme('light')}
+              onClick={() => handleSetPulpitTheme('light')}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
                 isLight ? 'bg-white text-[#121214] shadow-xs' : 'opacity-60 hover:opacity-100'
               }`}
@@ -236,7 +257,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
               <span>Luz</span>
             </button>
             <button
-              onClick={() => setPulpitTheme('dark')}
+              onClick={() => handleSetPulpitTheme('dark')}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
                 !isLight ? 'bg-white text-[#121214] shadow-xs' : 'opacity-60 hover:opacity-100'
               }`}
@@ -246,24 +267,25 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
             </button>
           </div>
 
-          <div className={`flex items-center rounded-xl p-1 text-xs font-bold ${
+          {/* Control de tamaño de letra (Zoom tipográfico efectivo) */}
+          <div className={`flex items-center rounded-xl p-1 text-xs font-bold gap-0.5 ${
             isLight ? 'bg-[#F2F3F6]' : 'bg-[#232329]'
           }`}>
             <button
-              onClick={() => setFontScale(Math.max(100, fontScale - 10))}
-              className="px-2.5 py-1 opacity-75 hover:opacity-100 transition-opacity whitespace-nowrap"
-              title="Reducir letra"
+              onClick={() => setFontScale(Math.max(80, fontScale - 15))}
+              className="p-1.5 opacity-75 hover:opacity-100 active:scale-90 transition-all whitespace-nowrap rounded-lg"
+              title="Reducir tamaño de letra"
             >
-              <ZoomOut size={13} className="inline mr-0.5" />
+              <ZoomOut size={14} className="inline mr-0.5" />
               <span>A-</span>
             </button>
-            <span className="px-1.5 font-mono text-xs font-bold">{fontScale}%</span>
+            <span className="px-2 font-mono text-xs font-bold min-w-[48px] text-center">{fontScale}%</span>
             <button
-              onClick={() => setFontScale(Math.min(180, fontScale + 10))}
-              className="px-2.5 py-1 opacity-75 hover:opacity-100 transition-opacity whitespace-nowrap"
-              title="Aumentar letra"
+              onClick={() => setFontScale(Math.min(220, fontScale + 15))}
+              className="p-1.5 opacity-75 hover:opacity-100 active:scale-90 transition-all whitespace-nowrap rounded-lg"
+              title="Aumentar tamaño de letra"
             >
-              <ZoomIn size={13} className="inline mr-0.5" />
+              <ZoomIn size={14} className="inline mr-0.5" />
               <span>A+</span>
             </button>
           </div>
@@ -377,7 +399,6 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
       {/* 3. ESCENARIO DE PÚLPITO ELÁSTICO SIN TRAZOS */}
       <main 
         className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6 pb-28 space-y-6"
-        style={{ fontSize: `${fontScale}%` }}
       >
         {(modules.pasaje || modules.notas) && (
           <div className={`w-full grid gap-6 ${
@@ -439,7 +460,10 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
                     </div>
                   </div>
 
-                  <p className="text-2xl sm:text-3xl font-serif font-medium leading-relaxed tracking-normal select-text">
+                  <p 
+                    className="font-serif font-medium leading-relaxed tracking-normal select-text"
+                    style={{ fontSize: `calc(2.15rem * ${fontScale / 100})`, lineHeight: 1.4 }}
+                  >
                     “{currentActiveVerse.text}”
                   </p>
                 </div>
@@ -486,7 +510,10 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
                     )}
                   </div>
 
-                  <div className="text-base sm:text-lg font-sans font-medium leading-relaxed space-y-2 select-text">
+                  <div 
+                    className="font-sans font-medium leading-relaxed space-y-2 select-text"
+                    style={{ fontSize: `calc(1.15rem * ${fontScale / 100})`, lineHeight: 1.6 }}
+                  >
                     {study.detailedNotes ? (
                       <MarkdownRenderer content={study.detailedNotes} />
                     ) : (
@@ -543,7 +570,10 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
                           {verse.version}
                         </span>
                       </div>
-                      <p className="text-xs leading-relaxed line-clamp-3 opacity-85">
+                      <p 
+                        className="leading-relaxed line-clamp-3 opacity-85"
+                        style={{ fontSize: `calc(0.92rem * ${fontScale / 100})`, lineHeight: 1.5 }}
+                      >
                         “{verse.text}”
                       </p>
                     </div>
@@ -638,11 +668,17 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
                           </div>
                         </div>
 
-                        <h4 className="text-xl sm:text-2xl font-black mb-2">
+                        <h4 
+                          className="font-black mb-2"
+                          style={{ fontSize: `calc(1.45rem * ${fontScale / 100})`, lineHeight: 1.25 }}
+                        >
                           {point.title}
                         </h4>
 
-                        <p className="text-base sm:text-lg leading-relaxed font-medium opacity-90">
+                        <p 
+                          className="leading-relaxed font-medium opacity-90"
+                          style={{ fontSize: `calc(1.12rem * ${fontScale / 100})`, lineHeight: 1.6 }}
+                        >
                           {point.content}
                         </p>
                       </div>
@@ -677,7 +713,10 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({ study, onExit, onAddVers
                         </span>
                         <span className="text-[11px] opacity-60 font-semibold">{note.createdAt}</span>
                       </div>
-                      <p className="text-sm sm:text-base font-bold leading-relaxed">
+                      <p 
+                        className="font-bold leading-relaxed"
+                        style={{ fontSize: `calc(1.05rem * ${fontScale / 100})`, lineHeight: 1.5 }}
+                      >
                         {note.text}
                       </p>
                     </div>

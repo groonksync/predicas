@@ -392,6 +392,8 @@ export const App: React.FC = () => {
       {isPulpitMode && currentStudy && (
         <PulpitMode
           study={currentStudy}
+          initialTheme={theme}
+          onThemeChange={setTheme}
           onExit={() => setIsPulpitMode(false)}
           onAddVerse={handleAddVerseToCurrentStudy}
         />
