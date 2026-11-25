@@ -157,25 +157,25 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
 
   return (
     <div className={`fixed inset-0 z-50 overflow-y-auto flex flex-col font-sans select-none animate-fadeIn transition-colors duration-300 ${
-      isLight ? 'bg-[#FAFAFB] text-[#141416]' : 'bg-[#161619] text-[#F5F5F7]'
+      isLight ? 'bg-[#FAFAFB] text-[#141416]' : 'bg-[#0B0B0D] text-[#F5F5F7]'
     }`}>
       
       {/* 1. BARRA SUPERIOR DE CONTROL DEL PÚLPITO SIN TRAZOS */}
       <header className={`sticky top-0 backdrop-blur-xl px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 z-20 border-b ${
-        isLight ? 'bg-white/95 border-black/[0.05]' : 'bg-[#1B1B20]/95 border-white/[0.06]'
+        isLight ? 'bg-white/95 border-black/[0.05]' : 'bg-[#0F0F12]/95 border-white/[0.06]'
       }`}>
         
         {/* Izquierda: Reloj, Cronómetro y Meta */}
         <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
           <div className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${
-            isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#232329] text-white'
+            isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#1A1A20] text-white'
           }`}>
             <Clock size={13} className="opacity-60" />
             <span className="font-mono tracking-wide">{currentTime}</span>
           </div>
 
           <div className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl whitespace-nowrap ${
-            isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#232329] text-white'
+            isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#1A1A20] text-white'
           }`}>
             <span className="font-mono text-sm font-black tracking-wider">
               {formatTimer(seconds)}
@@ -218,7 +218,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
         {/* Centro: Navegador Rápido de Puntos del Bosquejo */}
         {study.outlinePoints.length > 0 && (
           <div className={`hidden xl:flex items-center gap-2 px-2.5 py-1 rounded-xl ${
-            isLight ? 'bg-[#F2F3F6]' : 'bg-[#232329]'
+            isLight ? 'bg-[#F2F3F6]' : 'bg-[#1A1A20]'
           }`}>
             <button
               onClick={() => setActivePointIndex(prev => Math.max(0, prev - 1))}
@@ -245,7 +245,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
         {/* Derecha: Tema Claro/Gris, Zoom y Salir */}
         <div className="flex items-center gap-2">
           <div className={`flex items-center p-1 rounded-xl text-xs font-bold ${
-            isLight ? 'bg-[#F2F3F6]' : 'bg-[#232329]'
+            isLight ? 'bg-[#F2F3F6]' : 'bg-[#1A1A20]'
           }`}>
             <button
               onClick={() => handleSetPulpitTheme('light')}
@@ -269,7 +269,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
 
           {/* Control de tamaño de letra (Zoom tipográfico efectivo) */}
           <div className={`flex items-center rounded-xl p-1 text-xs font-bold gap-0.5 ${
-            isLight ? 'bg-[#F2F3F6]' : 'bg-[#232329]'
+            isLight ? 'bg-[#F2F3F6]' : 'bg-[#1A1A20]'
           }`}>
             <button
               onClick={() => setFontScale(Math.max(80, fontScale - 15))}
@@ -315,11 +315,11 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
 
       {/* 2. BARRA DE COORDINACIÓN MODULAR SIN TRAZOS Y EN PALETA LUZ/GRIS */}
       <nav className={`px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3 z-10 sticky top-[60px] backdrop-blur-md ${
-        isLight ? 'bg-[#F4F5F7]/90' : 'bg-[#161619]/90'
+        isLight ? 'bg-[#F4F5F7]/90' : 'bg-[#0B0B0D]/90'
       }`}>
         
         <div className={`flex items-center gap-1 p-1 rounded-2xl text-xs ${
-          isLight ? 'bg-white shadow-xs' : 'bg-[#1F1F24]'
+          isLight ? 'bg-white shadow-xs' : 'bg-[#131317]'
         }`}>
           <button
             onClick={() => applyPreset('pasaje-notas')}
@@ -407,7 +407,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
             
             {modules.pasaje && (
               <section className={`rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between ${
-                isLight ? 'bg-white' : 'bg-[#1F1F24]'
+                isLight ? 'bg-white' : 'bg-[#131317]'
               }`}>
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
@@ -445,7 +445,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                             body: currentActiveVerse.text
                           })}
                           className={`flex items-center gap-1.5 text-xs px-3.5 py-1.5 font-bold rounded-xl transition-all active:scale-95 whitespace-nowrap ${
-                            isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#25252C] text-white'
+                            isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#1B1B22] text-white'
                           }`}
                         >
                           <ProjectIcon size={13} />
@@ -453,7 +453,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                         </button>
                       )}
                       <span className={`text-xs px-3 py-1 font-bold rounded-xl ${
-                        isLight ? 'bg-[#F2F3F6] text-[#5A5A64]' : 'bg-[#25252C] text-[#A0A0AB]'
+                        isLight ? 'bg-[#F2F3F6] text-[#5A5A64]' : 'bg-[#1B1B22] text-[#A0A0AB]'
                       }`}>
                         {currentActiveVerse.version}
                       </span>
@@ -480,7 +480,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
 
             {modules.notas && (
               <section className={`rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between ${
-                isLight ? 'bg-white' : 'bg-[#1F1F24]'
+                isLight ? 'bg-white' : 'bg-[#131317]'
               }`}>
                 <div>
                   <div className="flex items-center justify-between mb-5">
@@ -501,7 +501,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                           markdown: true
                         })}
                         className={`flex items-center gap-1.5 text-xs px-3.5 py-1.5 font-bold rounded-xl transition-all whitespace-nowrap ${
-                          isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#25252C] text-white'
+                          isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#1B1B22] text-white'
                         }`}
                       >
                         <ProjectIcon size={12} />
@@ -554,7 +554,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                     className={`p-5 rounded-2xl text-left transition-all active:scale-98 flex flex-col justify-between ${
                       isSelected
                         ? isLight ? 'bg-[#1C1C1E] text-white shadow-lg' : 'bg-white text-[#121214] shadow-lg'
-                        : isLight ? 'bg-white hover:bg-[#EAECEF]' : 'bg-[#1F1F24] hover:bg-[#202026]'
+                        : isLight ? 'bg-white hover:bg-[#EAECEF]' : 'bg-[#131317] hover:bg-[#202026]'
                     }`}
                   >
                     <div>
@@ -565,7 +565,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                         <span className={`text-[10px] px-2 py-0.5 rounded-lg font-bold ${
                           isSelected
                             ? isLight ? 'bg-white/20 text-white' : 'bg-black/10 text-[#121214]'
-                            : isLight ? 'bg-[#F2F3F6] text-[#5A5A64]' : 'bg-[#25252C] text-[#A0A0AB]'
+                            : isLight ? 'bg-[#F2F3F6] text-[#5A5A64]' : 'bg-[#1B1B22] text-[#A0A0AB]'
                         }`}>
                           {verse.version}
                         </span>
@@ -619,7 +619,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                               : 'bg-[#24242B] text-white shadow-xl'
                             : isLight
                               ? 'bg-white text-[#141416]'
-                              : 'bg-[#1F1F24] text-[#F5F5F7]'
+                              : 'bg-[#131317] text-[#F5F5F7]'
                         }`}
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
@@ -627,7 +627,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                             <span className={`w-8 h-8 rounded-xl font-black text-sm flex items-center justify-center flex-shrink-0 ${
                               isSelected
                                 ? 'bg-white text-[#121214]'
-                                : isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#25252C] text-white'
+                                : isLight ? 'bg-[#F2F3F6] text-[#1C1C1E]' : 'bg-[#1B1B22] text-white'
                             }`}>
                               {point.number}
                             </span>
@@ -644,7 +644,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                               <span className={`text-xs font-bold px-3 py-1 rounded-xl ${
                                 isSelected
                                   ? 'bg-white/15 text-white'
-                                  : isLight ? 'bg-[#F2F3F6] text-[#4A4A52]' : 'bg-[#25252C] text-[#C8C8D0]'
+                                  : isLight ? 'bg-[#F2F3F6] text-[#4A4A52]' : 'bg-[#1B1B22] text-[#C8C8D0]'
                               }`}>
                                 {point.scriptureRef}
                               </span>
@@ -702,7 +702,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                     <div
                       key={note.id}
                       className={`rounded-2xl p-5 flex flex-col justify-between shadow-xs ${
-                        isLight ? 'bg-white' : 'bg-[#1F1F24]'
+                        isLight ? 'bg-white' : 'bg-[#131317]'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 mb-2">
