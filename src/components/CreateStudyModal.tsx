@@ -18,6 +18,7 @@ import {
   Edit3
 } from 'lucide-react';
 import { Topic, Study, OutlinePoint } from '../types';
+import { getDateInfo } from '../utils/dateInfo';
 import { COMMON_BIBLE_VERSES } from '../data/initialData';
 import { 
   BIBLE_BOOKS, 
@@ -79,6 +80,8 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
   // Selector de sugerencias rápidas en modo directo
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const dateInfo = getDateInfo(date);
 
   // Alternar vista previa en vivo para maximizar espacio de edición
   const [showLivePreview, setShowLivePreview] = useState(true);
@@ -1128,10 +1131,23 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                 }`}>
                   {currentTopic?.name || 'Tema Bíblico'}
                 </span>
-                <span className="text-xs text-[#8E8E93] font-medium flex items-center gap-1.5">
-                  <Calendar size={12} className="text-[#8E8E93]" />
-                  <span>{date || 'Sin fecha'}</span>
-                </span>
+              </div>
+
+              {/* Módulo de fecha de predicación y aviso */}
+              <div className={`rounded-2xl p-4 flex items-center gap-3.5 ${
+                isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+              }`}>
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                  isLight ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black'
+                }`}>
+                  <Calendar size={20} />
+                </div>
+                <div className="min-w-0">
+                  <p className={`text-sm font-bold leading-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
+                    {dateInfo.weekday ? `${dateInfo.weekday}, ${dateInfo.long}` : dateInfo.long}
+                  </p>
+                  <p className="text-xs text-[#8E8E93] mt-0.5">{dateInfo.message}</p>
+                </div>
               </div>
 
               {/* Título y Subtítulo Dinámicos */}

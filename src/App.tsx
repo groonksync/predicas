@@ -170,6 +170,33 @@ export const App: React.FC = () => {
     setActiveStudyId(initialStudy.id);
   };
 
+  // Elimina una categoría con todas sus prédicas
+  const handleDeleteTopic = (topicId: string) => {
+    const remaining = topics.filter(t => t.id !== topicId);
+    setTopics(remaining);
+    setStudiesMap(prev => {
+      const copy = { ...prev };
+      delete copy[topicId];
+      return copy;
+    });
+    if (activeTopicId === topicId) {
+      const next = remaining[0];
+      setActiveTopicId(next ? next.id : '');
+      const nextStudy = next ? (studiesMap[next.id] || [])[0] : undefined;
+      setActiveStudyId(nextStudy ? nextStudy.id : '');
+    }
+  };
+
+  // Conserva únicamente la categoría indicada
+  const handleKeepOnlyTopic = (topicId: string) => {
+    const keep = topics.filter(t => t.id === topicId);
+    setTopics(keep);
+    setStudiesMap(prev => (prev[topicId] ? { [topicId]: prev[topicId] } : {}));
+    setActiveTopicId(topicId);
+    const first = (studiesMap[topicId] || [])[0];
+    setActiveStudyId(first ? first.id : '');
+  };
+
   const handleCreateTopicOnly = (name: string): string => {
     const newId = `topic-${Date.now()}`;
     const newTopic: Topic = {
@@ -312,6 +339,8 @@ export const App: React.FC = () => {
         onSelectStudy={setActiveStudyId}
         onAddStudy={handleAddStudy}
         onAddTopic={handleAddTopic}
+        onDeleteTopic={handleDeleteTopic}
+        onKeepOnlyTopic={handleKeepOnlyTopic}
         onToggleArchiveStudy={handleToggleArchiveStudy}
         onDeleteStudy={handleDeleteStudy}
         onEnterPulpitMode={() => setIsPulpitMode(true)}

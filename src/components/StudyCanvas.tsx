@@ -38,6 +38,7 @@ import { Study, BibleVerse, OutlinePoint, ResourceImage, ResourceVideo } from '.
 import { BigPreview, PreviewItem } from './QuickAccess';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { getChapterVerses, findBook } from '../services/bibleService';
+import { getDateInfo } from '../utils/dateInfo';
 
 interface StudyCanvasProps {
   study: Study;
@@ -1109,8 +1110,16 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
         
         {/* Izquierda: Fecha, Tiempo Estimado y Escala Tipográfica */}
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[11px] font-semibold px-3 py-1 rounded-xl bg-[#F2F3F5] dark:bg-[#222227] text-[#636366] dark:text-neutral-300">
-            {study.date}
+          <span
+            className={`text-[11px] font-semibold px-3 py-1 rounded-xl flex items-center gap-1.5 ${
+              getDateInfo(study.date).tone === 'hoy' || getDateInfo(study.date).tone === 'proxima'
+                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
+                : 'bg-[#F2F3F5] dark:bg-[#222227] text-[#636366] dark:text-neutral-300'
+            }`}
+            title={getDateInfo(study.date).message}
+          >
+            <span>{getDateInfo(study.date).weekday ? `${getDateInfo(study.date).weekday}, ${getDateInfo(study.date).long}` : study.date}</span>
+            <span className="opacity-70">· {getDateInfo(study.date).message}</span>
           </span>
           <span className="text-[11px] font-semibold px-3 py-1 rounded-xl bg-[#F2F3F5] dark:bg-[#222227] text-[#636366] dark:text-neutral-300 flex items-center gap-1" title="Duración estimada de exposición">
             <Clock size={11} />

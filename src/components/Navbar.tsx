@@ -29,6 +29,8 @@ interface NavbarProps {
   onSelectStudy: (studyId: string) => void;
   onAddStudy: () => void;
   onAddTopic: (name: string, description: string) => void;
+  onDeleteTopic?: (topicId: string) => void;
+  onKeepOnlyTopic?: (topicId: string) => void;
   onToggleArchiveStudy?: (studyId: string) => void;
   onDeleteStudy?: (studyId: string) => void;
   onEnterPulpitMode: () => void;
@@ -48,6 +50,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectStudy,
   onAddStudy,
   onAddTopic,
+  onDeleteTopic,
+  onKeepOnlyTopic,
   onToggleArchiveStudy,
   onDeleteStudy,
   onEnterPulpitMode,
@@ -269,24 +273,54 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {topics.map((t) => {
                     const isActive = t.id === activeTopicId;
                     return (
-                      <button
+                      <div
                         key={t.id}
-                        onClick={() => onSelectTopic(t.id)}
-                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs text-left transition-all duration-200 active:scale-[0.99] ${
+                        className={`group w-full flex items-center justify-between rounded-2xl text-xs transition-all duration-200 ${
                           isActive
                             ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] font-bold shadow-sm'
                             : 'bg-white/70 dark:bg-[#1E1E23] text-[#1C1C1E] dark:text-neutral-300 hover:bg-white dark:hover:bg-[#25252B]'
                         }`}
                       >
-                        <div className="flex items-center gap-2.5 truncate">
+                        <button
+                          onClick={() => onSelectTopic(t.id)}
+                          className="flex-1 flex items-center gap-2.5 truncate px-3.5 py-2.5 text-left"
+                        >
                           <FolderOpen size={14} className={isActive ? 'opacity-90' : 'text-[#8E8E93]'} />
                           <span className="truncate">{t.name}</span>
-                        </div>
-                        {isActive && <Check size={14} className="flex-shrink-0" />}
-                      </button>
+                          {isActive && <Check size={14} className="flex-shrink-0 ml-auto" />}
+                        </button>
+                        {onDeleteTopic && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (window.confirm(`¿Eliminar la categoría "${t.name}" y todas sus prédicas?`)) {
+                                onDeleteTopic(t.id);
+                              }
+                            }}
+                            className="p-2 mr-1 rounded-lg opacity-0 group-hover:opacity-70 hover:!opacity-100 transition-opacity"
+                            title="Eliminar categoría"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
+
+                {onKeepOnlyTopic && topics.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (window.confirm(`¿Conservar solo "${currentTopic?.name}" y eliminar las demás categorías?`)) {
+                        onKeepOnlyTopic(activeTopicId);
+                      }
+                    }}
+                    className="w-full text-[11px] font-bold py-2 rounded-xl bg-[#EAEAEE] dark:bg-[#202025] text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
+                  >
+                    Conservar solo «{currentTopic?.name}»
+                  </button>
+                )}
               </div>
 
               {/* SECCIÓN 2: PRÉDICAS DEL TEMA SELECCIONADO */}
