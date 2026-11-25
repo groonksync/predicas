@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="32" y1="0" x2="32" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1E1E1E" />
+      <stop offset="100%" stop-color="#050505" />
+    </linearGradient>
+    <linearGradient id="mint" x1="32" y1="10" x2="32" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6EE7B7" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+    <linearGradient id="pageL" x1="12" y1="22" x2="30" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#D4D4D4" />
+    </linearGradient>
+    <linearGradient id="pageR" x1="52" y1="22" x2="34" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E5E5E5" />
+      <stop offset="100%" stop-color="#A3A3A3" />
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle OLED badge -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bg)" stroke="#2E2E2E" stroke-width="1.75" />
+
+  <!-- Subtle radial mint glow behind center spark -->
+  <circle cx="32" cy="18" r="10" fill="#34D399" fill-opacity="0.16" />
+
+  <!-- Left open Scripture page -->
+  <path d="M13 24.5C13 22.8431 14.3431 21.5 16 21.5H23.5C27.2 21.5 29.8 23.4 30.7 26.2V45.8C29.3 43.9 26.8 42.8 23.5 42.8H16C14.3431 42.8 13 41.4569 13 39.8V24.5Z" fill="url(#pageL)" />
+
+  <!-- Right open Scripture page -->
+  <path d="M51 24.5C51 22.8431 49.6569 21.5 48 21.5H40.5C36.8 21.5 34.2 23.4 33.3 26.2V45.8C34.7 43.9 37.2 42.8 40.5 42.8H48C49.6569 42.8 51 41.4569 51 39.8V24.5Z" fill="url(#pageR)" />
+
+  <!-- Center mint beam / spine light & 4-point spark -->
+  <rect x="30.75" y="25" width="2.5" height="23.5" rx="1.25" fill="url(#mint)" />
+  <path d="M32 10.5L33.8 15.7L39 17.5L33.8 19.3L32 24.5L30.2 19.3L25 17.5L30.2 15.7L32 10.5Z" fill="url(#mint)" />
+
+  <!-- Minimalist lectern base bar -->
+  <rect x="23" y="50.5" width="18" height="2.2" rx="1.1" fill="#3A3A3A" />
+</svg>
