@@ -574,10 +574,10 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
       {/* BARRA FLOTANTE DE ACCESO RÁPIDO SIN TRAZOS (oculta cuando hay vista previa gigante) */}
       {!preview && (
         <nav
-          className={`no-print fixed z-[66] left-1/2 -translate-x-1/2 bottom-5 flex items-center gap-1 p-1.5 rounded-2xl backdrop-blur-2xl shadow-2xl font-sans ${
+          className={`no-print fixed z-[66] left-1/2 -translate-x-1/2 bottom-4 max-w-[calc(100vw-1.5rem)] overflow-x-auto scrollbar-none flex items-center gap-1 p-1.5 rounded-2xl backdrop-blur-2xl shadow-2xl font-sans border ${
             variant === 'pulpit'
-              ? 'bg-[#18181C]/95'
-              : 'bg-white/95 dark:bg-[#18181C]/95'
+              ? 'bg-[#111115]/95 border-white/[0.08]'
+              : 'bg-white/95 border-black/[0.06] dark:bg-[#111115]/95 dark:border-white/[0.08]'
           }`}
         >
           {dockButtons.map(b => {

@@ -32,7 +32,9 @@ import {
   Quote,
   Lightbulb,
   Target,
-  PanelRight
+  PanelRight,
+  Search,
+  X
 } from 'lucide-react';
 import { Study, BibleVerse, OutlinePoint, ResourceImage, ResourceVideo } from '../types';
 import { BigPreview, PreviewItem } from './QuickAccess';
@@ -172,8 +174,21 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
   const [newVidUrl, setNewVidUrl] = useState('');
   const [newVidTime, setNewVidTime] = useState('');
 
+  // Filtro instantáneo dentro de la prédica actual
+  const [canvasQuery, setCanvasQuery] = useState('');
+
   // Sección colapsable de recursos multimedia
   const [showMediaResources, setShowMediaResources] = useState<boolean>(false);
+
+  // Reiniciar estados transitorios al cambiar de prédica
+  useEffect(() => {
+    setActiveVerseId('main');
+    setEditingPointId(null);
+    setIsEditingHeader(false);
+    setIsEditingCanvasNotes(false);
+    setShowChapterContext(false);
+    setCanvasQuery('');
+  }, [study.id]);
 
   // Versículo actualmente seleccionado
   const isMainActive = activeVerseId === 'main';
@@ -458,178 +473,36 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
   // ¿Solo están activos Pasaje y Notas?
   const isDuoPasajeNotas = modules.pasaje && modules.notas && !modules.citas && !modules.bosquejo;
 
-  // Espacio de trabajo: pasaje central + complementarios + notas visibles a la vez
-  const isWorkspaceLayout = modules.pasaje && modules.citas && modules.notas;
-
-  // 1. Render Lienzo Bíblico Central (Sin trazos, adaptado a Luz y Gris, con Contexto de Capítulo)
-  const renderPasajeCentral = () => (
-    <section className="surface-card bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-200">
-      <div>
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#1C1C1E] dark:text-white">
-              {currentActiveVerse.reference || 'Sin Pasaje Asignado'}
-            </span>
-            <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 bg-[#F2F3F5] dark:bg-[#25252B] text-[#636366] dark:text-neutral-300 rounded-full">
-              {currentActiveVerse.version}
-            </span>
-            <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] rounded-full">
-              {isMainActive ? 'Pasaje Central' : 'Cita de Apoyo'}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1.5 flex-wrap">
-            {currentActiveVerse.reference && (
-              <button
-                type="button"
-                onClick={() => setShowChapterContext(!showChapterContext)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all active:scale-95 whitespace-nowrap ${
-                  showChapterContext
-                    ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                    : 'bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#25252B] dark:hover:bg-[#2E2E35] text-[#1C1C1E] dark:text-neutral-200'
-                }`}
-                title="Leer el capítulo completo para ver el contexto bíblico"
-              >
-                <BookOpen size={13} />
-                <span>{showChapterContext ? 'Ocultar Contexto' : 'Contexto'}</span>
-              </button>
-            )}
-
-            {currentActiveVerse.text && (
-              <button
-                onClick={() => setProjectedItem({
-                  id: currentActiveVerse.id,
-                  kind: 'verse',
-                  label: `${isMainActive ? 'Pasaje Central' : 'Cita de Apoyo'} · ${currentActiveVerse.version}`,
-                  title: currentActiveVerse.reference,
-                  body: currentActiveVerse.text
-                })}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#121214] text-xs font-bold rounded-xl transition-all active:scale-95 whitespace-nowrap"
-                title="Proyectar a pantalla completa gigante"
-              >
-                <Maximize2 size={12} />
-                <span>Proyectar</span>
-              </button>
-            )}
-
-            <button
-              onClick={() => handleCopyText(currentActiveVerse.text, currentActiveVerse.id)}
-              className="p-2 text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white rounded-xl bg-[#F2F3F5] dark:bg-[#25252B] transition-colors"
-              title="Copiar texto bíblico"
-            >
-              {copiedVerseId === currentActiveVerse.id ? <Check size={14} /> : <Copy size={14} />}
-            </button>
-
-            {isMainActive && onOpenApplyMainVerse && (
-              <button
-                onClick={onOpenApplyMainVerse}
-                className="text-xs text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white px-3 py-1.5 rounded-xl bg-[#F2F3F5] dark:bg-[#25252B] transition-colors font-bold whitespace-nowrap"
-                title="Cambiar pasaje central"
-              >
-                Cambiar
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="p-5 sm:p-6 rounded-2xl bg-[#F6F7F9] dark:bg-[#1E1E24]">
-          <p className="text-xl sm:text-2xl font-serif leading-relaxed text-[#1C1C1E] dark:text-neutral-100 tracking-normal select-text">
-            “{currentActiveVerse.text || 'Selecciona o añade un pasaje bíblico central para comenzar el estudio.'}”
-          </p>
-        </div>
-
-        {/* Lector de Contexto del Capítulo Completo */}
-        {showChapterContext && (
-          <div className="mt-4 p-4 sm:p-5 rounded-2xl bg-[#F2F3F5] dark:bg-[#141417] space-y-3 animate-fadeIn">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BookOpen size={14} className="text-[#8E8E93]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-[#1C1C1E] dark:text-white">
-                  Contexto del Capítulo · {contextTitle} (RVR1960)
-                </span>
-              </div>
-              <span className="text-[11px] text-[#8E8E93]">
-                Haz clic en + junto a un versículo para sumarlo a tus citas
-              </span>
-            </div>
-
-            {loadingContext ? (
-              <div className="py-6 text-center text-xs text-[#8E8E93]">
-                Cargando capítulo completo...
-              </div>
-            ) : (
-              <div className="max-h-60 overflow-y-auto space-y-1.5 pr-1 scrollbar-thin">
-                {contextVerses.map(v => {
-                  const refString = `${contextTitle}:${v.verse}`;
-                  const isAlreadyAdded = study.relatedVerses.some(rv => rv.reference === refString);
-                  return (
-                    <div
-                      key={v.verse}
-                      className="group flex items-start justify-between gap-3 p-2.5 rounded-xl hover:bg-white dark:hover:bg-[#1E1E24] transition-colors"
-                    >
-                      <p className="text-xs sm:text-sm text-[#1C1C1E] dark:text-neutral-200 leading-relaxed select-text">
-                        <span className="font-bold text-[#8E8E93] mr-2 font-mono">{v.verse}</span>
-                        {v.text}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => handleAddContextVerse(v.verse, v.text)}
-                        disabled={isAlreadyAdded}
-                        className={`px-2.5 py-1 rounded-lg text-[10px] font-bold flex-shrink-0 transition-all ${
-                          isAlreadyAdded
-                            ? 'bg-black/[0.05] dark:bg-white/[0.08] text-[#8E8E93]'
-                            : 'opacity-0 group-hover:opacity-100 bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                        }`}
-                        title="Añadir como cita de referencia"
-                      >
-                        {isAlreadyAdded ? 'En citas' : '+ Cita'}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {currentActiveVerse.notes && (
-        <div className="mt-4 pt-3 text-xs text-[#636366] dark:text-neutral-400 leading-relaxed">
-          <span className="font-bold text-[#1C1C1E] dark:text-neutral-200">Nota exegética:</span> {currentActiveVerse.notes}
-        </div>
-      )}
-    </section>
-  );
-
   // Hero del pasaje principal: escenario oscuro de alto contraste con tipografía editorial
   const renderMainHero = () => {
     const v = study.mainVerse;
     return (
-      <section className="relative overflow-hidden rounded-[28px] bg-[#17171A] dark:bg-[#1D1D22] text-white p-7 sm:p-9 shadow-xl">
-        <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/[0.04] blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-28 -left-16 w-72 h-72 rounded-full bg-white/[0.03] blur-3xl" />
+      <section className="relative overflow-hidden rounded-[26px] bg-[#141418] dark:bg-[#111116] border border-black/[0.06] dark:border-white/[0.08] text-white p-6 sm:p-8 shadow-xl">
+        <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/[0.03] blur-3xl" />
 
-        <div className="relative space-y-6">
+        <div className="relative space-y-5">
           {/* Cabecera: etiqueta, referencia y acciones */}
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/50">
-                <BookOpen size={12} />
-                Pasaje principal
-              </span>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-black tracking-tight leading-tight">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-white/45">
+                  <BookOpen size={12} />
+                  Pasaje principal
+                </span>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-white/[0.08] text-white/70">
+                  {v.version}
+                </span>
+              </div>
+              <h2 className="mt-1.5 text-2xl sm:text-3xl font-black tracking-tight leading-tight">
                 {v.reference || 'Sin pasaje asignado'}
               </h2>
-              <span className="inline-block mt-2 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white/10 text-white/70">
-                {v.version}
-              </span>
             </div>
 
-            <div className="flex items-center gap-1 flex-shrink-0 p-1 rounded-2xl bg-white/[0.07]">
+            <div className="flex items-center gap-1 flex-shrink-0 p-1 rounded-2xl bg-white/[0.06] border border-white/[0.06]">
               <button
                 type="button"
                 onClick={() => setShowChapterContext(!showChapterContext)}
-                className={`p-2 rounded-xl transition-colors ${showChapterContext ? 'bg-white text-[#17171A]' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+                className={`p-2 rounded-xl transition-colors ${showChapterContext ? 'bg-white text-[#111116]' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
                 title="Leer el capítulo completo"
               >
                 <BookOpen size={15} />
@@ -671,10 +544,13 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
             </div>
           </div>
 
-          {/* Texto bíblico */}
+          {/* Texto bíblico escalable */}
           <div className="flex gap-4">
             <span className="w-1 rounded-full bg-white/25 flex-shrink-0" />
-            <p className="text-xl sm:text-2xl font-serif leading-[1.6] text-white/95 select-text">
+            <p
+              className="font-serif leading-[1.6] text-white/95 select-text"
+              style={{ fontSize: `calc(1.3rem * ${fontScale / 100})` }}
+            >
               {v.text || 'Selecciona o añade un pasaje bíblico central para comenzar el estudio.'}
             </p>
           </div>
@@ -730,99 +606,117 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
   };
 
   // Panel de versículos complementarios en formato línea de tiempo numerada
-  const renderComplementPanel = () => (
-    <section className="rounded-[28px] bg-white dark:bg-[#18181C] surface-card p-6 sm:p-7 space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8E8E93]">Refuerzan el mensaje</p>
-          <h3 className="text-lg font-black tracking-tight text-[#1C1C1E] dark:text-white mt-0.5">
-            Versículos complementarios
-            <span className="ml-2 text-xs font-bold align-middle px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#25252B] text-[#8E8E93]">
-              {study.relatedVerses.length}
-            </span>
-          </h3>
-        </div>
-        <button
-          onClick={onOpenVerseModal}
-          className="w-10 h-10 rounded-2xl flex items-center justify-center bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] hover:opacity-90 active:scale-90 transition-all shadow-xs flex-shrink-0"
-          title="Añadir versículo complementario"
-        >
-          <Plus size={18} />
-        </button>
-      </div>
+  const renderComplementPanel = () => {
+    const q = canvasQuery.trim().toLowerCase();
+    const visibleVerses = q
+      ? study.relatedVerses.filter(v =>
+          v.reference.toLowerCase().includes(q) ||
+          v.text.toLowerCase().includes(q) ||
+          (v.notes || '').toLowerCase().includes(q)
+        )
+      : study.relatedVerses;
 
-      {study.relatedVerses.length === 0 ? (
-        <button
-          onClick={onOpenVerseModal}
-          className="w-full py-9 rounded-2xl bg-[#F6F7F9] dark:bg-[#1E1E24] text-xs text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors flex flex-col items-center gap-2"
-        >
-          <Plus size={18} />
-          <span>Añade versículos que complementen el pasaje principal</span>
-        </button>
-      ) : (
-        <ol className="relative space-y-1">
-          <span className="absolute left-[15px] top-4 bottom-4 w-px bg-black/[0.07] dark:bg-white/[0.08]" />
-          {study.relatedVerses.map((verse, idx) => (
-            <li key={verse.id} className="group relative flex gap-4 p-2 -mx-2 rounded-2xl hover:bg-[#F6F7F9] dark:hover:bg-[#1E1E24] transition-colors">
-              <span className="relative z-10 w-[30px] h-[30px] rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0 bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] ring-4 ring-white dark:ring-[#18181C]">
-                {idx + 1}
+    return (
+      <section className="rounded-[26px] bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] surface-card p-5 sm:p-6 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8E8E93]">Refuerzan el mensaje</p>
+            <h3 className="text-base font-black tracking-tight text-[#1C1C1E] dark:text-white mt-0.5 flex items-center gap-2">
+              <span className="truncate">Versículos complementarios</span>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#1C1C23] text-[#8E8E93]">
+                {visibleVerses.length}
               </span>
-              <div className="min-w-0 flex-1 pb-1">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-sm font-bold text-[#1C1C1E] dark:text-white truncate">{verse.reference}</span>
-                    <span className="text-[10px] font-semibold text-[#8E8E93]">{verse.version}</span>
-                  </div>
-                  <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => handleCopyText(verse.text, verse.id)}
-                      className="p-1.5 rounded-lg text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white"
-                      title="Copiar texto"
-                    >
-                      {copiedVerseId === verse.id ? <Check size={13} /> : <Copy size={13} />}
-                    </button>
-                    {verse.text && (
+            </h3>
+          </div>
+          <button
+            onClick={onOpenVerseModal}
+            className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115] hover:opacity-90 active:scale-90 transition-all shadow-xs flex-shrink-0"
+            title="Añadir versículo complementario"
+          >
+            <Plus size={17} />
+          </button>
+        </div>
+
+        {study.relatedVerses.length === 0 ? (
+          <button
+            onClick={onOpenVerseModal}
+            className="w-full py-7 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] border border-dashed border-black/[0.08] dark:border-white/[0.08] text-xs text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors flex flex-col items-center gap-1.5"
+          >
+            <Plus size={16} />
+            <span>Añade versículos que complementen el pasaje principal</span>
+          </button>
+        ) : visibleVerses.length === 0 ? (
+          <div className="py-6 text-center text-xs text-[#8E8E93] rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C]">
+            Sin coincidencias para “{canvasQuery}”
+          </div>
+        ) : (
+          <ol className="relative space-y-1">
+            <span className="absolute left-[14px] top-4 bottom-4 w-px bg-black/[0.07] dark:bg-white/[0.07]" />
+            {visibleVerses.map((verse, idx) => (
+              <li key={verse.id} className="group relative flex gap-3.5 p-2 -mx-2 rounded-2xl hover:bg-[#F6F7F9] dark:hover:bg-[#17171E] transition-colors">
+                <span className="relative z-10 w-[28px] h-[28px] rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0 bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115] ring-4 ring-white dark:ring-[#111115]">
+                  {idx + 1}
+                </span>
+                <div className="min-w-0 flex-1 pb-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-sm font-bold text-[#1C1C1E] dark:text-white truncate">{verse.reference}</span>
+                      <span className="text-[10px] font-semibold text-[#8E8E93]">{verse.version}</span>
+                    </div>
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                       <button
                         type="button"
-                        onClick={() => setProjectedItem({
-                          id: verse.id,
-                          kind: 'verse',
-                          label: `Cita de Apoyo · ${verse.version}`,
-                          title: verse.reference,
-                          body: verse.text
-                        })}
+                        onClick={() => handleCopyText(verse.text, verse.id)}
                         className="p-1.5 rounded-lg text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white"
-                        title="Proyectar a pantalla completa"
+                        title="Copiar texto"
                       >
-                        <Maximize2 size={13} />
+                        {copiedVerseId === verse.id ? <Check size={13} /> : <Copy size={13} />}
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteRelatedVerse(verse.id)}
-                      className="p-1.5 rounded-lg text-[#8E8E93] hover:text-red-500"
-                      title="Eliminar versículo"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                      {verse.text && (
+                        <button
+                          type="button"
+                          onClick={() => setProjectedItem({
+                            id: verse.id,
+                            kind: 'verse',
+                            label: `Cita de Apoyo · ${verse.version}`,
+                            title: verse.reference,
+                            body: verse.text
+                          })}
+                          className="p-1.5 rounded-lg text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white"
+                          title="Proyectar a pantalla completa"
+                        >
+                          <Maximize2 size={13} />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteRelatedVerse(verse.id)}
+                        className="p-1.5 rounded-lg text-[#8E8E93] hover:text-red-500"
+                        title="Eliminar versículo"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <p className="mt-1 text-sm font-serif leading-relaxed text-[#48484D] dark:text-neutral-300 select-text">
-                  {verse.text}
-                </p>
-                {verse.notes && (
-                  <p className="mt-1.5 text-[11px] text-[#8E8E93] leading-relaxed">
-                    <span className="font-bold">Nota:</span> {verse.notes}
+                  <p
+                    className="mt-1 font-serif leading-relaxed text-[#48484D] dark:text-neutral-300 select-text"
+                    style={{ fontSize: `calc(0.92rem * ${fontScale / 100})` }}
+                  >
+                    {verse.text}
                   </p>
-                )}
-              </div>
-            </li>
-          ))}
-        </ol>
-      )}
-    </section>
-  );
+                  {verse.notes && (
+                    <p className="mt-1.5 text-[11px] text-[#8E8E93] leading-relaxed">
+                      <span className="font-bold">Nota:</span> {verse.notes}
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
+    );
+  };
 
   // 2. Render Citas Bíblicas de Referencia (Sin Trazos, Enfoque Monocromático Luz/Gris)
   const renderCitasBiblicasSection = () => (
@@ -982,73 +876,46 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
     </section>
   );
 
-  // 3. Render Notas Exegéticas, Léxico Bíblico y Bloques Homiléticos
+  // 3. Render Notas Exegéticas, Léxico Bíblico y Bloques Homiléticos (Diseño compacto sin apilamiento)
   const renderNotasExegeticas = () => (
-    <section className="surface-card bg-white dark:bg-[#18181C] rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-200">
+    <section className="surface-card bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] p-5 sm:p-6 flex flex-col justify-between transition-all duration-200">
       <div>
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-[#F2F3F5] dark:bg-[#25252B] text-[#1C1C1E] dark:text-white flex items-center justify-center">
-              <FileText size={16} />
-            </div>
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1C1C1E] dark:text-white">
-                Notas Exegéticas y Léxico Teológico
-              </h3>
-              <span className="text-[11px] text-[#8E8E93]">
-                Estudio de palabras originales, trasfondo e ilustraciones
-              </span>
-            </div>
+        <div className="flex items-center justify-between gap-3 mb-3.5">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8E8E93]">Estudio y trasfondo</p>
+            <h3 className="text-base font-black tracking-tight text-[#1C1C1E] dark:text-white mt-0.5 truncate">
+              Notas Exegéticas y Léxico
+            </h3>
           </div>
 
-          <div className="flex items-center gap-1.5 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <button
               type="button"
               onClick={() => setShowLexiconDrawer(!showLexiconDrawer)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1.5 whitespace-nowrap ${
+              className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap ${
                 showLexiconDrawer
-                  ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                  : 'bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#25252B] dark:hover:bg-[#2E2E35] text-[#1C1C1E] dark:text-neutral-200'
+                  ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115]'
+                  : 'bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#1A1A22] dark:hover:bg-[#23232D] text-[#1C1C1E] dark:text-neutral-200'
               }`}
               title="Abrir diccionario rápido de términos en Griego y Hebreo"
             >
-              <Sparkles size={13} />
-              <span>Diccionario Strong</span>
+              <Sparkles size={12} />
+              <span>Strong</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => handleInsertLexicon('Griego')}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#25252B] dark:hover:bg-[#2E2E35] text-[#1C1C1E] dark:text-neutral-200 transition-all active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
-              title="Insertar plantilla de estudio en Griego"
-            >
-              <BookA size={13} />
-              <span>Griego</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleInsertLexicon('Hebreo')}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#25252B] dark:hover:bg-[#2E2E35] text-[#1C1C1E] dark:text-neutral-200 transition-all active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
-              title="Insertar plantilla de estudio en Hebreo"
-            >
-              <BookA size={13} />
-              <span>Hebreo</span>
-            </button>
-            
             <button
               type="button"
               onClick={() => setIsEditingCanvasNotes(!isEditingCanvasNotes)}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#121214] transition-all active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
+              className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#111115] transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
             >
               {isEditingCanvasNotes ? (
                 <>
-                  <Check size={13} />
+                  <Check size={12} />
                   <span>Listo</span>
                 </>
               ) : (
                 <>
-                  <Edit3 size={13} />
+                  <Edit3 size={12} />
                   <span>Editar</span>
                 </>
               )}
@@ -1058,33 +925,33 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
 
         {/* Cajón de Diccionario Strong Rápido (Griego y Hebreo en 1 clic) */}
         {showLexiconDrawer && (
-          <div className="mb-5 p-4 rounded-2xl bg-[#F6F7F9] dark:bg-[#141417] space-y-3 animate-fadeIn">
+          <div className="mb-4 p-3.5 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] border border-black/[0.04] dark:border-white/[0.05] space-y-2.5 animate-fadeIn">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93]">
-                Términos Bíblicos Clave (Toca para insertar en tus notas)
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#8E8E93]">
+                Diccionario Strong (Toca para insertar)
               </span>
               <button
                 type="button"
                 onClick={() => setShowLexiconDrawer(false)}
-                className="text-xs text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white"
+                className="text-[11px] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white"
               >
                 Cerrar
               </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               {LEXICON_TERMS.map((item) => (
                 <button
                   key={item.strong}
                   type="button"
                   onClick={() => handleInsertPrebuiltLexicon(item)}
-                  className="p-3 rounded-xl bg-white dark:bg-[#1E1E24] hover:bg-[#EAECEF] dark:hover:bg-[#282830] text-left transition-all active:scale-[0.99] space-y-1"
+                  className="p-2.5 rounded-xl bg-white dark:bg-[#111115] hover:bg-[#EAECEF] dark:hover:bg-[#1E1E26] text-left transition-all active:scale-[0.99] space-y-0.5"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#1C1C1E] dark:text-white">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs font-bold text-[#1C1C1E] dark:text-white truncate">
                       {item.word}
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#2A2A32] text-[#636366] dark:text-neutral-300">
-                      {item.lang} · {item.strong}
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-[#F2F3F5] dark:bg-[#1E1E26] text-[#636366] dark:text-neutral-300 flex-shrink-0">
+                      {item.strong}
                     </span>
                   </div>
                   <p className="text-[11px] text-[#636366] dark:text-neutral-400 line-clamp-1">
@@ -1096,48 +963,64 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           </div>
         )}
 
-        {/* Bloques Homiléticos Rápidos */}
-        <div className="flex flex-wrap items-center gap-1.5 mb-4">
+        {/* Tira única compacta de inserción rápida */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-1 mb-3">
+          <button
+            type="button"
+            onClick={() => handleInsertLexicon('Griego')}
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
+          >
+            <BookA size={11} />
+            <span>Griego</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => handleInsertLexicon('Hebreo')}
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
+          >
+            <BookA size={11} />
+            <span>Hebreo</span>
+          </button>
           <button
             type="button"
             onClick={() => handleInsertHomileticBlock('ilustracion')}
-            className="px-3 py-1.5 rounded-xl text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#202026] dark:hover:bg-[#282830] text-[#636366] dark:text-neutral-300 flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
-            <Lightbulb size={12} />
-            <span>+ Ilustración</span>
+            <Lightbulb size={11} />
+            <span>Ilustración</span>
           </button>
           <button
             type="button"
             onClick={() => handleInsertHomileticBlock('aplicacion')}
-            className="px-3 py-1.5 rounded-xl text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#202026] dark:hover:bg-[#282830] text-[#636366] dark:text-neutral-300 flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
-            <Target size={12} />
-            <span>+ Aplicación Práctica</span>
+            <Target size={11} />
+            <span>Aplicación</span>
           </button>
           <button
             type="button"
             onClick={() => handleInsertHomileticBlock('frase')}
-            className="px-3 py-1.5 rounded-xl text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#202026] dark:hover:bg-[#282830] text-[#636366] dark:text-neutral-300 flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
-            <Quote size={12} />
-            <span>+ Frase de Púlpito</span>
+            <Quote size={11} />
+            <span>Frase</span>
           </button>
         </div>
 
         {/* Edición o Visualización Formateada */}
         {isEditingCanvasNotes ? (
           <div className="space-y-2.5 animate-fadeIn">
-            <div className="flex items-center gap-1 p-1.5 bg-[#F2F3F5] dark:bg-[#222227] rounded-2xl w-fit">
-              <button onClick={() => handleInsertFormat('**', '**', 'negrita')} className="p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#2E2E35] text-[#636366] dark:text-neutral-300" title="Negrita">
+            <div className="flex items-center gap-1 p-1 bg-[#F2F3F5] dark:bg-[#17171E] rounded-xl w-fit">
+              <button onClick={() => handleInsertFormat('**', '**', 'negrita')} className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-[#252530] text-[#636366] dark:text-neutral-300" title="Negrita">
                 <Bold size={13} />
               </button>
-              <button onClick={() => handleInsertFormat('*', '*', 'cursiva')} className="p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#2E2E35] text-[#636366] dark:text-neutral-300" title="Cursiva">
+              <button onClick={() => handleInsertFormat('*', '*', 'cursiva')} className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-[#252530] text-[#636366] dark:text-neutral-300" title="Cursiva">
                 <Italic size={13} />
               </button>
-              <button onClick={() => handleInsertFormat('\n### ', '\n', 'Subtítulo')} className="p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#2E2E35] text-[#636366] dark:text-neutral-300" title="Subtítulo">
+              <button onClick={() => handleInsertFormat('\n### ', '\n', 'Subtítulo')} className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-[#252530] text-[#636366] dark:text-neutral-300" title="Subtítulo">
                 <Heading size={13} />
               </button>
-              <button onClick={() => handleInsertFormat('\n- ', '', 'Punto')} className="p-1.5 rounded-xl hover:bg-white dark:hover:bg-[#2E2E35] text-[#636366] dark:text-neutral-300" title="Lista">
+              <button onClick={() => handleInsertFormat('\n- ', '', 'Punto')} className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-[#252530] text-[#636366] dark:text-neutral-300" title="Lista">
                 <List size={13} />
               </button>
             </div>
@@ -1145,22 +1028,23 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
               ref={canvasNotesRef}
               value={study.detailedNotes}
               onChange={(e) => onUpdateStudy({ ...study, detailedNotes: e.target.value })}
-              rows={9}
-              className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-100 bg-[#F6F7F9] dark:bg-[#202026] p-4 rounded-2xl outline-none resize-y"
+              rows={8}
+              className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-100 bg-[#F6F7F9] dark:bg-[#16161C] p-4 rounded-2xl outline-none resize-y"
               placeholder="Escribe el estudio de palabras griegas/hebreas, notas teológicas o reflexiones..."
               autoFocus
             />
           </div>
         ) : (
-          <div 
+          <div
             onClick={() => setIsEditingCanvasNotes(true)}
-            className="p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#202026] text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-200 cursor-text select-text min-h-[140px]"
+            className="p-4 sm:p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-200 cursor-text select-text min-h-[120px]"
+            style={{ fontSize: `calc(0.92rem * ${fontScale / 100})` }}
           >
             {study.detailedNotes?.trim() ? (
               <MarkdownRenderer content={study.detailedNotes} />
             ) : (
-              <div className="py-8 text-center text-xs text-[#8E8E93]">
-                Toca aquí o usa los botones superiores para añadir términos del Diccionario Strong, exégesis o ilustraciones.
+              <div className="py-6 text-center text-xs text-[#8E8E93]">
+                Toca aquí para escribir exégesis, palabras originales o ilustraciones.
               </div>
             )}
           </div>
@@ -1170,41 +1054,53 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
   );
 
   // 4. Render Bosquejo Homilético Interactivo y Editable en el Lienzo
-  const renderBosquejoSection = () => (
-    <section className="surface-card bg-white dark:bg-[#18181C] rounded-3xl p-6 sm:p-8 space-y-5 transition-all duration-200">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-2xl bg-[#F2F3F5] dark:bg-[#25252B] text-[#1C1C1E] dark:text-white flex items-center justify-center">
-            <ListOrdered size={16} />
-          </div>
+  const renderBosquejoSection = () => {
+    const q = canvasQuery.trim().toLowerCase();
+    const visiblePoints = q
+      ? study.outlinePoints.filter(p =>
+          p.title.toLowerCase().includes(q) ||
+          p.content.toLowerCase().includes(q) ||
+          (p.scriptureRef || '').toLowerCase().includes(q)
+        )
+      : study.outlinePoints;
+
+    return (
+      <section className="surface-card bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] p-5 sm:p-7 space-y-4 transition-all duration-200">
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1C1C1E] dark:text-white">
-              Estructura del Bosquejo ({study.outlinePoints.length} Puntos)
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8E8E93]">Flujo del mensaje</p>
+            <h3 className="text-base sm:text-lg font-black tracking-tight text-[#1C1C1E] dark:text-white mt-0.5 flex items-center gap-2">
+              <span>Estructura del Bosquejo</span>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#1C1C23] text-[#8E8E93]">
+                {visiblePoints.length}
+              </span>
             </h3>
-            <span className="text-[11px] text-[#8E8E93]">
-              Toca cualquier punto para editarlo, reordenarlo o proyectarlo
-            </span>
           </div>
+
+          <button
+            type="button"
+            onClick={handleAddPoint}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#111115] active:scale-95 transition-all whitespace-nowrap"
+          >
+            <Plus size={13} />
+            <span>Nuevo Punto</span>
+          </button>
         </div>
 
-        <button
-          type="button"
-          onClick={handleAddPoint}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#121214] active:scale-95 transition-all whitespace-nowrap"
-        >
-          <Plus size={13} />
-          <span>Nuevo Punto</span>
-        </button>
-      </div>
-
-      <div className="space-y-3">
-        {study.outlinePoints.map((point, idx) => {
-          const isEditing = editingPointId === point.id;
-          return (
-            <div
-              key={point.id}
-              className="group p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#202026] transition-all duration-200 space-y-2.5"
-            >
+        <div className="space-y-2.5">
+          {visiblePoints.length === 0 ? (
+            <div className="py-8 text-center text-xs text-[#8E8E93] rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C]">
+              {q ? `Sin puntos que coincidan con “${canvasQuery}”` : 'Aún no hay puntos en este bosquejo.'}
+            </div>
+          ) : (
+            visiblePoints.map((point) => {
+              const idx = study.outlinePoints.findIndex(p => p.id === point.id);
+              const isEditing = editingPointId === point.id;
+              return (
+                <div
+                  key={point.id}
+                  className="group p-4 sm:p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] hover:bg-[#EFEFF3] dark:hover:bg-[#1A1A22] transition-all duration-200 space-y-2"
+                >
               {isEditing ? (
                 <div className="space-y-3 animate-fadeIn">
                   <div className="flex items-center gap-2">
@@ -1319,7 +1215,8 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
                   {point.content && (
                     <p
                       onClick={() => setEditingPointId(point.id)}
-                      className="text-xs sm:text-sm text-[#636366] dark:text-neutral-300 leading-relaxed pl-10 cursor-pointer"
+                      className="text-[#636366] dark:text-neutral-300 leading-relaxed pl-10 cursor-pointer"
+                      style={{ fontSize: `calc(0.9rem * ${fontScale / 100})` }}
                     >
                       {point.content}
                     </p>
@@ -1328,298 +1225,264 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
               )}
             </div>
           );
-        })}
-      </div>
-    </section>
-  );
+        })
+          )}
+        </div>
+      </section>
+    );
+  };
+
+  const dateInfo = getDateInfo(study.date);
+  const hasLeftCol = modules.pasaje || modules.bosquejo;
+  const hasRightCol = modules.citas || modules.notas;
 
   return (
-    <main className={`flex-1 overflow-y-auto px-4 sm:px-8 py-6 pb-28 mx-auto w-full transition-all duration-200 font-sans select-none ${
-      isDuoPasajeNotas ? 'max-w-6xl' : 'max-w-5xl'
-    }`}>
+    <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-5 pb-28 mx-auto w-full max-w-[1720px] transition-all duration-200 font-sans select-none">
       
-      {/* 1. BARRA SUPERIOR DE ESTADO Y ESCALA DE LECTURA (Sin trazos) */}
-      <div className="surface-card flex flex-wrap items-center justify-between gap-3 mb-6 bg-white/90 dark:bg-[#18181C]/90 backdrop-blur-xl px-4 py-2.5 rounded-2xl">
-        
-        {/* Izquierda: Fecha, Tiempo Estimado y Escala Tipográfica */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <span
-            className={`text-[11px] font-semibold px-3 py-1 rounded-xl flex items-center gap-1.5 ${
-              getDateInfo(study.date).tone === 'hoy' || getDateInfo(study.date).tone === 'proxima'
-                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                : 'bg-[#F2F3F5] dark:bg-[#222227] text-[#636366] dark:text-neutral-300'
-            }`}
-            title={getDateInfo(study.date).message}
-          >
-            <span>{getDateInfo(study.date).weekday ? `${getDateInfo(study.date).weekday}, ${getDateInfo(study.date).long}` : study.date}</span>
-            <span className="opacity-70">· {getDateInfo(study.date).message}</span>
-          </span>
-          <span className="text-[11px] font-semibold px-3 py-1 rounded-xl bg-[#F2F3F5] dark:bg-[#222227] text-[#636366] dark:text-neutral-300 flex items-center gap-1" title="Duración estimada de exposición">
-            <Clock size={11} />
-            <span>~{estimatedMinutes} min</span>
-          </span>
-          {study.isArchived && (
-            <span className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-black/[0.08] dark:bg-white/[0.12] text-[#1C1C1E] dark:text-white">
-              Archivado
-            </span>
-          )}
-
-          {/* Stepper de zoom limpio */}
-          <div className="flex items-center bg-[#F2F3F5] dark:bg-[#222227] rounded-xl p-0.5 text-xs">
-            <button
-              onClick={() => setFontScale(Math.max(95, fontScale - 10))}
-              className="px-2.5 py-1 text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
-              title="Reducir tamaño de texto"
-            >
-              <ZoomOut size={12} className="inline mr-0.5" />
-              <span>A-</span>
-            </button>
-            <span className="px-1.5 text-[11px] font-mono font-bold text-[#1C1C1E] dark:text-white">
-              {fontScale}%
-            </span>
-            <button
-              onClick={() => setFontScale(Math.min(165, fontScale + 10))}
-              className="px-2.5 py-1 text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
-              title="Aumentar tamaño de texto"
-            >
-              <ZoomIn size={12} className="inline mr-0.5" />
-              <span>A+</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Derecha: Botón de Pasaje Base y Toggle del Panel Derecho */}
-        <div className="flex items-center gap-2">
-          {!isMainActive && (
-            <button
-              onClick={() => setActiveVerseId('main')}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] text-xs font-bold active:scale-95 transition-all"
-            >
-              <ArrowLeft size={12} />
-              <span>Pasaje Central</span>
-            </button>
-          )}
-
-          {onToggleOutline && (
-            <button
-              onClick={onToggleOutline}
-              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 whitespace-nowrap ${
-                isOutlineOpen
-                  ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                  : 'bg-[#F2F3F5] dark:bg-[#222227] text-[#1C1C1E] dark:text-neutral-300 hover:bg-[#E6E8EC] dark:hover:bg-[#2B2B32]'
-              }`}
-              title={isOutlineOpen ? "Ocultar panel lateral de apuntes" : "Mostrar panel lateral de apuntes"}
-            >
-              <PanelRight size={13} />
-              <span>{isOutlineOpen ? 'Ocultar Panel' : 'Panel Lateral'}</span>
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* 2. ENCABEZADO EDITORIAL DEL SERMÓN */}
-      <div className="mb-6 px-1">
+      {/* 1. CABECERA EDITORIAL UNIFICADA (Título, Fecha, Escala y Panel Lateral en un solo bloque limpio) */}
+      <div className="mb-4">
         {isEditingHeader ? (
-          <div className="surface-card space-y-3 p-6 rounded-3xl bg-white dark:bg-[#18181C] animate-scaleIn">
+          <div className="surface-card space-y-3 p-5 rounded-3xl bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] animate-scaleIn">
             <input
               type="text"
               value={study.title}
               onChange={(e) => onUpdateStudy({ ...study, title: e.target.value })}
               placeholder="Título del mensaje..."
-              className="w-full text-2xl font-black bg-[#F2F3F5] dark:bg-[#222227] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-white outline-none"
+              className="w-full text-2xl font-black bg-[#F2F3F5] dark:bg-[#17171E] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-white outline-none"
             />
             <input
               type="text"
               value={study.subtitle}
               onChange={(e) => onUpdateStudy({ ...study, subtitle: e.target.value })}
               placeholder="Propósito o subtítulo..."
-              className="w-full text-sm bg-[#F2F3F5] dark:bg-[#222227] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-neutral-200 outline-none"
+              className="w-full text-sm bg-[#F2F3F5] dark:bg-[#17171E] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-neutral-200 outline-none"
             />
             <div className="flex justify-end gap-2 pt-1">
               <button
                 onClick={() => setIsEditingHeader(false)}
-                className="px-5 py-2 text-xs font-bold bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] rounded-xl"
+                className="px-5 py-2 text-xs font-bold bg-[#1C1C1E] dark:bg-white text-white dark:text-[#111115] rounded-xl"
               >
                 Guardar Cambios
               </button>
             </div>
           </div>
         ) : (
-          <div className="group relative">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-1.5">
-                <h1 className="text-3xl sm:text-4xl font-black text-[#1C1C1E] dark:text-white tracking-tight leading-tight">
-                  {study.title}
-                </h1>
-                {study.subtitle && (
-                  <p className="text-sm sm:text-base text-[#8E8E93] font-normal leading-relaxed">
-                    {study.subtitle}
-                  </p>
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 px-0.5">
+            <div className="group min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                <span
+                  className={`text-[11px] font-bold px-2.5 py-0.5 rounded-lg inline-flex items-center gap-1.5 ${
+                    dateInfo.tone === 'hoy' || dateInfo.tone === 'proxima'
+                      ? 'bg-[#1C1C1E] text-white dark:bg-white/[0.12] dark:text-white border border-transparent dark:border-white/[0.12]'
+                      : 'bg-[#F2F3F5] dark:bg-[#16161C] text-[#636366] dark:text-neutral-400'
+                  }`}
+                  title={dateInfo.message}
+                >
+                  <span>{dateInfo.weekday ? `${dateInfo.weekday}, ${dateInfo.long}` : study.date}</span>
+                  <span className="opacity-70">· {dateInfo.message}</span>
+                </span>
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-lg bg-[#F2F3F5] dark:bg-[#16161C] text-[#636366] dark:text-neutral-400 inline-flex items-center gap-1" title="Duración estimada">
+                  <Clock size={11} />
+                  <span>~{estimatedMinutes} min</span>
+                </span>
+                {study.isArchived && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-black/[0.08] dark:bg-white/[0.1] text-[#1C1C1E] dark:text-white">
+                    Archivado
+                  </span>
                 )}
               </div>
 
-              {/* Acciones discretas del encabezado */}
-              <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0 pt-1">
-                <button
-                  onClick={() => setIsEditingHeader(true)}
-                  className="p-2 rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.08] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
-                  title="Editar título y subtítulo"
-                >
-                  <Edit2 size={14} />
-                </button>
-                {onToggleArchiveStudy && (
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl sm:text-3xl font-black text-[#1C1C1E] dark:text-white tracking-tight leading-tight truncate">
+                  {study.title}
+                </h1>
+                <div className="flex items-center gap-0.5 opacity-50 group-hover:opacity-100 transition-opacity flex-shrink-0">
                   <button
-                    onClick={() => onToggleArchiveStudy(study.id)}
-                    className="p-2 rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.08] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
-                    title={study.isArchived ? "Restaurar prédica" : "Archivar prédica"}
+                    onClick={() => setIsEditingHeader(true)}
+                    className="p-1.5 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.08] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
+                    title="Editar título y subtítulo"
                   >
-                    {study.isArchived ? <ArchiveRestore size={14} /> : <Archive size={14} />}
+                    <Edit2 size={13} />
                   </button>
-                )}
-                {onDeleteStudy && (
-                  <button
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="p-2 rounded-xl hover:bg-red-500/10 text-[#8E8E93] hover:text-red-500 transition-colors"
-                    title="Eliminar prédica"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                )}
+                  {onToggleArchiveStudy && (
+                    <button
+                      onClick={() => onToggleArchiveStudy(study.id)}
+                      className="p-1.5 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.08] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
+                      title={study.isArchived ? "Restaurar prédica" : "Archivar prédica"}
+                    >
+                      {study.isArchived ? <ArchiveRestore size={13} /> : <Archive size={13} />}
+                    </button>
+                  )}
+                  {onDeleteStudy && (
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="p-1.5 rounded-lg hover:bg-red-500/10 text-[#8E8E93] hover:text-red-500 transition-colors"
+                      title="Eliminar prédica"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
               </div>
+              {study.subtitle && (
+                <p className="text-xs sm:text-sm text-[#8E8E93] font-normal mt-0.5 truncate">
+                  {study.subtitle}
+                </p>
+              )}
+            </div>
+
+            {/* Controles rápidos de escala y panel derecho */}
+            <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
+              {!isMainActive && (
+                <button
+                  onClick={() => setActiveVerseId('main')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115] text-xs font-bold active:scale-95 transition-all"
+                >
+                  <ArrowLeft size={12} />
+                  <span>Pasaje Central</span>
+                </button>
+              )}
+
+              <div className="flex items-center bg-white dark:bg-[#111115] border border-black/[0.05] dark:border-white/[0.06] rounded-xl p-0.5 text-xs">
+                <button
+                  onClick={() => setFontScale(Math.max(85, fontScale - 10))}
+                  className="px-2 py-1 text-[#636366] dark:text-neutral-400 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
+                  title="Reducir tamaño de texto"
+                >
+                  <ZoomOut size={12} className="inline mr-0.5" />
+                  <span>A-</span>
+                </button>
+                <span className="px-1.5 text-[11px] font-mono font-bold text-[#1C1C1E] dark:text-white">
+                  {fontScale}%
+                </span>
+                <button
+                  onClick={() => setFontScale(Math.min(165, fontScale + 10))}
+                  className="px-2 py-1 text-[#636366] dark:text-neutral-400 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
+                  title="Aumentar tamaño de texto"
+                >
+                  <ZoomIn size={12} className="inline mr-0.5" />
+                  <span>A+</span>
+                </button>
+              </div>
+
+              {onToggleOutline && (
+                <button
+                  onClick={onToggleOutline}
+                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 whitespace-nowrap border ${
+                    isOutlineOpen
+                      ? 'bg-[#1C1C1E] text-white border-transparent dark:bg-white/[0.12] dark:text-white dark:border-white/[0.12]'
+                      : 'bg-white dark:bg-[#111115] border-black/[0.05] dark:border-white/[0.06] text-[#1C1C1E] dark:text-neutral-300 hover:bg-[#F2F3F5] dark:hover:bg-[#1A1A22]'
+                  }`}
+                  title={isOutlineOpen ? "Ocultar panel lateral de apuntes" : "Mostrar panel lateral de apuntes"}
+                >
+                  <PanelRight size={13} />
+                  <span>{isOutlineOpen ? 'Ocultar Panel' : 'Panel Lateral'}</span>
+                </button>
+              )}
             </div>
           </div>
         )}
       </div>
 
-      {/* 3. BARRA MODULAR UNIFICADA EN PALETA LUZ Y GRIS (Sin trazos ni colores saturados) */}
-      <div className="surface-card mb-6 p-3 rounded-3xl bg-white dark:bg-[#18181C] space-y-2.5 w-full">
-        
-        {/* Fila 1: Modos de Enfoque Rápido */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 w-full bg-[#F2F3F5] dark:bg-[#202026] p-1.5 rounded-2xl text-xs">
-          <button
-            onClick={() => applyPreset('todo')}
-            className={`py-2 px-3 rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-1.5 w-full whitespace-nowrap ${
-              activePreset === 'todo'
-                ? 'bg-white dark:bg-[#2E2E36] text-[#1C1C1E] dark:text-white shadow-xs'
-                : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <Layers size={13} />
-            <span>Vista Completa</span>
-          </button>
-
-          <button
-            onClick={() => applyPreset('pasaje-notas')}
-            className={`py-2 px-3 rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-1.5 w-full whitespace-nowrap ${
-              activePreset === 'pasaje-notas'
-                ? 'bg-white dark:bg-[#2E2E36] text-[#1C1C1E] dark:text-white shadow-xs'
-                : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <Sparkles size={13} />
-            <span>Pasaje + Exégesis</span>
-          </button>
-
-          <button
-            onClick={() => applyPreset('pasaje-bosquejo')}
-            className={`py-2 px-3 rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-1.5 w-full whitespace-nowrap ${
-              activePreset === 'pasaje-bosquejo'
-                ? 'bg-white dark:bg-[#2E2E36] text-[#1C1C1E] dark:text-white shadow-xs'
-                : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <ListOrdered size={13} />
-            <span>Pasaje + Bosquejo</span>
-          </button>
-
-          <button
-            onClick={() => applyPreset('solo-citas')}
-            className={`py-2 px-3 rounded-xl font-bold transition-all duration-200 flex items-center justify-center gap-1.5 w-full whitespace-nowrap ${
-              activePreset === 'solo-citas'
-                ? 'bg-white dark:bg-[#2E2E36] text-[#1C1C1E] dark:text-white shadow-xs'
-                : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <Bookmark size={13} />
-            <span>Solo Citas</span>
-          </button>
+      {/* 2. BARRA ÚNICA DE BÚSQUEDA INSTANTÁNEA Y VISTAS (Compacta, calmada y lista para el púlpito) */}
+      <div className="mb-5 p-2 rounded-2xl bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] flex flex-col lg:flex-row items-stretch lg:items-center gap-2 w-full">
+        {/* Buscador instantáneo en la prédica */}
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+          <input
+            type="text"
+            value={canvasQuery}
+            onChange={(e) => setCanvasQuery(e.target.value)}
+            placeholder="Buscar punto del bosquejo o versículo al instante..."
+            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl bg-[#F4F5F7] dark:bg-[#17171E] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none"
+          />
+          {canvasQuery && (
+            <button
+              type="button"
+              onClick={() => setCanvasQuery('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white"
+              title="Limpiar búsqueda"
+            >
+              <X size={12} />
+            </button>
+          )}
         </div>
 
-        {/* Fila 2: Interruptores de Apartados Individuales en Luz y Gris */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full text-xs">
-          <button
-            onClick={() => toggleModule('pasaje')}
-            className={`py-2 px-3 rounded-2xl font-bold transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 w-full whitespace-nowrap ${
-              modules.pasaje
-                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
-                : 'bg-[#F2F3F5] dark:bg-[#222227] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <BookOpen size={13} />
-            <span>Pasaje Central</span>
-          </button>
+        {/* Enfoques rápidos + interruptores de módulos en una sola línea */}
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
+          <div className="flex items-center bg-[#F4F5F7] dark:bg-[#17171E] p-0.5 rounded-xl text-[11px] font-bold flex-shrink-0">
+            {([
+              { key: 'todo', label: 'Todo', icon: Layers },
+              { key: 'pasaje-notas', label: 'Exégesis', icon: Sparkles },
+              { key: 'pasaje-bosquejo', label: 'Bosquejo', icon: ListOrdered },
+              { key: 'solo-citas', label: 'Citas', icon: Bookmark },
+            ] as const).map(p => (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => applyPreset(p.key)}
+                className={`px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 whitespace-nowrap ${
+                  activePreset === p.key
+                    ? 'bg-white dark:bg-[#252530] text-[#1C1C1E] dark:text-white shadow-2xs'
+                    : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
+                }`}
+              >
+                <p.icon size={12} />
+                <span>{p.label}</span>
+              </button>
+            ))}
+          </div>
 
-          <button
-            onClick={() => toggleModule('citas')}
-            className={`py-2 px-3 rounded-2xl font-bold transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 w-full whitespace-nowrap ${
-              modules.citas
-                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
-                : 'bg-[#F2F3F5] dark:bg-[#222227] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <Bookmark size={13} />
-            <span>Citas ({study.relatedVerses.length})</span>
-          </button>
+          <span className="hidden sm:block w-px h-5 bg-black/[0.06] dark:bg-white/[0.08] flex-shrink-0" />
 
-          <button
-            onClick={() => toggleModule('notas')}
-            className={`py-2 px-3 rounded-2xl font-bold transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 w-full whitespace-nowrap ${
-              modules.notas
-                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
-                : 'bg-[#F2F3F5] dark:bg-[#222227] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <FileText size={13} />
-            <span>Exégesis y Léxico</span>
-          </button>
-
-          <button
-            onClick={() => toggleModule('bosquejo')}
-            className={`py-2 px-3 rounded-2xl font-bold transition-all duration-200 flex items-center justify-center gap-2 active:scale-95 w-full whitespace-nowrap ${
-              modules.bosquejo
-                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
-                : 'bg-[#F2F3F5] dark:bg-[#222227] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-            }`}
-          >
-            <ListOrdered size={13} />
-            <span>Bosquejo ({study.outlinePoints.length})</span>
-          </button>
+          <div className="flex items-center gap-1 flex-shrink-0 text-[11px] font-bold">
+            {([
+              { key: 'pasaje', label: 'Pasaje', icon: BookOpen },
+              { key: 'citas', label: `Citas (${study.relatedVerses.length})`, icon: Bookmark },
+              { key: 'notas', label: 'Notas', icon: FileText },
+              { key: 'bosquejo', label: `Bosquejo (${study.outlinePoints.length})`, icon: ListOrdered },
+            ] as const).map(m => (
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => toggleModule(m.key)}
+                className={`px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1 whitespace-nowrap border ${
+                  modules[m.key]
+                    ? 'bg-[#1C1C1E] text-white border-transparent dark:bg-white/[0.11] dark:text-white dark:border-white/[0.12]'
+                    : 'bg-transparent border-transparent text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.05]'
+                }`}
+              >
+                <m.icon size={11} />
+                <span>{m.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* CONTENIDO PRINCIPAL ESCALABLE */}
-      <div style={{ fontSize: `${fontScale}%` }} className="transition-all duration-200 space-y-6">
-        
-        {isWorkspaceLayout ? (
-          <div className="w-full space-y-6">
-            {/* Pasaje principal fijo a la izquierda; complementarios y notas a la derecha */}
-            <div className="grid gap-6 grid-cols-1 lg:grid-cols-12 items-start">
-              <div className="lg:col-span-7 lg:sticky lg:top-2">{renderMainHero()}</div>
-              <div className="lg:col-span-5 space-y-6 min-w-0">
-                {renderComplementPanel()}
-                {renderNotasExegeticas()}
-              </div>
-            </div>
-            {modules.bosquejo && renderBosquejoSection()}
-          </div>
-        ) : isDuoPasajeNotas ? (
-          <div className="w-full grid gap-6 grid-cols-1 lg:grid-cols-2">
-            {renderPasajeCentral()}
+      {/* 3. ESPACIO DE TRABAJO BENTO DE ANCHO COMPLETO (Cero espacios muertos) */}
+      <div className="transition-all duration-200 space-y-5">
+        {isDuoPasajeNotas ? (
+          <div className="w-full grid gap-5 grid-cols-1 lg:grid-cols-2 items-start">
+            {renderMainHero()}
             {renderNotasExegeticas()}
           </div>
+        ) : hasLeftCol && hasRightCol ? (
+          <div className="w-full grid gap-5 grid-cols-1 xl:grid-cols-12 items-start">
+            {/* Columna principal (Pasaje + Bosquejo): flujo central de predicación */}
+            <div className="xl:col-span-7 space-y-5 min-w-0">
+              {modules.pasaje && renderMainHero()}
+              {modules.bosquejo && renderBosquejoSection()}
+            </div>
+            {/* Columna de apoyo (Versículos complementarios + Notas exegéticas) */}
+            <div className="xl:col-span-5 space-y-5 min-w-0">
+              {modules.citas && renderComplementPanel()}
+              {modules.notas && renderNotasExegeticas()}
+            </div>
+          </div>
         ) : (
-          <div className="w-full space-y-6">
-            {modules.pasaje && renderPasajeCentral()}
+          <div className="w-full space-y-5">
+            {modules.pasaje && renderMainHero()}
             {modules.citas && renderCitasBiblicasSection()}
             {modules.notas && renderNotasExegeticas()}
             {modules.bosquejo && renderBosquejoSection()}
@@ -1627,7 +1490,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
         )}
 
         {/* RECURSOS VISUALES Y MULTIMEDIA */}
-        <section className="surface-card bg-white dark:bg-[#18181C] rounded-3xl overflow-hidden transition-all duration-200">
+        <section className="surface-card bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] overflow-hidden transition-all duration-200">
           <button
             onClick={() => setShowMediaResources(!showMediaResources)}
             className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"

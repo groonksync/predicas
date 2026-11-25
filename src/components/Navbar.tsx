@@ -91,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      <header className="h-16 bg-white/85 dark:bg-[#151518]/85 backdrop-blur-2xl px-4 sm:px-6 lg:px-8 flex items-center justify-between z-30 select-none font-sans sticky top-0 shadow-[0_2px_16px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-colors duration-200">
+      <header className="h-15 sm:h-16 bg-white/90 dark:bg-[#0C0C0F]/90 backdrop-blur-2xl border-b border-black/[0.04] dark:border-white/[0.06] px-4 sm:px-6 lg:px-8 flex items-center justify-between z-30 select-none font-sans flex-shrink-0 transition-colors duration-200">
         
         {/* Izquierda: Selector de Biblioteca y Creación Directa */}
         <div className="flex items-center gap-2.5 min-w-0">
@@ -194,7 +194,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setIsSidebarOpen(false)}
           />
 
-          <aside className="fixed top-0 left-0 bottom-0 w-[88vw] max-w-[400px] bg-[#F6F7F9] dark:bg-[#131316] z-50 shadow-2xl flex flex-col font-sans select-none animate-slideRight">
+          <aside className="fixed top-0 left-0 bottom-0 w-[88vw] max-w-[400px] bg-[#F6F7F9] dark:bg-[#0B0B0E] border-r border-black/[0.05] dark:border-white/[0.06] z-50 shadow-2xl flex flex-col font-sans select-none animate-slideRight">
             
             {/* Cabecera */}
             <div className="px-6 pt-6 pb-4 flex items-start justify-between gap-3">
@@ -445,7 +445,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Acción principal fija */}
-            <div className="px-6 py-4 bg-[#F6F7F9] dark:bg-[#131316]">
+            <div className="px-6 py-4 bg-[#F6F7F9] dark:bg-[#0B0B0E]">
               <button
                 onClick={() => {
                   setIsSidebarOpen(false);

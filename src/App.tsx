@@ -61,7 +61,15 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('study_theme', theme);
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.body.style.backgroundColor = theme === 'dark' ? '#09090B' : '#FAFAFB';
   }, [theme]);
+
+  useEffect(() => {
+    if (activeStudyId) {
+      localStorage.setItem('study_active_study', activeStudyId);
+    }
+  }, [activeStudyId]);
 
   useEffect(() => {
     localStorage.setItem('study_topics', JSON.stringify(topics));
@@ -318,18 +326,16 @@ export const App: React.FC = () => {
   const handleSelectTopic = (topicId: string) => {
     setActiveTopicId(topicId);
     const studies = studiesMap[topicId] || [];
-    if (studies.length > 0) {
-      setActiveStudyId(studies[0].id);
-    }
+    setActiveStudyId(studies.length > 0 ? studies[0].id : '');
   };
 
   const getThemeClass = () => {
-    if (theme === 'dark') return 'dark bg-[#121214] text-[#F5F5F7]';
+    if (theme === 'dark') return 'dark bg-[#09090B] text-[#F5F5F7]';
     return 'bg-[#FAFAFB] text-[#1C1C1E]';
   };
 
   return (
-    <div className={`min-h-screen flex flex-col ${getThemeClass()} transition-colors duration-200`}>
+    <div className={`h-screen overflow-hidden flex flex-col ${getThemeClass()} transition-colors duration-200`}>
       <Navbar
         topics={topics}
         activeTopicId={activeTopicId}
@@ -371,8 +377,8 @@ export const App: React.FC = () => {
             isOutlineOpen={isOutlineOpen}
           />
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F4F5F7] dark:bg-[#121214]">
-            <div className="max-w-lg w-full p-9 rounded-3xl surface-card bg-white dark:bg-[#18181C] space-y-5 animate-scaleIn">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F4F5F7] dark:bg-[#09090B]">
+            <div className="max-w-lg w-full p-9 rounded-3xl surface-card bg-white dark:bg-[#111115] space-y-5 animate-scaleIn">
               <div className="w-14 h-14 mx-auto rounded-2xl bg-[#F2F3F6] dark:bg-[#232329] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
                 <BookOpen size={26} />
               </div>

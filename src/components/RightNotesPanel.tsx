@@ -388,10 +388,10 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
   };
 
   return (
-    <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[460px] lg:static lg:w-[460px] xl:w-[490px] flex-shrink-0 bg-white dark:bg-[#18181C] flex flex-col h-full min-h-0 select-none font-sans shadow-2xl lg:shadow-xl animate-slideRight">
+    <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[430px] lg:static lg:w-[400px] xl:w-[430px] flex-shrink-0 bg-white dark:bg-[#0E0E12] border-l border-black/[0.05] dark:border-white/[0.06] flex flex-col h-full min-h-0 select-none font-sans shadow-2xl lg:shadow-none animate-slideRight">
       
       {/* 1. CABECERA PRINCIPAL SIN TRAZOS */}
-      <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#18181C]/95 backdrop-blur-xl">
+      <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#0E0E12]/95 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] flex items-center justify-center font-bold text-xs shadow-xs">
             <FileText size={15} />
