@@ -234,7 +234,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     if (allVerses.length === 0) return null;
 
     return (
-      <div className="p-4 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl space-y-3">
+      <div className="p-4 bg-[#F6F7F9] dark:bg-[#25252C] rounded-2xl space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-[#E8E9EE] dark:bg-[#2C2C34] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
@@ -388,10 +388,10 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
   };
 
   return (
-    <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[430px] lg:static lg:w-[400px] xl:w-[430px] flex-shrink-0 bg-white dark:bg-[#0E0E12] border-l border-black/[0.05] dark:border-white/[0.06] flex flex-col h-full min-h-0 select-none font-sans shadow-2xl lg:shadow-none animate-slideRight">
+    <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[430px] lg:static lg:w-[400px] xl:w-[430px] flex-shrink-0 bg-white dark:bg-[#1B1B20] border-l border-black/[0.05] dark:border-white/[0.06] flex flex-col h-full min-h-0 select-none font-sans shadow-2xl lg:shadow-none animate-slideRight">
       
       {/* 1. CABECERA PRINCIPAL SIN TRAZOS */}
-      <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#0E0E12]/95 backdrop-blur-xl">
+      <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#1B1B20]/95 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] flex items-center justify-center font-bold text-xs shadow-xs">
             <FileText size={15} />
@@ -418,7 +418,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
 
       {/* 2. PESTAÑAS SUPERIORES COMPACTAS SIN TRAZOS */}
       <div className="px-4 pb-2">
-        <div className="flex bg-[#F2F3F6] dark:bg-[#222228] p-1 rounded-2xl gap-1">
+        <div className="flex bg-[#F2F3F6] dark:bg-[#26262D] p-1 rounded-2xl gap-1">
           <button
             onClick={() => setActiveTab('notas')}
             className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
@@ -531,7 +531,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               </div>
 
               {isEditingNotes && (
-                <div className="flex flex-wrap items-center gap-1 p-1.5 bg-[#F2F3F6] dark:bg-[#222228] rounded-xl">
+                <div className="flex flex-wrap items-center gap-1 p-1.5 bg-[#F2F3F6] dark:bg-[#26262D] rounded-xl">
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('**', '**', 'negrita')}
@@ -589,14 +589,14 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   value={study.detailedNotes}
                   onChange={(e) => onUpdateStudy({ ...study, detailedNotes: e.target.value })}
                   rows={14}
-                  className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] bg-[#F6F7F9] dark:bg-[#202026] p-4 rounded-2xl resize-y focus:outline-none"
+                  className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] bg-[#F6F7F9] dark:bg-[#25252C] p-4 rounded-2xl resize-y focus:outline-none"
                   placeholder="Escribe aquí el estudio de palabras griegas/hebreas, trasfondo teológico, notas exegéticas o reflexiones..."
                   autoFocus
                 />
               ) : (
                 <div 
                   onClick={() => setIsEditingNotes(true)}
-                  className="w-full p-4 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl cursor-text min-h-[220px]"
+                  className="w-full p-4 bg-[#F6F7F9] dark:bg-[#25252C] rounded-2xl cursor-text min-h-[220px]"
                 >
                   {study.detailedNotes?.trim() ? (
                     <div className="text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] select-text">
@@ -639,7 +639,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               {study.outlinePoints.map((point, idx) => (
                 <div
                   key={point.id}
-                  className="bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl p-4 space-y-2.5"
+                  className="bg-[#F6F7F9] dark:bg-[#25252C] rounded-2xl p-4 space-y-2.5"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5 flex-1">
@@ -708,7 +708,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
         {/* PESTAÑA 3: AVISOS Y RECORDATORIOS DE PÚLPITO */}
         {activeTab === 'avisos' && (
           <div className="space-y-4">
-            <form onSubmit={handleAddQuickNote} className="p-4 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl space-y-3">
+            <form onSubmit={handleAddQuickNote} className="p-4 bg-[#F6F7F9] dark:bg-[#25252C] rounded-2xl space-y-3">
               <input
                 type="text"
                 placeholder="Escribe un recordatorio o pausa (ej. Hacer llamado al final)..."
@@ -746,7 +746,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               {study.quickNotes.map(n => (
                 <div
                   key={n.id}
-                  className="p-3.5 bg-[#F6F7F9] dark:bg-[#202026] rounded-2xl flex items-center justify-between gap-2"
+                  className="p-3.5 bg-[#F6F7F9] dark:bg-[#25252C] rounded-2xl flex items-center justify-between gap-2"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] whitespace-nowrap">

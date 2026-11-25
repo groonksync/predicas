@@ -157,12 +157,12 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
 
   return (
     <div className={`fixed inset-0 z-50 overflow-y-auto flex flex-col font-sans select-none animate-fadeIn transition-colors duration-300 ${
-      isLight ? 'bg-[#FAFAFB] text-[#141416]' : 'bg-[#09090B] text-[#F5F5F7]'
+      isLight ? 'bg-[#FAFAFB] text-[#141416]' : 'bg-[#161619] text-[#F5F5F7]'
     }`}>
       
       {/* 1. BARRA SUPERIOR DE CONTROL DEL PÚLPITO SIN TRAZOS */}
       <header className={`sticky top-0 backdrop-blur-xl px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 z-20 border-b ${
-        isLight ? 'bg-white/95 border-black/[0.05]' : 'bg-[#0D0D10]/95 border-white/[0.06]'
+        isLight ? 'bg-white/95 border-black/[0.05]' : 'bg-[#1B1B20]/95 border-white/[0.06]'
       }`}>
         
         {/* Izquierda: Reloj, Cronómetro y Meta */}
@@ -263,7 +263,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
               }`}
             >
               <Moon size={12} />
-              <span>Gris</span>
+              <span>Oscuro</span>
             </button>
           </div>
 
@@ -315,11 +315,11 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
 
       {/* 2. BARRA DE COORDINACIÓN MODULAR SIN TRAZOS Y EN PALETA LUZ/GRIS */}
       <nav className={`px-4 sm:px-6 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3 z-10 sticky top-[60px] backdrop-blur-md ${
-        isLight ? 'bg-[#F4F5F7]/90' : 'bg-[#09090B]/90'
+        isLight ? 'bg-[#F4F5F7]/90' : 'bg-[#161619]/90'
       }`}>
         
         <div className={`flex items-center gap-1 p-1 rounded-2xl text-xs ${
-          isLight ? 'bg-white shadow-xs' : 'bg-[#111115]'
+          isLight ? 'bg-white shadow-xs' : 'bg-[#1F1F24]'
         }`}>
           <button
             onClick={() => applyPreset('pasaje-notas')}
@@ -407,7 +407,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
             
             {modules.pasaje && (
               <section className={`rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between ${
-                isLight ? 'bg-white' : 'bg-[#111115]'
+                isLight ? 'bg-white' : 'bg-[#1F1F24]'
               }`}>
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
@@ -480,7 +480,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
 
             {modules.notas && (
               <section className={`rounded-3xl p-6 sm:p-8 shadow-sm flex flex-col justify-between ${
-                isLight ? 'bg-white' : 'bg-[#111115]'
+                isLight ? 'bg-white' : 'bg-[#1F1F24]'
               }`}>
                 <div>
                   <div className="flex items-center justify-between mb-5">
@@ -554,7 +554,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                     className={`p-5 rounded-2xl text-left transition-all active:scale-98 flex flex-col justify-between ${
                       isSelected
                         ? isLight ? 'bg-[#1C1C1E] text-white shadow-lg' : 'bg-white text-[#121214] shadow-lg'
-                        : isLight ? 'bg-white hover:bg-[#EAECEF]' : 'bg-[#111115] hover:bg-[#202026]'
+                        : isLight ? 'bg-white hover:bg-[#EAECEF]' : 'bg-[#1F1F24] hover:bg-[#202026]'
                     }`}
                   >
                     <div>
@@ -619,7 +619,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                               : 'bg-[#24242B] text-white shadow-xl'
                             : isLight
                               ? 'bg-white text-[#141416]'
-                              : 'bg-[#111115] text-[#F5F5F7]'
+                              : 'bg-[#1F1F24] text-[#F5F5F7]'
                         }`}
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
@@ -702,7 +702,7 @@ export const PulpitMode: React.FC<PulpitModeProps> = ({
                     <div
                       key={note.id}
                       className={`rounded-2xl p-5 flex flex-col justify-between shadow-xs ${
-                        isLight ? 'bg-white' : 'bg-[#111115]'
+                        isLight ? 'bg-white' : 'bg-[#1F1F24]'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 mb-2">

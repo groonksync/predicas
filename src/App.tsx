@@ -62,7 +62,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('study_theme', theme);
     document.documentElement.classList.toggle('dark', theme === 'dark');
-    document.body.style.backgroundColor = theme === 'dark' ? '#09090B' : '#FAFAFB';
+    document.body.style.backgroundColor = theme === 'dark' ? '#161619' : '#FAFAFB';
   }, [theme]);
 
   useEffect(() => {
@@ -330,7 +330,7 @@ export const App: React.FC = () => {
   };
 
   const getThemeClass = () => {
-    if (theme === 'dark') return 'dark bg-[#09090B] text-[#F5F5F7]';
+    if (theme === 'dark') return 'dark bg-[#161619] text-[#F5F5F7]';
     return 'bg-[#FAFAFB] text-[#1C1C1E]';
   };
 
@@ -377,8 +377,8 @@ export const App: React.FC = () => {
             isOutlineOpen={isOutlineOpen}
           />
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F4F5F7] dark:bg-[#09090B]">
-            <div className="max-w-lg w-full p-9 rounded-3xl surface-card bg-white dark:bg-[#111115] space-y-5 animate-scaleIn">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F4F5F7] dark:bg-[#161619]">
+            <div className="max-w-lg w-full p-9 rounded-3xl surface-card bg-white dark:bg-[#1F1F24] space-y-5 animate-scaleIn">
               <div className="w-14 h-14 mx-auto rounded-2xl bg-[#F2F3F6] dark:bg-[#232329] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
                 <BookOpen size={26} />
               </div>

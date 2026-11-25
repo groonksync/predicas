@@ -34,7 +34,8 @@ import {
   Target,
   PanelRight,
   Search,
-  X
+  X,
+  Calendar
 } from 'lucide-react';
 import { Study, BibleVerse, OutlinePoint, ResourceImage, ResourceVideo } from '../types';
 import { BigPreview, PreviewItem } from './QuickAccess';
@@ -477,7 +478,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
   const renderMainHero = () => {
     const v = study.mainVerse;
     return (
-      <section className="relative overflow-hidden rounded-[26px] bg-[#141418] dark:bg-[#111116] border border-black/[0.06] dark:border-white/[0.08] text-white p-6 sm:p-8 shadow-xl">
+      <section className="relative overflow-hidden rounded-[26px] bg-[#141418] dark:bg-[#24242B] border border-black/[0.06] dark:border-white/[0.08] text-white p-6 sm:p-8 shadow-xl">
         <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/[0.03] blur-3xl" />
 
         <div className="relative space-y-5">
@@ -617,20 +618,20 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
       : study.relatedVerses;
 
     return (
-      <section className="rounded-[26px] bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] surface-card p-5 sm:p-6 space-y-4">
+      <section className="rounded-[26px] bg-white dark:bg-[#1F1F24] border border-black/[0.04] dark:border-white/[0.06] surface-card p-5 sm:p-6 space-y-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8E8E93]">Refuerzan el mensaje</p>
             <h3 className="text-base font-black tracking-tight text-[#1C1C1E] dark:text-white mt-0.5 flex items-center gap-2">
               <span className="truncate">Versículos complementarios</span>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#1C1C23] text-[#8E8E93]">
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#2B2B33] text-[#8E8E93]">
                 {visibleVerses.length}
               </span>
             </h3>
           </div>
           <button
             onClick={onOpenVerseModal}
-            className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115] hover:opacity-90 active:scale-90 transition-all shadow-xs flex-shrink-0"
+            className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#1C1C1E] text-white dark:bg-white dark:text-[#161619] hover:opacity-90 active:scale-90 transition-all shadow-xs flex-shrink-0"
             title="Añadir versículo complementario"
           >
             <Plus size={17} />
@@ -640,21 +641,21 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
         {study.relatedVerses.length === 0 ? (
           <button
             onClick={onOpenVerseModal}
-            className="w-full py-7 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] border border-dashed border-black/[0.08] dark:border-white/[0.08] text-xs text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors flex flex-col items-center gap-1.5"
+            className="w-full py-7 rounded-2xl bg-[#F6F7F9] dark:bg-[#27272E] border border-dashed border-black/[0.08] dark:border-white/[0.08] text-xs text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors flex flex-col items-center gap-1.5"
           >
             <Plus size={16} />
             <span>Añade versículos que complementen el pasaje principal</span>
           </button>
         ) : visibleVerses.length === 0 ? (
-          <div className="py-6 text-center text-xs text-[#8E8E93] rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C]">
+          <div className="py-6 text-center text-xs text-[#8E8E93] rounded-2xl bg-[#F6F7F9] dark:bg-[#27272E]">
             Sin coincidencias para “{canvasQuery}”
           </div>
         ) : (
           <ol className="relative space-y-1">
             <span className="absolute left-[14px] top-4 bottom-4 w-px bg-black/[0.07] dark:bg-white/[0.07]" />
             {visibleVerses.map((verse, idx) => (
-              <li key={verse.id} className="group relative flex gap-3.5 p-2 -mx-2 rounded-2xl hover:bg-[#F6F7F9] dark:hover:bg-[#17171E] transition-colors">
-                <span className="relative z-10 w-[28px] h-[28px] rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0 bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115] ring-4 ring-white dark:ring-[#111115]">
+              <li key={verse.id} className="group relative flex gap-3.5 p-2 -mx-2 rounded-2xl hover:bg-[#F6F7F9] dark:hover:bg-[#27272E] transition-colors">
+                <span className="relative z-10 w-[28px] h-[28px] rounded-full flex items-center justify-center text-[11px] font-black flex-shrink-0 bg-[#1C1C1E] text-white dark:bg-white dark:text-[#161619] ring-4 ring-white dark:ring-[#1F1F24]">
                   {idx + 1}
                 </span>
                 <div className="min-w-0 flex-1 pb-1">
@@ -878,7 +879,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
 
   // 3. Render Notas Exegéticas, Léxico Bíblico y Bloques Homiléticos (Diseño compacto sin apilamiento)
   const renderNotasExegeticas = () => (
-    <section className="surface-card bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] p-5 sm:p-6 flex flex-col justify-between transition-all duration-200">
+    <section className="surface-card bg-white dark:bg-[#1F1F24] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] p-5 sm:p-6 flex flex-col justify-between transition-all duration-200">
       <div>
         <div className="flex items-center justify-between gap-3 mb-3.5">
           <div className="min-w-0">
@@ -894,8 +895,8 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
               onClick={() => setShowLexiconDrawer(!showLexiconDrawer)}
               className={`px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap ${
                 showLexiconDrawer
-                  ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115]'
-                  : 'bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#1A1A22] dark:hover:bg-[#23232D] text-[#1C1C1E] dark:text-neutral-200'
+                  ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#161619]'
+                  : 'bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#2A2A32] dark:hover:bg-[#23232D] text-[#1C1C1E] dark:text-neutral-200'
               }`}
               title="Abrir diccionario rápido de términos en Griego y Hebreo"
             >
@@ -906,7 +907,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
             <button
               type="button"
               onClick={() => setIsEditingCanvasNotes(!isEditingCanvasNotes)}
-              className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#111115] transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+              className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#161619] transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
             >
               {isEditingCanvasNotes ? (
                 <>
@@ -925,7 +926,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
 
         {/* Cajón de Diccionario Strong Rápido (Griego y Hebreo en 1 clic) */}
         {showLexiconDrawer && (
-          <div className="mb-4 p-3.5 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] border border-black/[0.04] dark:border-white/[0.05] space-y-2.5 animate-fadeIn">
+          <div className="mb-4 p-3.5 rounded-2xl bg-[#F6F7F9] dark:bg-[#27272E] border border-black/[0.04] dark:border-white/[0.05] space-y-2.5 animate-fadeIn">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#8E8E93]">
                 Diccionario Strong (Toca para insertar)
@@ -944,7 +945,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
                   key={item.strong}
                   type="button"
                   onClick={() => handleInsertPrebuiltLexicon(item)}
-                  className="p-2.5 rounded-xl bg-white dark:bg-[#111115] hover:bg-[#EAECEF] dark:hover:bg-[#1E1E26] text-left transition-all active:scale-[0.99] space-y-0.5"
+                  className="p-2.5 rounded-xl bg-white dark:bg-[#1F1F24] hover:bg-[#EAECEF] dark:hover:bg-[#1E1E26] text-left transition-all active:scale-[0.99] space-y-0.5"
                 >
                   <div className="flex items-center justify-between gap-1">
                     <span className="text-xs font-bold text-[#1C1C1E] dark:text-white truncate">
@@ -968,7 +969,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           <button
             type="button"
             onClick={() => handleInsertLexicon('Griego')}
-            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#27272E] dark:hover:bg-[#31313B] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
             <BookA size={11} />
             <span>Griego</span>
@@ -976,7 +977,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           <button
             type="button"
             onClick={() => handleInsertLexicon('Hebreo')}
-            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#27272E] dark:hover:bg-[#31313B] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
             <BookA size={11} />
             <span>Hebreo</span>
@@ -984,7 +985,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           <button
             type="button"
             onClick={() => handleInsertHomileticBlock('ilustracion')}
-            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#27272E] dark:hover:bg-[#31313B] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
             <Lightbulb size={11} />
             <span>Ilustración</span>
@@ -992,7 +993,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           <button
             type="button"
             onClick={() => handleInsertHomileticBlock('aplicacion')}
-            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#27272E] dark:hover:bg-[#31313B] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
             <Target size={11} />
             <span>Aplicación</span>
@@ -1000,7 +1001,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           <button
             type="button"
             onClick={() => handleInsertHomileticBlock('frase')}
-            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#17171E] dark:hover:bg-[#20202A] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
+            className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#F6F7F9] hover:bg-[#EAECEF] dark:bg-[#27272E] dark:hover:bg-[#31313B] text-[#636366] dark:text-neutral-300 flex items-center gap-1 transition-colors whitespace-nowrap flex-shrink-0"
           >
             <Quote size={11} />
             <span>Frase</span>
@@ -1010,7 +1011,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
         {/* Edición o Visualización Formateada */}
         {isEditingCanvasNotes ? (
           <div className="space-y-2.5 animate-fadeIn">
-            <div className="flex items-center gap-1 p-1 bg-[#F2F3F5] dark:bg-[#17171E] rounded-xl w-fit">
+            <div className="flex items-center gap-1 p-1 bg-[#F2F3F5] dark:bg-[#27272E] rounded-xl w-fit">
               <button onClick={() => handleInsertFormat('**', '**', 'negrita')} className="p-1.5 rounded-lg hover:bg-white dark:hover:bg-[#252530] text-[#636366] dark:text-neutral-300" title="Negrita">
                 <Bold size={13} />
               </button>
@@ -1029,7 +1030,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
               value={study.detailedNotes}
               onChange={(e) => onUpdateStudy({ ...study, detailedNotes: e.target.value })}
               rows={8}
-              className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-100 bg-[#F6F7F9] dark:bg-[#16161C] p-4 rounded-2xl outline-none resize-y"
+              className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-100 bg-[#F6F7F9] dark:bg-[#27272E] p-4 rounded-2xl outline-none resize-y"
               placeholder="Escribe el estudio de palabras griegas/hebreas, notas teológicas o reflexiones..."
               autoFocus
             />
@@ -1037,7 +1038,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
         ) : (
           <div
             onClick={() => setIsEditingCanvasNotes(true)}
-            className="p-4 sm:p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-200 cursor-text select-text min-h-[120px]"
+            className="p-4 sm:p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#27272E] font-sans leading-relaxed text-[#1C1C1E] dark:text-neutral-200 cursor-text select-text min-h-[120px]"
             style={{ fontSize: `calc(0.92rem * ${fontScale / 100})` }}
           >
             {study.detailedNotes?.trim() ? (
@@ -1065,13 +1066,13 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
       : study.outlinePoints;
 
     return (
-      <section className="surface-card bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] p-5 sm:p-7 space-y-4 transition-all duration-200">
+      <section className="surface-card bg-white dark:bg-[#1F1F24] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] p-5 sm:p-7 space-y-4 transition-all duration-200">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#8E8E93]">Flujo del mensaje</p>
             <h3 className="text-base sm:text-lg font-black tracking-tight text-[#1C1C1E] dark:text-white mt-0.5 flex items-center gap-2">
               <span>Estructura del Bosquejo</span>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#1C1C23] text-[#8E8E93]">
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#F2F3F5] dark:bg-[#2B2B33] text-[#8E8E93]">
                 {visiblePoints.length}
               </span>
             </h3>
@@ -1080,7 +1081,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
           <button
             type="button"
             onClick={handleAddPoint}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#111115] active:scale-95 transition-all whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#161619] active:scale-95 transition-all whitespace-nowrap"
           >
             <Plus size={13} />
             <span>Nuevo Punto</span>
@@ -1089,7 +1090,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
 
         <div className="space-y-2.5">
           {visiblePoints.length === 0 ? (
-            <div className="py-8 text-center text-xs text-[#8E8E93] rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C]">
+            <div className="py-8 text-center text-xs text-[#8E8E93] rounded-2xl bg-[#F6F7F9] dark:bg-[#27272E]">
               {q ? `Sin puntos que coincidan con “${canvasQuery}”` : 'Aún no hay puntos en este bosquejo.'}
             </div>
           ) : (
@@ -1099,7 +1100,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
               return (
                 <div
                   key={point.id}
-                  className="group p-4 sm:p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#16161C] hover:bg-[#EFEFF3] dark:hover:bg-[#1A1A22] transition-all duration-200 space-y-2"
+                  className="group p-4 sm:p-5 rounded-2xl bg-[#F6F7F9] dark:bg-[#27272E] hover:bg-[#EFEFF3] dark:hover:bg-[#2C2C35] transition-all duration-200 space-y-2"
                 >
               {isEditing ? (
                 <div className="space-y-3 animate-fadeIn">
@@ -1239,67 +1240,105 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
   return (
     <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-8 py-5 pb-28 mx-auto w-full max-w-[1720px] transition-all duration-200 font-sans select-none">
       
-      {/* 1. CABECERA EDITORIAL UNIFICADA (Título, Fecha, Escala y Panel Lateral en un solo bloque limpio) */}
+      {/* 1. CABECERA EDITORIAL UNIFICADA */}
       <div className="mb-4">
         {isEditingHeader ? (
-          <div className="surface-card space-y-3 p-5 rounded-3xl bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] animate-scaleIn">
+          <div className="surface-card space-y-3 p-5 rounded-[24px] bg-white dark:bg-[#1F1F24] border border-black/[0.05] dark:border-white/[0.07] animate-scaleIn">
             <input
               type="text"
               value={study.title}
               onChange={(e) => onUpdateStudy({ ...study, title: e.target.value })}
               placeholder="Título del mensaje..."
-              className="w-full text-2xl font-black bg-[#F2F3F5] dark:bg-[#17171E] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-white outline-none"
+              className="w-full text-2xl font-black bg-[#F2F3F5] dark:bg-[#27272E] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-white outline-none"
             />
             <input
               type="text"
               value={study.subtitle}
               onChange={(e) => onUpdateStudy({ ...study, subtitle: e.target.value })}
               placeholder="Propósito o subtítulo..."
-              className="w-full text-sm bg-[#F2F3F5] dark:bg-[#17171E] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-neutral-200 outline-none"
+              className="w-full text-sm bg-[#F2F3F5] dark:bg-[#27272E] p-3.5 rounded-2xl text-[#1C1C1E] dark:text-neutral-200 outline-none"
             />
             <div className="flex justify-end gap-2 pt-1">
               <button
                 onClick={() => setIsEditingHeader(false)}
-                className="px-5 py-2 text-xs font-bold bg-[#1C1C1E] dark:bg-white text-white dark:text-[#111115] rounded-xl"
+                className="px-5 py-2 text-xs font-bold bg-[#1C1C1E] dark:bg-white text-white dark:text-[#161619] rounded-xl"
               >
                 Guardar Cambios
               </button>
             </div>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-3 px-0.5">
-            <div className="group min-w-0 flex-1">
-              <div className="flex items-center gap-2 flex-wrap mb-1.5">
+          <header className="surface-card rounded-[24px] bg-white dark:bg-[#1F1F24] border border-black/[0.05] dark:border-white/[0.07] px-5 sm:px-6 py-4 sm:py-5 space-y-3.5 transition-colors duration-200">
+            {/* Fila superior: Estado de fecha + Controles agrupados */}
+            <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-black/[0.05] dark:border-white/[0.06]">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span
-                  className={`text-[11px] font-bold px-2.5 py-0.5 rounded-lg inline-flex items-center gap-1.5 ${
+                  className={`text-[11px] font-bold px-3 py-1 rounded-xl inline-flex items-center gap-2 ${
                     dateInfo.tone === 'hoy' || dateInfo.tone === 'proxima'
-                      ? 'bg-[#1C1C1E] text-white dark:bg-white/[0.12] dark:text-white border border-transparent dark:border-white/[0.12]'
-                      : 'bg-[#F2F3F5] dark:bg-[#16161C] text-[#636366] dark:text-neutral-400'
+                      ? 'bg-[#1C1C1E] text-white dark:bg-white/[0.1] dark:text-white border border-transparent dark:border-white/[0.1]'
+                      : 'bg-[#F2F3F5] dark:bg-[#27272E] text-[#636366] dark:text-neutral-300'
                   }`}
                   title={dateInfo.message}
                 >
+                  {(dateInfo.tone === 'hoy' || dateInfo.tone === 'proxima') && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
+                  )}
+                  <Calendar size={12} className="opacity-70 flex-shrink-0" />
                   <span>{dateInfo.weekday ? `${dateInfo.weekday}, ${dateInfo.long}` : study.date}</span>
-                  <span className="opacity-70">· {dateInfo.message}</span>
+                  <span className="opacity-65 font-medium">· {dateInfo.message}</span>
                 </span>
-                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-lg bg-[#F2F3F5] dark:bg-[#16161C] text-[#636366] dark:text-neutral-400 inline-flex items-center gap-1" title="Duración estimada">
-                  <Clock size={11} />
+
+                <span className="text-[11px] font-semibold px-2.5 py-1 rounded-xl bg-[#F2F3F5] dark:bg-[#27272E] text-[#636366] dark:text-neutral-300 inline-flex items-center gap-1" title="Duración estimada">
+                  <Clock size={11} className="opacity-70" />
                   <span>~{estimatedMinutes} min</span>
                 </span>
+
                 {study.isArchived && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-black/[0.08] dark:bg-white/[0.1] text-[#1C1C1E] dark:text-white">
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-xl bg-black/[0.08] dark:bg-white/[0.1] text-[#1C1C1E] dark:text-white">
                     Archivado
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-black text-[#1C1C1E] dark:text-white tracking-tight leading-tight truncate">
-                  {study.title}
-                </h1>
-                <div className="flex items-center gap-0.5 opacity-50 group-hover:opacity-100 transition-opacity flex-shrink-0">
+              {/* Grupo derecho: Zoom + Acciones del estudio + Panel Lateral */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {!isMainActive && (
+                  <button
+                    onClick={() => setActiveVerseId('main')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#161619] text-xs font-bold active:scale-95 transition-all"
+                  >
+                    <ArrowLeft size={12} />
+                    <span>Pasaje Central</span>
+                  </button>
+                )}
+
+                <div className="flex items-center bg-[#F4F5F7] dark:bg-[#27272E] rounded-xl p-0.5 text-xs">
+                  <button
+                    onClick={() => setFontScale(Math.max(85, fontScale - 10))}
+                    className="px-2 py-1 text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
+                    title="Reducir tamaño de texto"
+                  >
+                    <ZoomOut size={12} className="inline mr-0.5" />
+                    <span>A-</span>
+                  </button>
+                  <span className="px-1.5 text-[11px] font-mono font-bold text-[#1C1C1E] dark:text-white">
+                    {fontScale}%
+                  </span>
+                  <button
+                    onClick={() => setFontScale(Math.min(165, fontScale + 10))}
+                    className="px-2 py-1 text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
+                    title="Aumentar tamaño de texto"
+                  >
+                    <ZoomIn size={12} className="inline mr-0.5" />
+                    <span>A+</span>
+                  </button>
+                </div>
+
+                {/* Acciones del estudio en cápsula limpia */}
+                <div className="flex items-center bg-[#F4F5F7] dark:bg-[#27272E] rounded-xl p-0.5">
                   <button
                     onClick={() => setIsEditingHeader(true)}
-                    className="p-1.5 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.08] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
+                    className="p-1.5 rounded-lg text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white hover:bg-white dark:hover:bg-[#32323B] transition-colors"
                     title="Editar título y subtítulo"
                   >
                     <Edit2 size={13} />
@@ -1307,7 +1346,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
                   {onToggleArchiveStudy && (
                     <button
                       onClick={() => onToggleArchiveStudy(study.id)}
-                      className="p-1.5 rounded-lg hover:bg-black/[0.05] dark:hover:bg-white/[0.08] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
+                      className="p-1.5 rounded-lg text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white hover:bg-white dark:hover:bg-[#32323B] transition-colors"
                       title={study.isArchived ? "Restaurar prédica" : "Archivar prédica"}
                     >
                       {study.isArchived ? <ArchiveRestore size={13} /> : <Archive size={13} />}
@@ -1316,76 +1355,68 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
                   {onDeleteStudy && (
                     <button
                       onClick={() => setShowDeleteConfirm(true)}
-                      className="p-1.5 rounded-lg hover:bg-red-500/10 text-[#8E8E93] hover:text-red-500 transition-colors"
+                      className="p-1.5 rounded-lg text-[#636366] dark:text-neutral-300 hover:text-red-500 hover:bg-red-500/10 transition-colors"
                       title="Eliminar prédica"
                     >
                       <Trash2 size={13} />
                     </button>
                   )}
                 </div>
+
+                {onToggleOutline && (
+                  <button
+                    onClick={onToggleOutline}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 whitespace-nowrap ${
+                      isOutlineOpen
+                        ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#161619]'
+                        : 'bg-[#F4F5F7] dark:bg-[#27272E] text-[#1C1C1E] dark:text-neutral-200 hover:bg-[#E8E9EE] dark:hover:bg-[#32323B]'
+                    }`}
+                    title={isOutlineOpen ? "Ocultar panel lateral de apuntes" : "Mostrar panel lateral de apuntes"}
+                  >
+                    <PanelRight size={13} />
+                    <span>{isOutlineOpen ? 'Ocultar Panel' : 'Panel Lateral'}</span>
+                  </button>
+                )}
               </div>
-              {study.subtitle && (
-                <p className="text-xs sm:text-sm text-[#8E8E93] font-normal mt-0.5 truncate">
-                  {study.subtitle}
-                </p>
-              )}
             </div>
 
-            {/* Controles rápidos de escala y panel derecho */}
-            <div className="flex items-center gap-2 flex-wrap flex-shrink-0">
-              {!isMainActive && (
-                <button
-                  onClick={() => setActiveVerseId('main')}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#111115] text-xs font-bold active:scale-95 transition-all"
-                >
-                  <ArrowLeft size={12} />
-                  <span>Pasaje Central</span>
-                </button>
-              )}
+            {/* Fila inferior: Título, subtítulo y resumen rápido del sermón */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-3">
+              <div className="min-w-0">
+                <h1 className="text-2xl sm:text-3xl font-black text-[#1C1C1E] dark:text-white tracking-tight leading-tight">
+                  {study.title}
+                </h1>
+                {study.subtitle && (
+                  <p className="text-xs sm:text-sm text-[#6E6E77] dark:text-neutral-400 font-normal mt-1 leading-relaxed">
+                    {study.subtitle}
+                  </p>
+                )}
+              </div>
 
-              <div className="flex items-center bg-white dark:bg-[#111115] border border-black/[0.05] dark:border-white/[0.06] rounded-xl p-0.5 text-xs">
-                <button
-                  onClick={() => setFontScale(Math.max(85, fontScale - 10))}
-                  className="px-2 py-1 text-[#636366] dark:text-neutral-400 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
-                  title="Reducir tamaño de texto"
-                >
-                  <ZoomOut size={12} className="inline mr-0.5" />
-                  <span>A-</span>
-                </button>
-                <span className="px-1.5 text-[11px] font-mono font-bold text-[#1C1C1E] dark:text-white">
-                  {fontScale}%
+              {/* Resumen rápido del contenido de la prédica */}
+              <div className="flex items-center gap-2 flex-wrap flex-shrink-0 text-[11px] font-semibold text-[#6E6E77] dark:text-neutral-400">
+                {study.mainVerse?.reference && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F4F5F7] dark:bg-[#27272E] text-[#1C1C1E] dark:text-neutral-200 font-bold">
+                    <BookOpen size={11} className="opacity-70" />
+                    <span>{study.mainVerse.reference}</span>
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F4F5F7] dark:bg-[#27272E]">
+                  <Bookmark size={11} className="opacity-70" />
+                  <span>{study.relatedVerses.length} citas</span>
                 </span>
-                <button
-                  onClick={() => setFontScale(Math.min(165, fontScale + 10))}
-                  className="px-2 py-1 text-[#636366] dark:text-neutral-400 hover:text-[#1C1C1E] dark:hover:text-white rounded-lg transition-colors"
-                  title="Aumentar tamaño de texto"
-                >
-                  <ZoomIn size={12} className="inline mr-0.5" />
-                  <span>A+</span>
-                </button>
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F4F5F7] dark:bg-[#27272E]">
+                  <ListOrdered size={11} className="opacity-70" />
+                  <span>{study.outlinePoints.length} pts</span>
+                </span>
               </div>
-
-              {onToggleOutline && (
-                <button
-                  onClick={onToggleOutline}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all duration-200 active:scale-95 whitespace-nowrap border ${
-                    isOutlineOpen
-                      ? 'bg-[#1C1C1E] text-white border-transparent dark:bg-white/[0.12] dark:text-white dark:border-white/[0.12]'
-                      : 'bg-white dark:bg-[#111115] border-black/[0.05] dark:border-white/[0.06] text-[#1C1C1E] dark:text-neutral-300 hover:bg-[#F2F3F5] dark:hover:bg-[#1A1A22]'
-                  }`}
-                  title={isOutlineOpen ? "Ocultar panel lateral de apuntes" : "Mostrar panel lateral de apuntes"}
-                >
-                  <PanelRight size={13} />
-                  <span>{isOutlineOpen ? 'Ocultar Panel' : 'Panel Lateral'}</span>
-                </button>
-              )}
             </div>
-          </div>
+          </header>
         )}
       </div>
 
       {/* 2. BARRA ÚNICA DE BÚSQUEDA INSTANTÁNEA Y VISTAS (Compacta, calmada y lista para el púlpito) */}
-      <div className="mb-5 p-2 rounded-2xl bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] flex flex-col lg:flex-row items-stretch lg:items-center gap-2 w-full">
+      <div className="mb-5 p-2 rounded-2xl bg-white dark:bg-[#1F1F24] border border-black/[0.04] dark:border-white/[0.06] flex flex-col lg:flex-row items-stretch lg:items-center gap-2 w-full">
         {/* Buscador instantáneo en la prédica */}
         <div className="relative flex-1 min-w-[200px]">
           <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
@@ -1394,7 +1425,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
             value={canvasQuery}
             onChange={(e) => setCanvasQuery(e.target.value)}
             placeholder="Buscar punto del bosquejo o versículo al instante..."
-            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl bg-[#F4F5F7] dark:bg-[#17171E] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none"
+            className="w-full pl-8 pr-8 py-1.5 text-xs rounded-xl bg-[#F4F5F7] dark:bg-[#27272E] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none"
           />
           {canvasQuery && (
             <button
@@ -1410,7 +1441,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
 
         {/* Enfoques rápidos + interruptores de módulos en una sola línea */}
         <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none">
-          <div className="flex items-center bg-[#F4F5F7] dark:bg-[#17171E] p-0.5 rounded-xl text-[11px] font-bold flex-shrink-0">
+          <div className="flex items-center bg-[#F4F5F7] dark:bg-[#27272E] p-0.5 rounded-xl text-[11px] font-bold flex-shrink-0">
             {([
               { key: 'todo', label: 'Todo', icon: Layers },
               { key: 'pasaje-notas', label: 'Exégesis', icon: Sparkles },
@@ -1423,7 +1454,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
                 onClick={() => applyPreset(p.key)}
                 className={`px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 whitespace-nowrap ${
                   activePreset === p.key
-                    ? 'bg-white dark:bg-[#252530] text-[#1C1C1E] dark:text-white shadow-2xs'
+                    ? 'bg-white dark:bg-[#34343E] text-[#1C1C1E] dark:text-white shadow-2xs'
                     : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
                 }`}
               >
@@ -1490,7 +1521,7 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
         )}
 
         {/* RECURSOS VISUALES Y MULTIMEDIA */}
-        <section className="surface-card bg-white dark:bg-[#111115] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] overflow-hidden transition-all duration-200">
+        <section className="surface-card bg-white dark:bg-[#1F1F24] border border-black/[0.04] dark:border-white/[0.06] rounded-[26px] overflow-hidden transition-all duration-200">
           <button
             onClick={() => setShowMediaResources(!showMediaResources)}
             className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-black/[0.02] dark:hover:bg-white/[0.02] transition-colors"
