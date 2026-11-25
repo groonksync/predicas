@@ -328,14 +328,14 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
         className={`w-[96vw] max-w-6xl h-[94vh] max-h-[920px] rounded-2xl shadow-2xl flex flex-col overflow-hidden my-auto transition-colors duration-200 ${
           isLight 
             ? 'bg-[#F8F9FB] text-[#1C1C1E]' 
-            : 'bg-[#161619] text-[#F5F5F7]'
+            : 'bg-[#0B0B0B] text-[#F5F5F7]'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Cabecera Espaciosa con Márgenes Generosos */}
         <div className={`px-8 pt-7 pb-5 flex items-center justify-between flex-shrink-0 transition-colors ${
-          isLight ? 'bg-white' : 'bg-[#1E1E22]'
+          isLight ? 'bg-white' : 'bg-[#121212]'
         }`}>
           <div>
             <h2 className={`text-xl sm:text-2xl font-bold tracking-tight leading-tight ${
@@ -357,7 +357,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                 showLivePreview
                   ? isLight
                     ? 'bg-[#EAEAEE] text-slate-800 hover:bg-[#DEDEE4]'
-                    : 'bg-[#2A2A2F] text-neutral-200 hover:bg-[#36363C]'
+                    : 'bg-[#1E1E1E] text-neutral-200 hover:bg-[#282828]'
                   : isLight
                     ? 'bg-[#1C1C1E] text-white hover:bg-black shadow-xs'
                     : 'bg-white text-black hover:bg-neutral-200 shadow-xs'
@@ -374,7 +374,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-95 ${
                 isLight 
                   ? 'bg-[#EAEAEE] text-slate-700 hover:bg-[#DEDEE4] hover:text-black' 
-                  : 'bg-[#2A2A2F] text-neutral-300 hover:bg-[#36363C] hover:text-white'
+                  : 'bg-[#1E1E1E] text-neutral-300 hover:bg-[#282828] hover:text-white'
               }`}
               title="Cerrar modal"
             >
@@ -421,7 +421,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
               {/* Input inline para crear nuevo tema */}
               {isCreatingTopic && (
                 <div className={`flex items-center gap-2 p-2.5 rounded-2xl animate-fadeIn ${
-                  isLight ? 'bg-white shadow-xs' : 'bg-[#222227]'
+                  isLight ? 'bg-white shadow-xs' : 'bg-[#1A1A1A]'
                 }`}>
                   <input
                     type="text"
@@ -482,7 +482,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                             : 'bg-white text-black shadow-md font-bold scale-[1.02]'
                           : isLight
                             ? 'bg-[#EAEAEE] text-slate-800 hover:bg-[#DEDEE4]'
-                            : 'bg-[#222227] text-neutral-300 hover:bg-[#2A2A30] hover:text-white'
+                            : 'bg-[#1A1A1A] text-neutral-300 hover:bg-[#2A2A30] hover:text-white'
                       }`}
                     >
                       {t.name}
@@ -573,7 +573,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
                 {/* Tabs de Modo: Luz y Gris */}
                 <div className={`flex items-center gap-1 p-1 rounded-2xl self-start sm:self-auto ${
-                  isLight ? 'bg-[#EAEAEE]' : 'bg-[#141417]'
+                  isLight ? 'bg-[#EAEAEE]' : 'bg-[#0E0E0E]'
                 }`}>
                   <button
                     type="button"
@@ -618,7 +618,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
                     {/* Filtros de Testamento */}
                     <div className={`flex items-center gap-1 p-1 rounded-xl ${
-                      isLight ? 'bg-[#F2F2F7]' : 'bg-[#141417]'
+                      isLight ? 'bg-[#F2F2F7]' : 'bg-[#0E0E0E]'
                     }`}>
                       <button
                         type="button"
@@ -666,7 +666,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                         className={`w-full rounded-xl pl-8 pr-3 py-1.5 text-xs outline-none ${
                           isLight 
                             ? 'bg-[#F2F2F7] text-slate-900 placeholder:text-neutral-400' 
-                            : 'bg-[#141417] text-white placeholder:text-neutral-500'
+                            : 'bg-[#0E0E0E] text-white placeholder:text-neutral-500'
                         }`}
                       />
                     </div>
@@ -678,7 +678,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                       1. Selecciona el Libro:
                     </span>
                     <div className={`flex flex-wrap gap-1.5 max-h-36 overflow-y-auto p-2 rounded-2xl scrollbar-thin scrollbar-thumb-neutral-400/20 ${
-                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#0E0E0E]'
                     }`}>
                       {filteredBooks.map((b) => {
                         const isBookActive = selectedBook.name === b.name;
@@ -700,7 +700,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                                   : 'bg-white text-black font-bold shadow-xs scale-[1.02]'
                                 : isLight
                                   ? 'bg-white text-slate-800 hover:bg-[#EAEAEA]'
-                                  : 'bg-[#222227] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
+                                  : 'bg-[#1A1A1A] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
                             }`}
                           >
                             <span>{b.name}</span>
@@ -723,7 +723,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                     </div>
 
                     <div className={`flex flex-wrap gap-1 max-h-24 overflow-y-auto p-2 rounded-2xl scrollbar-thin scrollbar-thumb-neutral-400/20 ${
-                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#0E0E0E]'
                     }`}>
                       {Array.from({ length: selectedBook.chaptersCount }, (_, i) => i + 1).map((ch) => {
                         const isChActive = selectedChapter === ch;
@@ -744,7 +744,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                                   : 'bg-white text-black shadow-xs scale-105'
                                 : isLight
                                   ? 'bg-white text-slate-800 hover:bg-[#EAEAEA]'
-                                  : 'bg-[#222227] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
+                                  : 'bg-[#1A1A1A] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
                             }`}
                           >
                             {ch}
@@ -771,7 +771,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                       </div>
                     ) : (
                       <div className={`flex flex-wrap gap-1 max-h-28 overflow-y-auto p-2 rounded-2xl scrollbar-thin scrollbar-thumb-neutral-400/20 ${
-                        isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                        isLight ? 'bg-[#F4F4F7]' : 'bg-[#0E0E0E]'
                       }`}>
                         {chapterVerses.map((item) => {
                           const isStart = item.verse === selectedVerseStart;
@@ -794,7 +794,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                                     : 'bg-white/20 text-white font-bold'
                                   : isLight
                                     ? 'bg-white text-slate-800 hover:bg-[#EAEAEA]'
-                                    : 'bg-[#222227] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
+                                    : 'bg-[#1A1A1A] text-neutral-300 hover:bg-[#2B2B31] hover:text-white'
                               }`}
                               title={`Versículo ${item.verse}: ${item.text.substring(0, 60)}...`}
                             >
@@ -808,7 +808,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
                   {/* Texto del Pasaje Seleccionado en RVR1960 */}
                   <div className={`p-4 rounded-2xl space-y-1.5 ${
-                    isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                    isLight ? 'bg-[#F4F4F7]' : 'bg-[#0E0E0E]'
                   }`}>
                     <div className="flex items-center justify-between text-xs font-bold">
                       <span className={isLight ? 'text-slate-900' : 'text-white'}>
@@ -878,7 +878,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                       className={`w-full rounded-2xl px-4 py-2.5 text-xs font-semibold transition-all outline-none ${
                         isLight 
                           ? 'bg-[#F2F2F7] text-slate-900 placeholder:text-neutral-400 focus:bg-white' 
-                          : 'bg-[#141417] text-white placeholder:text-neutral-500 focus:bg-[#202026]'
+                          : 'bg-[#0E0E0E] text-white placeholder:text-neutral-500 focus:bg-[#202026]'
                       }`}
                     />
                   </div>
@@ -886,7 +886,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                   {/* Sugerencias Rápidas desplegables */}
                   {showSuggestions && (
                     <div className={`p-3 rounded-2xl space-y-2 animate-fadeIn ${
-                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#141417]'
+                      isLight ? 'bg-[#F4F4F7]' : 'bg-[#0E0E0E]'
                     }`}>
                       <div className="flex items-center justify-between text-[10px] font-bold text-[#8E8E93] uppercase tracking-wider">
                         <span>Pasajes clave para prédica:</span>
@@ -907,7 +907,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                             className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
                               isLight 
                                 ? 'bg-white hover:bg-[#1C1C1E] hover:text-white text-slate-800' 
-                                : 'bg-[#222227] hover:bg-white hover:text-black text-neutral-300'
+                                : 'bg-[#1A1A1A] hover:bg-white hover:text-black text-neutral-300'
                             }`}
                           >
                             {v.reference}
@@ -937,7 +937,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                                   : 'bg-white text-black shadow-md scale-[1.02]'
                                 : isLight
                                   ? 'bg-[#F2F2F7] text-slate-700 hover:bg-[#EAEAEE]'
-                                  : 'bg-[#141417] text-neutral-400 hover:text-white hover:bg-[#202026]'
+                                  : 'bg-[#0E0E0E] text-neutral-400 hover:text-white hover:bg-[#202026]'
                             }`}
                           >
                             {ver}
@@ -960,7 +960,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                       className={`w-full rounded-2xl p-3 text-xs leading-relaxed outline-none resize-none transition-all ${
                         isLight 
                           ? 'bg-[#F2F2F7] text-slate-900 placeholder:text-neutral-400 focus:bg-white' 
-                          : 'bg-[#141417] text-neutral-200 placeholder:text-neutral-500 focus:bg-[#202026]'
+                          : 'bg-[#0E0E0E] text-neutral-200 placeholder:text-neutral-500 focus:bg-[#202026]'
                       }`}
                     />
                   </div>
@@ -1096,7 +1096,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
           {/* COLUMNA DERECHA: Previsualización en Vivo de la Prédica (5 columnas, colapsable) */}
           {showLivePreview && (
             <div className={`lg:col-span-5 flex flex-col min-h-0 overflow-y-auto px-6 sm:px-8 py-6 space-y-4 scrollbar-thin scrollbar-thumb-neutral-400/20 transition-colors border-l ${
-              isLight ? 'bg-[#EFF1F4] border-black/[0.04]' : 'bg-[#101012] border-white/[0.04]'
+              isLight ? 'bg-[#EFF1F4] border-black/[0.04]' : 'bg-[#060606] border-white/[0.04]'
             }`}>
             
             {/* Cabecera de Previsualización */}
@@ -1121,7 +1121,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
             {/* Hoja de Estudio / Tarjeta del Púlpito en Blanco y Gris */}
             <div className={`rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 flex-1 ${
-              isLight ? 'bg-white text-slate-900' : 'bg-[#1A1A1E] text-white'
+              isLight ? 'bg-white text-slate-900' : 'bg-[#141414] text-white'
             }`}>
               
               {/* Metadatos Superiores */}
@@ -1135,7 +1135,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
               {/* Módulo de fecha de predicación y aviso */}
               <div className={`rounded-2xl p-4 flex items-center gap-3.5 ${
-                isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+                isLight ? 'bg-[#F4F4F7]' : 'bg-[#1A1A1A]'
               }`}>
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
                   isLight ? 'bg-[#1C1C1E] text-white' : 'bg-white text-black'
@@ -1172,7 +1172,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
               {/* Cita Bíblica Central */}
               {verseRef.trim() ? (
                 <div className={`rounded-2xl p-4 space-y-2 ${
-                  isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+                  isLight ? 'bg-[#F4F4F7]' : 'bg-[#1A1A1A]'
                 }`}>
                   <div className={`flex items-center justify-between text-xs font-bold ${
                     isLight ? 'text-slate-900' : 'text-white'
@@ -1201,7 +1201,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                 </div>
               ) : (
                 <div className={`p-3 rounded-2xl text-center ${
-                  isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+                  isLight ? 'bg-[#F4F4F7]' : 'bg-[#1A1A1A]'
                 }`}>
                   <p className="text-[11px] text-[#8E8E93] flex items-center justify-center gap-1.5">
                     <Quote size={12} />
@@ -1227,7 +1227,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
                     <div 
                       key={pt.id || idx}
                       className={`p-3 rounded-2xl space-y-1 ${
-                        isLight ? 'bg-[#F4F4F7]' : 'bg-[#222227]'
+                        isLight ? 'bg-[#F4F4F7]' : 'bg-[#1A1A1A]'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -1262,7 +1262,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
             {/* Tarjeta de Información Complementaria */}
             <div className={`p-4 rounded-2xl text-[11px] space-y-1 ${
-              isLight ? 'bg-white text-slate-700 shadow-xs' : 'bg-[#1A1A1E] text-neutral-400'
+              isLight ? 'bg-white text-slate-700 shadow-xs' : 'bg-[#141414] text-neutral-400'
             }`}>
               <span className={`font-bold block ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 Suite de Predicación Lista
@@ -1279,7 +1279,7 @@ export const CreateStudyModal: React.FC<CreateStudyModalProps> = ({
 
         {/* Footer Global de Acciones con Espaciado Generoso y Botones Compactos */}
         <div className={`px-8 py-5 flex items-center justify-between flex-shrink-0 transition-colors ${
-          isLight ? 'bg-white border-t border-black/[0.04]' : 'bg-[#1E1E22] border-t border-white/[0.04]'
+          isLight ? 'bg-white border-t border-black/[0.04]' : 'bg-[#121212] border-t border-white/[0.04]'
         }`}>
           <div className="hidden sm:flex items-center gap-2 text-xs text-[#8E8E93]">
             <span>Tema:</span>

@@ -62,7 +62,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('study_theme', theme);
     document.documentElement.classList.toggle('dark', theme === 'dark');
-    document.body.style.backgroundColor = theme === 'dark' ? '#0B0B0D' : '#FAFAFB';
+    document.body.style.backgroundColor = theme === 'dark' ? '#000000' : '#FAFAFB';
   }, [theme]);
 
   useEffect(() => {
@@ -330,7 +330,7 @@ export const App: React.FC = () => {
   };
 
   const getThemeClass = () => {
-    if (theme === 'dark') return 'dark bg-[#0B0B0D] text-[#F5F5F7]';
+    if (theme === 'dark') return 'dark bg-[#000000] text-[#F5F5F7]';
     return 'bg-[#FAFAFB] text-[#1C1C1E]';
   };
 
@@ -377,9 +377,9 @@ export const App: React.FC = () => {
             isOutlineOpen={isOutlineOpen}
           />
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F4F5F7] dark:bg-[#0B0B0D]">
-            <div className="max-w-lg w-full p-9 rounded-3xl surface-card bg-white dark:bg-[#131317] space-y-5 animate-scaleIn">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-[#F2F3F6] dark:bg-[#232329] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#F4F5F7] dark:bg-[#000000]">
+            <div className="max-w-lg w-full p-9 rounded-3xl surface-card bg-white dark:bg-[#111111] space-y-5 animate-scaleIn">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-[#F2F3F6] dark:bg-[#1A1A1A] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
                 <BookOpen size={26} />
               </div>
               <div className="space-y-1.5">
@@ -400,7 +400,7 @@ export const App: React.FC = () => {
                 </button>
                 <button
                   onClick={handleLoadSampleStudy}
-                  className="flex items-center gap-2 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#232329] dark:hover:bg-[#2C2C33] text-[#1C1C1E] dark:text-white active:scale-95 transition-all whitespace-nowrap"
+                  className="flex items-center gap-2 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#1A1A1A] dark:hover:bg-[#242424] text-[#1C1C1E] dark:text-white active:scale-95 transition-all whitespace-nowrap"
                 >
                   <Sparkles size={15} />
                   <span>Cargar Prédica de Ejemplo</span>

@@ -234,22 +234,22 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
     if (allVerses.length === 0) return null;
 
     return (
-      <div className="p-4 bg-[#F6F7F9] dark:bg-[#17171C] rounded-2xl space-y-3">
+      <div className="p-4 bg-[#F6F7F9] dark:bg-[#151515] rounded-2xl space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-[#E8E9EE] dark:bg-[#2C2C34] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
+            <div className="w-6 h-6 rounded-lg bg-[#E8E9EE] dark:bg-[#222222] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
               <Bookmark size={13} />
             </div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#1C1C1E] dark:text-white">
               Citas Bíblicas
             </span>
-            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-white dark:bg-[#18181C] text-[#6E6E77] dark:text-[#9E9EA8]">
+            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md bg-white dark:bg-[#141414] text-[#6E6E77] dark:text-[#9E9EA8]">
               {allVerses.length}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <div className="flex items-center bg-white dark:bg-[#18181C] p-0.5 rounded-xl text-xs">
+            <div className="flex items-center bg-white dark:bg-[#141414] p-0.5 rounded-xl text-xs">
               <button
                 type="button"
                 onClick={() => handleStepVerse('prev')}
@@ -275,7 +275,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               <button
                 type="button"
                 onClick={onOpenVerseModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] active:scale-95 transition-all whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black active:scale-95 transition-all whitespace-nowrap"
                 title="Añadir nueva cita bíblica"
               >
                 <Plus size={12} />
@@ -292,8 +292,8 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               onClick={() => setSelectedRefVerse(study.mainVerse)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap ${
                 currentSelectedVerse?.id === study.mainVerse.id
-                  ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
-                  : 'bg-white dark:bg-[#18181C] text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-[#EAECEF] dark:hover:bg-[#282830]'
+                  ? 'bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black shadow-xs'
+                  : 'bg-white dark:bg-[#141414] text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-[#EAECEF] dark:hover:bg-[#282830]'
               }`}
             >
               <BookOpen size={12} />
@@ -316,8 +316,8 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 onClick={() => setSelectedRefVerse(v)}
                 className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer whitespace-nowrap ${
                   isSelected
-                    ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] shadow-xs'
-                    : 'bg-white dark:bg-[#18181C] text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-[#EAECEF] dark:hover:bg-[#282830]'
+                    ? 'bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black shadow-xs'
+                    : 'bg-white dark:bg-[#141414] text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-[#EAECEF] dark:hover:bg-[#282830]'
                 }`}
               >
                 <BookOpen size={12} className=" opacity-75" />
@@ -340,13 +340,13 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
         </div>
 
         {currentSelectedVerse && (
-          <div className="p-3.5 bg-white dark:bg-[#18181C] rounded-xl space-y-2 animate-fadeIn">
+          <div className="p-3.5 bg-white dark:bg-[#141414] rounded-xl space-y-2 animate-fadeIn">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-black text-[#1C1C1E] dark:text-white">
                   {currentSelectedVerse.reference}
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#F2F3F6] dark:bg-[#17171C] text-[#6E6E77] dark:text-[#9E9EA8] font-bold">
+                <span className="text-[10px] px-2 py-0.5 rounded-md bg-[#F2F3F6] dark:bg-[#151515] text-[#6E6E77] dark:text-[#9E9EA8] font-bold">
                   {currentSelectedVerse.version}
                 </span>
               </div>
@@ -355,7 +355,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 <button
                   type="button"
                   onClick={() => handleInsertVerseIntoNotes(currentSelectedVerse)}
-                  className="text-[10px] font-bold text-[#5A5A64] dark:text-[#B4B4BE] hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F2F3F6] dark:bg-[#17171C] active:scale-95 transition-all whitespace-nowrap"
+                  className="text-[10px] font-bold text-[#5A5A64] dark:text-[#B4B4BE] hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F2F3F6] dark:bg-[#151515] active:scale-95 transition-all whitespace-nowrap"
                   title="Pegar esta cita dentro de las notas"
                 >
                   <FileText size={10} />
@@ -364,7 +364,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                 <button
                   type="button"
                   onClick={() => handleCopyVerse(currentSelectedVerse.text, currentSelectedVerse.id)}
-                  className="text-[10px] font-bold text-[#5A5A64] dark:text-[#B4B4BE] hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F2F3F6] dark:bg-[#17171C] active:scale-95 transition-all whitespace-nowrap"
+                  className="text-[10px] font-bold text-[#5A5A64] dark:text-[#B4B4BE] hover:text-black dark:hover:text-white flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F2F3F6] dark:bg-[#151515] active:scale-95 transition-all whitespace-nowrap"
                 >
                   {copiedVerseId === currentSelectedVerse.id ? <Check size={10} /> : <Copy size={10} />}
                   <span>{copiedVerseId === currentSelectedVerse.id ? 'Copiado' : 'Copiar'}</span>
@@ -388,12 +388,12 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
   };
 
   return (
-    <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[430px] lg:static lg:w-[400px] xl:w-[430px] flex-shrink-0 bg-white dark:bg-[#0F0F12] border-l border-black/[0.05] dark:border-white/[0.06] flex flex-col h-full min-h-0 select-none font-sans shadow-2xl lg:shadow-none animate-slideRight">
+    <aside className="fixed inset-y-0 right-0 z-40 w-full sm:w-[430px] lg:static lg:w-[400px] xl:w-[430px] flex-shrink-0 bg-white dark:bg-[#080808] border-l border-black/[0.05] dark:border-white/[0.06] flex flex-col h-full min-h-0 select-none font-sans shadow-2xl lg:shadow-none animate-slideRight">
       
       {/* 1. CABECERA PRINCIPAL SIN TRAZOS */}
-      <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#0F0F12]/95 backdrop-blur-xl">
+      <div className="px-5 py-3.5 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#080808]/95 backdrop-blur-xl">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] flex items-center justify-center font-bold text-xs shadow-xs">
+          <div className="w-8 h-8 rounded-xl bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black flex items-center justify-center font-bold text-xs shadow-xs">
             <FileText size={15} />
           </div>
           <div>
@@ -408,7 +408,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
 
         <button
           onClick={onToggle}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#5A5A64] hover:text-black dark:text-[#A0A0AB] dark:hover:text-white bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#1A1A20] dark:hover:bg-[#23232B] transition-all active:scale-95 whitespace-nowrap"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-[#5A5A64] hover:text-black dark:text-[#A0A0AB] dark:hover:text-white bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#191919] dark:hover:bg-[#242424] transition-all active:scale-95 whitespace-nowrap"
           title="Ocultar panel lateral"
         >
           <span>Ocultar</span>
@@ -418,12 +418,12 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
 
       {/* 2. PESTAÑAS SUPERIORES COMPACTAS SIN TRAZOS */}
       <div className="px-4 pb-2">
-        <div className="flex bg-[#F2F3F6] dark:bg-[#17171C] p-1 rounded-2xl gap-1">
+        <div className="flex bg-[#F2F3F6] dark:bg-[#151515] p-1 rounded-2xl gap-1">
           <button
             onClick={() => setActiveTab('notas')}
             className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
               activeTab === 'notas'
-                ? 'bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white shadow-xs'
+                ? 'bg-white dark:bg-[#141414] text-[#1C1C1E] dark:text-white shadow-xs'
                 : 'text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white'
             }`}
           >
@@ -435,7 +435,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
             onClick={() => setActiveTab('bosquejo')}
             className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
               activeTab === 'bosquejo'
-                ? 'bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white shadow-xs'
+                ? 'bg-white dark:bg-[#141414] text-[#1C1C1E] dark:text-white shadow-xs'
                 : 'text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white'
             }`}
           >
@@ -447,7 +447,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
             onClick={() => setActiveTab('avisos')}
             className={`flex-1 py-2 px-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 whitespace-nowrap ${
               activeTab === 'avisos'
-                ? 'bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white shadow-xs'
+                ? 'bg-white dark:bg-[#141414] text-[#1C1C1E] dark:text-white shadow-xs'
                 : 'text-[#6E6E77] dark:text-[#9E9EA8] hover:text-black dark:hover:text-white'
             }`}
           >
@@ -475,7 +475,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertLexicon('Griego')}
-                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#1A1A20] dark:hover:bg-[#23232B] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#191919] dark:hover:bg-[#242424] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                   >
                     <BookA size={12} />
                     <span>+ Griego</span>
@@ -484,7 +484,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertLexicon('Hebreo')}
-                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#1A1A20] dark:hover:bg-[#23232B] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#191919] dark:hover:bg-[#242424] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                   >
                     <BookA size={12} />
                     <span>+ Hebreo</span>
@@ -493,7 +493,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertBlock('ilustracion')}
-                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#1A1A20] dark:hover:bg-[#23232B] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#191919] dark:hover:bg-[#242424] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                     title="Insertar bloque de ilustración"
                   >
                     <Lightbulb size={12} />
@@ -503,7 +503,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => handleInsertBlock('aplicacion')}
-                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#1A1A20] dark:hover:bg-[#23232B] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                    className="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-[#F2F3F6] hover:bg-[#E6E8EC] dark:bg-[#191919] dark:hover:bg-[#242424] text-[#1C1C1E] dark:text-white transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                     title="Insertar bloque de aplicación práctica"
                   >
                     <Target size={12} />
@@ -513,7 +513,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsEditingNotes(!isEditingNotes)}
-                    className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
+                    className="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap"
                   >
                     {isEditingNotes ? (
                       <>
@@ -531,7 +531,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               </div>
 
               {isEditingNotes && (
-                <div className="flex flex-wrap items-center gap-1 p-1.5 bg-[#F2F3F6] dark:bg-[#17171C] rounded-xl">
+                <div className="flex flex-wrap items-center gap-1 p-1.5 bg-[#F2F3F6] dark:bg-[#151515] rounded-xl">
                   <button
                     type="button"
                     onClick={() => handleInsertFormat('**', '**', 'negrita')}
@@ -589,14 +589,14 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                   value={study.detailedNotes}
                   onChange={(e) => onUpdateStudy({ ...study, detailedNotes: e.target.value })}
                   rows={14}
-                  className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] bg-[#F6F7F9] dark:bg-[#17171C] p-4 rounded-2xl resize-y focus:outline-none"
+                  className="w-full text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] bg-[#F6F7F9] dark:bg-[#151515] p-4 rounded-2xl resize-y focus:outline-none"
                   placeholder="Escribe aquí el estudio de palabras griegas/hebreas, trasfondo teológico, notas exegéticas o reflexiones..."
                   autoFocus
                 />
               ) : (
                 <div 
                   onClick={() => setIsEditingNotes(true)}
-                  className="w-full p-4 bg-[#F6F7F9] dark:bg-[#17171C] rounded-2xl cursor-text min-h-[220px]"
+                  className="w-full p-4 bg-[#F6F7F9] dark:bg-[#151515] rounded-2xl cursor-text min-h-[220px]"
                 >
                   {study.detailedNotes?.trim() ? (
                     <div className="text-xs sm:text-sm font-sans leading-relaxed text-[#1C1C1E] dark:text-[#E5E5EA] select-text">
@@ -628,7 +628,7 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               <button
                 type="button"
                 onClick={handleAddOutlinePoint}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] active:scale-95 transition-all whitespace-nowrap"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black active:scale-95 transition-all whitespace-nowrap"
               >
                 <Plus size={13} />
                 <span>Añadir Punto</span>
@@ -639,11 +639,11 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               {study.outlinePoints.map((point, idx) => (
                 <div
                   key={point.id}
-                  className="bg-[#F6F7F9] dark:bg-[#17171C] rounded-2xl p-4 space-y-2.5"
+                  className="bg-[#F6F7F9] dark:bg-[#151515] rounded-2xl p-4 space-y-2.5"
                 >
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5 flex-1">
-                      <span className="w-6 h-6 rounded-lg bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] font-bold text-xs flex items-center justify-center flex-shrink-0">
+                      <span className="w-6 h-6 rounded-lg bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black font-bold text-xs flex items-center justify-center flex-shrink-0">
                         {point.number}
                       </span>
                       <input
@@ -689,14 +689,14 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                     value={point.scriptureRef || ''}
                     onChange={(e) => handleUpdatePoint(point.id, { scriptureRef: e.target.value })}
                     placeholder="Cita bíblica de respaldo (ej. Juan 3:16)..."
-                    className="w-full text-xs font-mono bg-white dark:bg-[#18181C] px-3 py-1.5 rounded-xl text-[#4A4A52] dark:text-[#C8C8D0] outline-none"
+                    className="w-full text-xs font-mono bg-white dark:bg-[#141414] px-3 py-1.5 rounded-xl text-[#4A4A52] dark:text-[#C8C8D0] outline-none"
                   />
 
                   <textarea
                     value={point.content}
                     onChange={(e) => handleUpdatePoint(point.id, { content: e.target.value })}
                     rows={3}
-                    className="w-full text-xs leading-relaxed bg-white dark:bg-[#18181C] p-3 rounded-xl text-[#1C1C1E] dark:text-[#E5E5EA] outline-none resize-y"
+                    className="w-full text-xs leading-relaxed bg-white dark:bg-[#141414] p-3 rounded-xl text-[#1C1C1E] dark:text-[#E5E5EA] outline-none resize-y"
                     placeholder="Contenido, explicación y aplicación..."
                   />
                 </div>
@@ -708,13 +708,13 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
         {/* PESTAÑA 3: AVISOS Y RECORDATORIOS DE PÚLPITO */}
         {activeTab === 'avisos' && (
           <div className="space-y-4">
-            <form onSubmit={handleAddQuickNote} className="p-4 bg-[#F6F7F9] dark:bg-[#17171C] rounded-2xl space-y-3">
+            <form onSubmit={handleAddQuickNote} className="p-4 bg-[#F6F7F9] dark:bg-[#151515] rounded-2xl space-y-3">
               <input
                 type="text"
                 placeholder="Escribe un recordatorio o pausa (ej. Hacer llamado al final)..."
                 value={newNoteText}
                 onChange={(e) => setNewNoteText(e.target.value)}
-                className="w-full text-xs p-3 bg-white dark:bg-[#18181C] rounded-xl text-[#1C1C1E] dark:text-white outline-none"
+                className="w-full text-xs p-3 bg-white dark:bg-[#141414] rounded-xl text-[#1C1C1E] dark:text-white outline-none"
               />
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 scrollbar-none">
@@ -725,8 +725,8 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
                       onClick={() => setNewNoteTag(tag)}
                       className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all whitespace-nowrap ${
                         newNoteTag === tag
-                          ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                          : 'bg-white dark:bg-[#18181C] text-[#6E6E77] dark:text-[#9E9EA8]'
+                          ? 'bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black'
+                          : 'bg-white dark:bg-[#141414] text-[#6E6E77] dark:text-[#9E9EA8]'
                       }`}
                     >
                       {tag}
@@ -746,10 +746,10 @@ export const RightNotesPanel: React.FC<RightNotesPanelProps> = ({
               {study.quickNotes.map(n => (
                 <div
                   key={n.id}
-                  className="p-3.5 bg-[#F6F7F9] dark:bg-[#17171C] rounded-2xl flex items-center justify-between gap-2"
+                  className="p-3.5 bg-[#F6F7F9] dark:bg-[#151515] rounded-2xl flex items-center justify-between gap-2"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] whitespace-nowrap">
+                    <span className="text-[9px] font-black uppercase px-2.5 py-1 rounded-lg bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black whitespace-nowrap">
                       {n.tag || 'Nota'}
                     </span>
                     <span className="text-xs text-[#1C1C1E] dark:text-[#E5E5EA] truncate font-medium">

@@ -136,10 +136,10 @@ export const BigPreview: React.FC<{
 
   return createPortal(
     <div className={`fixed inset-0 z-[100] w-screen h-screen min-h-screen overflow-hidden flex flex-col font-sans select-none animate-fadeIn transition-colors duration-200 ${
-      isLight ? 'bg-[#FAFAFC] text-[#121214]' : 'bg-[#0E0E10] text-white'
+      isLight ? 'bg-[#FAFAFC] text-[#121214]' : 'bg-[#000000] text-white'
     }`}>
       <div className={`flex items-center justify-between px-5 sm:px-8 py-3.5 flex-shrink-0 ${
-        isLight ? 'bg-white shadow-xs border-b border-black/[0.05]' : 'bg-[#141418] border-b border-white/[0.06]'
+        isLight ? 'bg-white shadow-xs border-b border-black/[0.05]' : 'bg-[#0A0A0A] border-b border-white/[0.06]'
       }`}>
         <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? 'text-[#636366]' : 'text-neutral-400'}`}>
           {item.label} {items.length > 1 && <span className="ml-2 opacity-60">{index + 1} / {items.length}</span>}
@@ -147,7 +147,7 @@ export const BigPreview: React.FC<{
         <div className="flex items-center gap-2">
           {/* Alternar tema Claro / Gris */}
           <div className={`flex items-center p-1 rounded-xl text-xs font-bold ${
-            isLight ? 'bg-[#F2F3F6]' : 'bg-[#202026]'
+            isLight ? 'bg-[#F2F3F6]' : 'bg-[#1A1A1A]'
           }`}>
             <button
               onClick={() => setPreviewTheme('light')}
@@ -171,7 +171,7 @@ export const BigPreview: React.FC<{
 
           {/* Zoom tipográfico */}
           <div className={`flex items-center rounded-xl p-1 gap-1 ${
-            isLight ? 'bg-[#F2F3F6]' : 'bg-[#202026]'
+            isLight ? 'bg-[#F2F3F6]' : 'bg-[#1A1A1A]'
           }`}>
             <button
               onClick={() => setScale(s => Math.max(70, s - 15))}
@@ -236,7 +236,7 @@ export const BigPreview: React.FC<{
             disabled={index === 0}
             onClick={() => onIndexChange(index - 1)}
             className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap ${
-              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white hover:bg-[#282830]'
+              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#161616] text-white hover:bg-[#282830]'
             }`}
           >
             <ChevronLeft size={16} /> Anterior
@@ -245,7 +245,7 @@ export const BigPreview: React.FC<{
             disabled={index === items.length - 1}
             onClick={() => onIndexChange(index + 1)}
             className={`flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-30 active:scale-95 whitespace-nowrap ${
-              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#1C1C22] text-white hover:bg-[#282830]'
+              isLight ? 'bg-white text-[#1C1C1E] shadow-sm' : 'bg-[#161616] text-white hover:bg-[#282830]'
             }`}
           >
             Siguiente <ChevronRight size={16} />
@@ -349,7 +349,7 @@ const UniversalSearch: React.FC<{
   return (
     <div className="fixed inset-0 z-[75] bg-black/60 backdrop-blur-sm flex items-start justify-center pt-[10vh] px-4 font-sans" onClick={onClose}>
       <div
-        className="w-full max-w-2xl bg-[#1C1C22] rounded-3xl shadow-2xl overflow-hidden text-white animate-scaleIn"
+        className="w-full max-w-2xl bg-[#161616] rounded-3xl shadow-2xl overflow-hidden text-white animate-scaleIn"
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center gap-3 px-5 py-4 bg-[#23232A]">
@@ -523,7 +523,7 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
       {sheet && (
         <>
           <div className="fixed inset-0 z-[64] bg-black/30" onClick={() => setSheet(null)} />
-          <div className="fixed z-[65] left-1/2 -translate-x-1/2 bottom-24 w-[calc(100%-2rem)] max-w-3xl bg-[#1C1C22]/95 backdrop-blur-2xl rounded-3xl shadow-2xl text-white font-sans animate-scaleIn">
+          <div className="fixed z-[65] left-1/2 -translate-x-1/2 bottom-24 w-[calc(100%-2rem)] max-w-3xl bg-[#111111]/95 backdrop-blur-2xl rounded-3xl shadow-2xl text-white font-sans animate-scaleIn">
             <div className="flex items-center justify-between px-5 py-4">
               <h3 className="text-sm font-bold">{sheetTitle[sheet]}</h3>
               <button onClick={() => setSheet(null)} className="p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-white/[0.08]">
@@ -576,8 +576,8 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
         <nav
           className={`no-print fixed z-[66] left-1/2 -translate-x-1/2 bottom-4 max-w-[calc(100vw-1.5rem)] overflow-x-auto scrollbar-none flex items-center gap-1 p-1.5 rounded-2xl backdrop-blur-2xl shadow-2xl font-sans border ${
             variant === 'pulpit'
-              ? 'bg-[#131317]/95 border-white/[0.08]'
-              : 'bg-white/95 border-black/[0.06] dark:bg-[#131317]/95 dark:border-white/[0.08]'
+              ? 'bg-[#0D0D0D]/95 border-white/[0.08]'
+              : 'bg-white/95 border-black/[0.06] dark:bg-[#0D0D0D]/95 dark:border-white/[0.08]'
           }`}
         >
           {dockButtons.map(b => {
@@ -590,7 +590,7 @@ export const QuickAccess: React.FC<QuickAccessProps> = ({ study, onAddVerse, var
                   active
                     ? variant === 'pulpit'
                       ? 'bg-white text-[#121214]'
-                      : 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
+                      : 'bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black'
                     : variant === 'pulpit'
                     ? 'text-neutral-300 hover:bg-white/[0.08] hover:text-white'
                     : 'text-[#4A4A52] dark:text-[#C8C8D0] hover:bg-black/[0.05] dark:hover:bg-white/[0.08]'

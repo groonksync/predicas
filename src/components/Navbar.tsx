@@ -91,13 +91,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      <header className="h-15 sm:h-16 bg-white/90 dark:bg-[#0F0F12]/90 backdrop-blur-2xl border-b border-black/[0.04] dark:border-white/[0.06] px-4 sm:px-6 lg:px-8 flex items-center justify-between z-30 select-none font-sans flex-shrink-0 transition-colors duration-200">
+      <header className="h-15 sm:h-16 bg-white/90 dark:bg-[#050505]/95 backdrop-blur-2xl border-b border-black/[0.04] dark:border-white/[0.06] px-4 sm:px-6 lg:px-8 flex items-center justify-between z-30 select-none font-sans flex-shrink-0 transition-colors duration-200">
         
         {/* Izquierda: Selector de Biblioteca y Creación Directa */}
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#18181D] dark:hover:bg-[#212128] text-[#1C1C1E] dark:text-white transition-all duration-200 active:scale-95"
+            className="flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#151515] dark:hover:bg-[#1F1F1F] text-[#1C1C1E] dark:text-white transition-all duration-200 active:scale-95"
             title="Abrir biblioteca de temas y prédicas"
           >
             <PanelLeft size={16} className="text-[#8E8E93]" />
@@ -112,7 +112,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Botón Directo: Nueva Prédica en 1 clic desde cualquier vista */}
           <button
             onClick={onAddStudy}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#18181D] dark:hover:bg-[#212128] text-[#1C1C1E] dark:text-white text-xs font-bold transition-all duration-200 active:scale-95 whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#151515] dark:hover:bg-[#1F1F1F] text-[#1C1C1E] dark:text-white text-xs font-bold transition-all duration-200 active:scale-95 whitespace-nowrap"
             title="Crear nueva prédica o estudio bíblico"
           >
             <Plus size={14} />
@@ -133,7 +133,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Derecha: Selector de Tema (Luz / Gris), Imprimir y Modo Prédica */}
         <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Selector de Modo: Luz y Gris (Sin trazos) */}
-          <div className="flex items-center bg-[#F2F3F5] dark:bg-[#18181D] p-1 rounded-2xl text-xs font-medium">
+          <div className="flex items-center bg-[#F2F3F5] dark:bg-[#151515] p-1 rounded-2xl text-xs font-medium">
             <button
               onClick={() => setTheme('light')}
               className={`px-3.5 py-1.5 rounded-xl transition-all duration-200 whitespace-nowrap flex items-center gap-1.5 ${
@@ -164,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {activeStudyTitle && (
             <button
               onClick={() => (onOpenPrintPreview ? onOpenPrintPreview() : window.print())}
-              className="hidden md:flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#1C1C1E] dark:text-neutral-200 bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#18181D] dark:hover:bg-[#212128] rounded-2xl transition-all duration-200 active:scale-95 whitespace-nowrap"
+              className="hidden md:flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-[#1C1C1E] dark:text-neutral-200 bg-[#F2F3F5] hover:bg-[#E6E8EC] dark:bg-[#151515] dark:hover:bg-[#1F1F1F] rounded-2xl transition-all duration-200 active:scale-95 whitespace-nowrap"
               title="Vista previa de impresión y hoja de púlpito"
             >
               <Printer size={14} />
@@ -194,7 +194,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setIsSidebarOpen(false)}
           />
 
-          <aside className="fixed top-0 left-0 bottom-0 w-[88vw] max-w-[400px] bg-[#F6F7F9] dark:bg-[#0E0E11] border-r border-black/[0.05] dark:border-white/[0.06] z-50 shadow-2xl flex flex-col font-sans select-none animate-slideRight">
+          <aside className="fixed top-0 left-0 bottom-0 w-[88vw] max-w-[400px] bg-[#F6F7F9] dark:bg-[#060606] border-r border-black/[0.05] dark:border-white/[0.06] z-50 shadow-2xl flex flex-col font-sans select-none animate-slideRight">
             
             {/* Cabecera */}
             <div className="px-6 pt-6 pb-4 flex items-start justify-between gap-3">
@@ -206,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <button
                 onClick={() => setIsSidebarOpen(false)}
-                className="w-9 h-9 rounded-xl bg-white dark:bg-[#16161B] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white flex items-center justify-center transition-colors active:scale-95"
+                className="w-9 h-9 rounded-xl bg-white dark:bg-[#141414] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white flex items-center justify-center transition-colors active:scale-95"
                 title="Cerrar biblioteca"
               >
                 <PanelLeftClose size={16} />
@@ -222,7 +222,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   value={studySearch}
                   onChange={(e) => setStudySearch(e.target.value)}
                   placeholder="Buscar por título o pasaje..."
-                  className="w-full pl-10 pr-3 py-2.5 text-xs rounded-xl bg-white dark:bg-[#16161B] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none transition-colors"
+                  className="w-full pl-10 pr-3 py-2.5 text-xs rounded-xl bg-white dark:bg-[#141414] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none transition-colors"
                 />
               </div>
             </div>
@@ -246,7 +246,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {isAddingTopic && (
-                  <form onSubmit={handleCreateTopic} className="p-3 bg-white dark:bg-[#16161B] rounded-2xl space-y-2.5 animate-fadeIn">
+                  <form onSubmit={handleCreateTopic} className="p-3 bg-white dark:bg-[#141414] rounded-2xl space-y-2.5 animate-fadeIn">
                     <input
                       type="text"
                       placeholder="Nombre de la categoría..."
@@ -273,7 +273,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <div
                         key={t.id}
                         className={`group flex items-center rounded-xl transition-all duration-200 ${
-                          isActive ? 'bg-white dark:bg-[#16161B] shadow-xs' : 'hover:bg-white/70 dark:hover:bg-[#1A1A1E]'
+                          isActive ? 'bg-white dark:bg-[#141414] shadow-xs' : 'hover:bg-white/70 dark:hover:bg-[#1A1A1E]'
                         }`}
                       >
                         <button
@@ -282,8 +282,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                         >
                           <span className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
                             isActive
-                              ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
-                              : 'bg-[#E9EAEE] dark:bg-[#26262B] text-[#8E8E93]'
+                              ? 'bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black'
+                              : 'bg-[#E9EAEE] dark:bg-[#1B1B1B] text-[#8E8E93]'
                           }`}>
                             <FolderOpen size={14} />
                           </span>
@@ -292,7 +292,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           }`}>
                             {t.name}
                           </span>
-                          {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
+                          {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#34D399] flex-shrink-0" />}
                         </button>
                         {onDeleteTopic && (
                           <button
@@ -334,7 +334,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   Prédicas · {currentTopic?.name || 'Tema'}
                 </h4>
 
-                <div className="flex bg-[#E9EAEE] dark:bg-[#16161B] p-1 rounded-xl text-[11px] font-bold">
+                <div className="flex bg-[#E9EAEE] dark:bg-[#141414] p-1 rounded-xl text-[11px] font-bold">
                   {([
                     { key: 'activos', label: 'Activos', count: studies.filter(s => !s.isArchived).length },
                     { key: 'archivados', label: 'Archivo', count: studies.filter(s => s.isArchived).length },
@@ -346,7 +346,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => setStudyFilter(tab.key)}
                       className={`flex-1 py-2 rounded-lg transition-all ${
                         studyFilter === tab.key
-                          ? 'bg-white dark:bg-[#34343B] text-[#1C1C1E] dark:text-white shadow-xs'
+                          ? 'bg-white dark:bg-[#222222] text-[#1C1C1E] dark:text-white shadow-xs'
                           : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
                       }`}
                     >
@@ -381,8 +381,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                           }}
                           className={`group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 ${
                             isSelected
-                              ? 'bg-white dark:bg-[#16161B] shadow-md'
-                              : 'bg-white/60 dark:bg-[#131317] hover:bg-white dark:hover:bg-[#1F1F24]'
+                              ? 'bg-white dark:bg-[#141414] shadow-md'
+                              : 'bg-white/60 dark:bg-[#111111] hover:bg-white dark:hover:bg-[#1A1A1A]'
                           }`}
                         >
                           {isSelected && <span className="absolute left-0 top-4 bottom-4 w-1 rounded-r-full bg-[#1C1C1E] dark:bg-white" />}
@@ -425,7 +425,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <div className="mt-3 flex items-center gap-2 flex-wrap">
                             <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-lg ${
                               soon
-                                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
+                                ? 'bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black'
                                 : 'bg-black/[0.05] dark:bg-white/[0.07] text-[#636366] dark:text-neutral-300'
                             }`}>
                               <Calendar size={10} />
@@ -445,13 +445,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Acción principal fija */}
-            <div className="px-6 py-4 bg-[#F6F7F9] dark:bg-[#0E0E11]">
+            <div className="px-6 py-4 bg-[#F6F7F9] dark:bg-[#060606]">
               <button
                 onClick={() => {
                   setIsSidebarOpen(false);
                   onAddStudy();
                 }}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold bg-[#1C1C1E] text-white dark:bg-[#E5E5E5] dark:text-black hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
               >
                 <Plus size={16} />
                 <span>Nueva Prédica</span>
@@ -462,7 +462,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Modal de Confirmación para Eliminar Prédica */}
           {studyToDelete && (
             <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-[#1C1C20] w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 animate-scaleIn">
+              <div className="bg-white dark:bg-[#111111] w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 animate-scaleIn">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-black/[0.05] dark:bg-white/[0.08] text-[#1C1C1E] dark:text-white flex items-center justify-center font-bold">
                     <Trash2 size={18} />
