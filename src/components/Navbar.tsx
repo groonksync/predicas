@@ -6,9 +6,7 @@ import {
   Moon,
   BookOpen,
   Plus,
-  Check,
   FolderOpen,
-  FileText,
   PanelLeft,
   PanelLeftClose,
   Archive,
@@ -16,9 +14,11 @@ import {
   Trash2,
   Search,
   Sparkles,
+  Calendar,
   ChevronRight
 } from 'lucide-react';
 import { Topic, Study } from '../types';
+import { getDateInfo } from '../utils/dateInfo';
 
 interface NavbarProps {
   topics: Topic[];
@@ -194,100 +194,105 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setIsSidebarOpen(false)}
           />
 
-          <aside className="fixed top-0 left-0 bottom-0 w-84 sm:w-96 bg-[#F8F9FB] dark:bg-[#161619] z-50 shadow-2xl flex flex-col font-sans select-none animate-slideRight">
+          <aside className="fixed top-0 left-0 bottom-0 w-[88vw] max-w-[400px] bg-[#F6F7F9] dark:bg-[#131316] z-50 shadow-2xl flex flex-col font-sans select-none animate-slideRight">
             
-            {/* Cabecera del Panel Lateral */}
-            <div className="px-6 pt-6 pb-4 bg-white dark:bg-[#1C1C20] flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#F2F3F5] dark:bg-[#26262B] text-[#1C1C1E] dark:text-white flex items-center justify-center">
-                  <BookOpen size={16} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-[#1C1C1E] dark:text-white leading-tight">
-                    Biblioteca de Estudios
-                  </h3>
-                  <span className="text-[11px] text-[#8E8E93]">
-                    Temas y bosquejos de predicación
-                  </span>
-                </div>
+            {/* Cabecera */}
+            <div className="px-6 pt-6 pb-4 flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#8E8E93]">Biblioteca</p>
+                <h3 className="font-black text-xl tracking-tight text-[#1C1C1E] dark:text-white leading-tight mt-0.5">
+                  Mis Estudios
+                </h3>
               </div>
-
               <button
                 onClick={() => setIsSidebarOpen(false)}
-                className="w-8 h-8 rounded-full bg-[#F2F3F5] dark:bg-[#26262B] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-xl bg-white dark:bg-[#1F1F24] text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white flex items-center justify-center transition-colors active:scale-95"
                 title="Cerrar biblioteca"
               >
                 <PanelLeftClose size={16} />
               </button>
             </div>
 
-            {/* Contenido con Scroll */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-thin">
-              
-              {/* SECCIÓN 1: TEMAS BÍBLICOS */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93]">
-                    Categorías Temáticas ({topics.length})
-                  </span>
+            {/* Buscador global */}
+            <div className="px-6 pb-4">
+              <div className="relative">
+                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
+                <input
+                  type="text"
+                  value={studySearch}
+                  onChange={(e) => setStudySearch(e.target.value)}
+                  placeholder="Buscar por título o pasaje..."
+                  className="w-full pl-10 pr-3 py-2.5 text-xs rounded-xl bg-white dark:bg-[#1F1F24] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Contenido */}
+            <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-7 scrollbar-none">
+
+              {/* CATEGORÍAS */}
+              <section className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93]">
+                    Categorías · {topics.length}
+                  </h4>
                   <button
                     onClick={() => setIsAddingTopic(!isAddingTopic)}
-                    className="text-xs font-bold text-[#1C1C1E] dark:text-neutral-200 hover:opacity-80 flex items-center gap-1 px-3 py-1 rounded-xl bg-white dark:bg-[#222227] shadow-2xs transition-all"
+                    className="text-[11px] font-bold text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white flex items-center gap-1 transition-colors"
                   >
                     <Plus size={12} />
-                    <span>Nuevo Tema</span>
+                    <span>Nueva</span>
                   </button>
                 </div>
 
-                {/* Formulario para añadir nuevo tema */}
                 {isAddingTopic && (
-                  <form onSubmit={handleCreateTopic} className="p-3 bg-white dark:bg-[#222227] rounded-2xl shadow-sm space-y-2.5 animate-fadeIn">
+                  <form onSubmit={handleCreateTopic} className="p-3 bg-white dark:bg-[#1F1F24] rounded-2xl space-y-2.5 animate-fadeIn">
                     <input
                       type="text"
-                      placeholder="Nombre del nuevo tema bíblico..."
+                      placeholder="Nombre de la categoría..."
                       value={newTopicName}
                       onChange={(e) => setNewTopicName(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 bg-[#F2F3F5] dark:bg-[#161619] rounded-xl text-[#1C1C1E] dark:text-white focus:outline-none"
+                      className="w-full text-xs px-3.5 py-2.5 bg-[#F2F3F5] dark:bg-[#131316] rounded-xl text-[#1C1C1E] dark:text-white focus:outline-none"
                       autoFocus
                     />
                     <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setIsAddingTopic(false)}
-                        className="px-3 py-1 text-xs text-[#8E8E93] font-semibold"
-                      >
+                      <button type="button" onClick={() => setIsAddingTopic(false)} className="px-3 py-1.5 text-xs text-[#8E8E93] font-semibold">
                         Cancelar
                       </button>
-                      <button
-                        type="submit"
-                        className="px-3.5 py-1.5 text-xs bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] font-bold rounded-xl"
-                      >
+                      <button type="submit" className="px-4 py-1.5 text-xs bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] font-bold rounded-xl">
                         Guardar
                       </button>
                     </div>
                   </form>
                 )}
 
-                {/* Lista de temas */}
-                <div className="grid grid-cols-1 gap-1.5">
+                <div className="space-y-1">
                   {topics.map((t) => {
                     const isActive = t.id === activeTopicId;
                     return (
                       <div
                         key={t.id}
-                        className={`group w-full flex items-center justify-between rounded-2xl text-xs transition-all duration-200 ${
-                          isActive
-                            ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] font-bold shadow-sm'
-                            : 'bg-white/70 dark:bg-[#1E1E23] text-[#1C1C1E] dark:text-neutral-300 hover:bg-white dark:hover:bg-[#25252B]'
+                        className={`group flex items-center rounded-xl transition-all duration-200 ${
+                          isActive ? 'bg-white dark:bg-[#1F1F24] shadow-xs' : 'hover:bg-white/70 dark:hover:bg-[#1A1A1E]'
                         }`}
                       >
                         <button
                           onClick={() => onSelectTopic(t.id)}
-                          className="flex-1 flex items-center gap-2.5 truncate px-3.5 py-2.5 text-left"
+                          className="flex-1 min-w-0 flex items-center gap-3 px-3.5 py-3 text-left"
                         >
-                          <FolderOpen size={14} className={isActive ? 'opacity-90' : 'text-[#8E8E93]'} />
-                          <span className="truncate">{t.name}</span>
-                          {isActive && <Check size={14} className="flex-shrink-0 ml-auto" />}
+                          <span className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            isActive
+                              ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
+                              : 'bg-[#E9EAEE] dark:bg-[#26262B] text-[#8E8E93]'
+                          }`}>
+                            <FolderOpen size={14} />
+                          </span>
+                          <span className={`text-sm truncate ${
+                            isActive ? 'font-bold text-[#1C1C1E] dark:text-white' : 'font-medium text-[#48484D] dark:text-neutral-300'
+                          }`}>
+                            {t.name}
+                          </span>
+                          {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />}
                         </button>
                         {onDeleteTopic && (
                           <button
@@ -297,7 +302,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                                 onDeleteTopic(t.id);
                               }
                             }}
-                            className="p-2 mr-1 rounded-lg opacity-0 group-hover:opacity-70 hover:!opacity-100 transition-opacity"
+                            className="p-2 mr-2 rounded-lg text-[#8E8E93] opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all"
                             title="Eliminar categoría"
                           >
                             <Trash2 size={13} />
@@ -316,96 +321,57 @@ export const Navbar: React.FC<NavbarProps> = ({
                         onKeepOnlyTopic(activeTopicId);
                       }
                     }}
-                    className="w-full text-[11px] font-bold py-2 rounded-xl bg-[#EAEAEE] dark:bg-[#202025] text-[#636366] dark:text-neutral-300 hover:text-[#1C1C1E] dark:hover:text-white transition-colors"
+                    className="w-full text-[11px] font-bold py-2 rounded-xl text-[#636366] dark:text-neutral-400 hover:text-[#1C1C1E] dark:hover:text-white bg-black/[0.04] dark:bg-white/[0.05] transition-colors"
                   >
                     Conservar solo «{currentTopic?.name}»
                   </button>
                 )}
-              </div>
+              </section>
 
-              {/* SECCIÓN 2: PRÉDICAS DEL TEMA SELECCIONADO */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93] truncate">
-                    Prédicas en {currentTopic?.name || 'Tema'} ({studies.length})
-                  </span>
-                  <button
-                    onClick={() => {
-                      setIsSidebarOpen(false);
-                      onAddStudy();
-                    }}
-                    className="text-xs font-bold bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] flex items-center gap-1 px-3 py-1.5 rounded-xl shadow-xs active:scale-95 transition-all"
-                  >
-                    <Plus size={12} />
-                    <span>Crear Prédica</span>
-                  </button>
+              {/* PRÉDICAS */}
+              <section className="space-y-3">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#8E8E93] truncate">
+                  Prédicas · {currentTopic?.name || 'Tema'}
+                </h4>
+
+                <div className="flex bg-[#E9EAEE] dark:bg-[#1F1F24] p-1 rounded-xl text-[11px] font-bold">
+                  {([
+                    { key: 'activos', label: 'Activos', count: studies.filter(s => !s.isArchived).length },
+                    { key: 'archivados', label: 'Archivo', count: studies.filter(s => s.isArchived).length },
+                    { key: 'todos', label: 'Todos', count: studies.length },
+                  ] as const).map(tab => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setStudyFilter(tab.key)}
+                      className={`flex-1 py-2 rounded-lg transition-all ${
+                        studyFilter === tab.key
+                          ? 'bg-white dark:bg-[#34343B] text-[#1C1C1E] dark:text-white shadow-xs'
+                          : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
+                      }`}
+                    >
+                      {tab.label} <span className="opacity-60">{tab.count}</span>
+                    </button>
+                  ))}
                 </div>
 
-                {/* Buscador rápido de prédicas dentro del tema */}
-                {studies.length > 1 && (
-                  <div className="relative">
-                    <Search size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8E8E93]" />
-                    <input
-                      type="text"
-                      value={studySearch}
-                      onChange={(e) => setStudySearch(e.target.value)}
-                      placeholder="Filtrar por título o pasaje..."
-                      className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white dark:bg-[#1E1E23] text-[#1C1C1E] dark:text-white placeholder:text-[#8E8E93] outline-none"
-                    />
-                  </div>
-                )}
-
-                {/* Filtro Activos / Archivados / Todos */}
-                <div className="flex bg-[#EAEAEE] dark:bg-[#202025] p-1 rounded-xl text-[11px] font-bold">
-                  <button
-                    type="button"
-                    onClick={() => setStudyFilter('activos')}
-                    className={`flex-1 py-1.5 rounded-lg transition-all ${
-                      studyFilter === 'activos'
-                        ? 'bg-white dark:bg-[#2E2E35] text-[#1C1C1E] dark:text-white shadow-2xs'
-                        : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-                    }`}
-                  >
-                    Activos ({studies.filter(s => !s.isArchived).length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStudyFilter('archivados')}
-                    className={`flex-1 py-1.5 rounded-lg transition-all ${
-                      studyFilter === 'archivados'
-                        ? 'bg-white dark:bg-[#2E2E35] text-[#1C1C1E] dark:text-white shadow-2xs'
-                        : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-                    }`}
-                  >
-                    Archivados ({studies.filter(s => s.isArchived).length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setStudyFilter('todos')}
-                    className={`flex-1 py-1.5 rounded-lg transition-all ${
-                      studyFilter === 'todos'
-                        ? 'bg-white dark:bg-[#2E2E35] text-[#1C1C1E] dark:text-white shadow-2xs'
-                        : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white'
-                    }`}
-                  >
-                    Todos ({studies.length})
-                  </button>
-                </div>
-
-                {/* Lista de prédicas */}
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {filteredStudies.length === 0 ? (
-                    <div className="p-6 text-center text-xs text-[#8E8E93] bg-white/60 dark:bg-[#1E1E23] rounded-2xl space-y-2">
-                      <Sparkles size={18} className="mx-auto text-[#8E8E93]" />
+                    <div className="py-10 text-center text-xs text-[#8E8E93] space-y-2">
+                      <Sparkles size={20} className="mx-auto" />
                       <p>
-                        {studyFilter === 'archivados'
-                          ? 'No hay prédicas archivadas en este tema.'
-                          : 'Aún no hay prédicas en este tema.'}
+                        {studySearch.trim()
+                          ? 'Sin resultados para tu búsqueda.'
+                          : studyFilter === 'archivados'
+                            ? 'No hay prédicas archivadas.'
+                            : 'Aún no hay prédicas en esta categoría.'}
                       </p>
                     </div>
                   ) : (
                     filteredStudies.map((s) => {
                       const isSelected = s.id === activeStudyId;
+                      const info = getDateInfo(s.date);
+                      const soon = info.tone === 'hoy' || info.tone === 'proxima';
                       return (
                         <div
                           key={s.id}
@@ -413,44 +379,25 @@ export const Navbar: React.FC<NavbarProps> = ({
                             onSelectStudy(s.id);
                             setIsSidebarOpen(false);
                           }}
-                          className={`group w-full p-3.5 rounded-2xl text-left transition-all duration-200 cursor-pointer ${
+                          className={`group relative p-4 rounded-2xl cursor-pointer transition-all duration-200 ${
                             isSelected
-                              ? 'bg-[#1C1C1E] dark:bg-white text-white dark:text-[#121214] shadow-md'
-                              : 'bg-white dark:bg-[#1E1E23] hover:bg-[#F0F1F4] dark:hover:bg-[#26262C] text-[#1C1C1E] dark:text-neutral-200'
+                              ? 'bg-white dark:bg-[#1F1F24] shadow-md'
+                              : 'bg-white/60 dark:bg-[#1A1A1E] hover:bg-white dark:hover:bg-[#1F1F24]'
                           }`}
                         >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-start gap-2.5 min-w-0">
-                              <FileText size={15} className={`mt-0.5 flex-shrink-0 ${
-                                isSelected ? 'opacity-90' : 'text-[#8E8E93]'
-                              }`} />
-                              <div className="min-w-0">
-                                <div className="font-bold text-xs sm:text-sm truncate">
-                                  {s.title}
-                                </div>
-                                <div className={`text-[11px] truncate mt-0.5 ${
-                                  isSelected ? 'opacity-75' : 'text-[#8E8E93]'
-                                }`}>
-                                  {s.mainVerse?.reference || 'Sin pasaje central'} • {s.outlinePoints.length} pts
-                                </div>
-                              </div>
-                            </div>
+                          {isSelected && <span className="absolute left-0 top-4 bottom-4 w-1 rounded-r-full bg-[#1C1C1E] dark:bg-white" />}
 
-                            {/* Acciones rápidas: Archivar y Eliminar */}
-                            <div className="flex items-center gap-1 flex-shrink-0 opacity-80 group-hover:opacity-100">
+                          <div className="flex items-start justify-between gap-2">
+                            <h5 className="font-bold text-sm leading-snug text-[#1C1C1E] dark:text-white line-clamp-2">
+                              {s.title}
+                            </h5>
+                            <div className="flex items-center gap-0.5 flex-shrink-0 -mr-1.5 -mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               {onToggleArchiveStudy && (
                                 <button
                                   type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onToggleArchiveStudy(s.id);
-                                  }}
-                                  className={`p-1.5 rounded-xl transition-colors ${
-                                    isSelected
-                                      ? 'hover:bg-white/15 dark:hover:bg-black/10'
-                                      : 'text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08]'
-                                  }`}
-                                  title={s.isArchived ? "Restaurar prédica" : "Archivar prédica"}
+                                  onClick={(e) => { e.stopPropagation(); onToggleArchiveStudy(s.id); }}
+                                  className="p-1.5 rounded-lg text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08]"
+                                  title={s.isArchived ? 'Restaurar prédica' : 'Archivar prédica'}
                                 >
                                   {s.isArchived ? <ArchiveRestore size={13} /> : <Archive size={13} />}
                                 </button>
@@ -458,15 +405,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                               {onDeleteStudy && (
                                 <button
                                   type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setStudyToDelete(s);
-                                  }}
-                                  className={`p-1.5 rounded-xl transition-colors ${
-                                    isSelected
-                                      ? 'hover:bg-white/15 dark:hover:bg-black/10'
-                                      : 'text-[#8E8E93] hover:text-red-500 hover:bg-red-500/10'
-                                  }`}
+                                  onClick={(e) => { e.stopPropagation(); setStudyToDelete(s); }}
+                                  className="p-1.5 rounded-lg text-[#8E8E93] hover:text-red-500 hover:bg-red-500/10"
                                   title="Eliminar prédica"
                                 >
                                   <Trash2 size={13} />
@@ -474,18 +414,48 @@ export const Navbar: React.FC<NavbarProps> = ({
                               )}
                             </div>
                           </div>
+
+                          <p className="text-xs text-[#8E8E93] mt-1 flex items-center gap-1.5">
+                            <BookOpen size={11} />
+                            <span className="truncate">{s.mainVerse?.reference || 'Sin pasaje central'}</span>
+                            <span>·</span>
+                            <span className="whitespace-nowrap">{s.outlinePoints.length} pts</span>
+                          </p>
+
+                          <div className="mt-3 flex items-center gap-2 flex-wrap">
+                            <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-lg ${
+                              soon
+                                ? 'bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214]'
+                                : 'bg-black/[0.05] dark:bg-white/[0.07] text-[#636366] dark:text-neutral-300'
+                            }`}>
+                              <Calendar size={10} />
+                              {info.weekday ? `${info.weekday.slice(0, 3)}. ${info.long.replace(/ de \d{4}$/, '')}` : 'Sin fecha'}
+                            </span>
+                            {info.tone !== 'vacia' && (
+                              <span className="text-[10px] font-medium text-[#8E8E93]">{info.message}</span>
+                            )}
+                          </div>
                         </div>
                       );
                     })
                   )}
                 </div>
-              </div>
+              </section>
 
             </div>
 
-            {/* Footer del Sidebar */}
-            <div className="p-4 bg-white dark:bg-[#1C1C20] text-center text-[11px] text-[#8E8E93]">
-              Selecciona una prédica para abrir su lienzo de estudio
+            {/* Acción principal fija */}
+            <div className="px-6 py-4 bg-[#F6F7F9] dark:bg-[#131316]">
+              <button
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  onAddStudy();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl text-sm font-bold bg-[#1C1C1E] text-white dark:bg-white dark:text-[#121214] hover:opacity-90 active:scale-[0.98] transition-all shadow-sm"
+              >
+                <Plus size={16} />
+                <span>Nueva Prédica</span>
+              </button>
             </div>
           </aside>
 
