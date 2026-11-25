@@ -204,6 +204,13 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
     return () => { mounted = false; };
   }, [showChapterContext, currentActiveVerse?.reference]);
 
+  // En el espacio de trabajo el pasaje principal permanece fijo
+  useEffect(() => {
+    if (modules.pasaje && modules.citas && modules.notas && activeVerseId !== 'main') {
+      setActiveVerseId('main');
+    }
+  }, [modules.pasaje, modules.citas, modules.notas, activeVerseId]);
+
   // Calcular tiempo estimado de predicación
   const estimatedMinutes = Math.max(
     15,
@@ -451,6 +458,9 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
   // ¿Solo están activos Pasaje y Notas?
   const isDuoPasajeNotas = modules.pasaje && modules.notas && !modules.citas && !modules.bosquejo;
 
+  // Espacio de trabajo: pasaje central + complementarios + notas visibles a la vez
+  const isWorkspaceLayout = modules.pasaje && modules.citas && modules.notas;
+
   // 1. Render Lienzo Bíblico Central (Sin trazos, adaptado a Luz y Gris, con Contexto de Capítulo)
   const renderPasajeCentral = () => (
     <section className="surface-card bg-white dark:bg-[#18181C] text-[#1C1C1E] dark:text-white rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-200">
@@ -586,6 +596,103 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
       {currentActiveVerse.notes && (
         <div className="mt-4 pt-3 text-xs text-[#636366] dark:text-neutral-400 leading-relaxed">
           <span className="font-bold text-[#1C1C1E] dark:text-neutral-200">Nota exegética:</span> {currentActiveVerse.notes}
+        </div>
+      )}
+    </section>
+  );
+
+  // Panel de Versículos Complementarios (se ven todos a la vez junto al pasaje central)
+  const renderComplementPanel = () => (
+    <section className="surface-card bg-white dark:bg-[#18181C] rounded-3xl p-6 space-y-4 transition-all duration-200">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-2xl bg-[#F2F3F5] dark:bg-[#25252B] text-[#1C1C1E] dark:text-white flex items-center justify-center flex-shrink-0">
+            <Bookmark size={16} />
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1C1C1E] dark:text-white truncate">
+              Versículos Complementarios
+            </h3>
+            <span className="text-[11px] text-[#8E8E93]">
+              {study.relatedVerses.length === 0
+                ? 'Refuerzan el pasaje central'
+                : `${study.relatedVerses.length} ${study.relatedVerses.length === 1 ? 'versículo' : 'versículos'} de apoyo`}
+            </span>
+          </div>
+        </div>
+        <button
+          onClick={onOpenVerseModal}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold bg-[#1C1C1E] hover:bg-black text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-[#121214] active:scale-95 transition-all shadow-xs whitespace-nowrap flex-shrink-0"
+        >
+          <Plus size={13} />
+          <span>Añadir</span>
+        </button>
+      </div>
+
+      {study.relatedVerses.length === 0 ? (
+        <button
+          onClick={onOpenVerseModal}
+          className="w-full py-8 rounded-2xl bg-[#F6F7F9] dark:bg-[#1E1E24] text-xs text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-colors flex flex-col items-center gap-2"
+        >
+          <Plus size={18} />
+          <span>Añade versículos que complementen el pasaje principal</span>
+        </button>
+      ) : (
+        <div className="space-y-2.5">
+          {study.relatedVerses.map(verse => (
+            <div key={verse.id} className="group p-4 rounded-2xl bg-[#F6F7F9] dark:bg-[#1E1E24] space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-sm font-bold text-[#1C1C1E] dark:text-white truncate">{verse.reference}</span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/[0.06] dark:bg-white/[0.08] text-[#636366] dark:text-neutral-300">
+                    {verse.version}
+                  </span>
+                </div>
+                <div className="flex items-center gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleCopyText(verse.text, verse.id)}
+                    className="p-1.5 rounded-lg text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08]"
+                    title="Copiar texto"
+                  >
+                    {copiedVerseId === verse.id ? <Check size={13} /> : <Copy size={13} />}
+                  </button>
+                  {verse.text && (
+                    <button
+                      type="button"
+                      onClick={() => setProjectedItem({
+                        id: verse.id,
+                        kind: 'verse',
+                        label: `Cita de Apoyo · ${verse.version}`,
+                        title: verse.reference,
+                        body: verse.text
+                      })}
+                      className="p-1.5 rounded-lg text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white hover:bg-black/[0.05] dark:hover:bg-white/[0.08]"
+                      title="Proyectar a pantalla completa"
+                    >
+                      <Maximize2 size={13} />
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteRelatedVerse(verse.id)}
+                    className="p-1.5 rounded-lg text-[#8E8E93] hover:text-red-500 hover:bg-red-500/10"
+                    title="Eliminar versículo"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm font-serif italic leading-relaxed text-[#1C1C1E] dark:text-neutral-200 select-text">
+                “{verse.text}”
+              </p>
+              {verse.notes && (
+                <p className="text-[11px] text-[#8E8E93] leading-relaxed">
+                  <span className="font-bold">Nota:</span> {verse.notes}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       )}
     </section>
@@ -1367,7 +1474,19 @@ export const StudyCanvas: React.FC<StudyCanvasProps> = ({
       {/* CONTENIDO PRINCIPAL ESCALABLE */}
       <div style={{ fontSize: `${fontScale}%` }} className="transition-all duration-200 space-y-6">
         
-        {isDuoPasajeNotas ? (
+        {isWorkspaceLayout ? (
+          <div className="w-full space-y-6">
+            {/* Pasaje principal fijo a la izquierda; complementarios y notas a la derecha */}
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 items-start">
+              <div className="lg:sticky lg:top-2">{renderPasajeCentral()}</div>
+              <div className="space-y-6 min-w-0">
+                {renderComplementPanel()}
+                {renderNotasExegeticas()}
+              </div>
+            </div>
+            {modules.bosquejo && renderBosquejoSection()}
+          </div>
+        ) : isDuoPasajeNotas ? (
           <div className="w-full grid gap-6 grid-cols-1 lg:grid-cols-2">
             {renderPasajeCentral()}
             {renderNotasExegeticas()}
